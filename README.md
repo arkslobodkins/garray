@@ -1,4 +1,4 @@
-***strict++
+***strict++***
 
 Type safe C++20 numerical library. Offers customized analogues of built-in arithmetic types, flexible
 fixed-size and dynamic arrays, lazy evaluation, extensive support for constexpr, and rigorous error handling.
