@@ -1,109 +1,194 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
 
-#include <initializer_list>  // initializer_list
-#include <iterator>          // reverse_iterator
-#include <type_traits>       // is_lvalue_reference_v
-#include <utility>           // move, forward
-#include <vector>            // vector
 
+#include <iterator>
+#include <type_traits>
+#include <utility>
+
+#include "ArrayCommon/array_common.hpp"
+#include "StrictCommon/strict_common.hpp"
 #include "array_base1D.hpp"
 #include "fixed_array_base1D.hpp"
 #include "iterator.hpp"
+#include "slice.hpp"
 #include "slicearray_base1D.hpp"
 
 
-namespace slib {
+namespace spp {
 
 
-template <OneDimBaseType Base>
-class Derived1D;
+namespace detail {
 
 
-template <typename D> concept ArrayOneDimType = FixedArray1DType<D> || Array1DType<D>;
+template <typename D> concept ArrayOneDimType = FixedArrayBase1DType<D> || ArrayBase1DType<D>;
+template <typename D> concept ArrayOneDimRealType = ArrayOneDimType<D> && Real<BuiltinTypeOf<D>>;
+template <typename D> concept ArrayOneDimBooleanType
+    = ArrayOneDimType<D> && Boolean<BuiltinTypeOf<D>>;
+template <typename D> concept ArrayOneDimIntegerType
+    = ArrayOneDimType<D> && Integer<BuiltinTypeOf<D>>;
+template <typename D> concept ArrayOneDimFloatingType
+    = ArrayOneDimType<D> && Floating<BuiltinTypeOf<D>>;
 
-template <typename D> concept ArrayOneDimRealType = ArrayOneDimType<D> && OneDimRealBaseType<D>;
 
-template <typename D> concept ArrayOneDimTypeRvalue = ArrayOneDimType<D> && !std::is_lvalue_reference_v<D>;
+template <typename D> concept ArrayOneDimTypeRvalue
+    = ArrayOneDimType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
+
 
 template <typename D> concept ArrayOneDimRealTypeRvalue
-    = ArrayOneDimRealType<D> && !std::is_lvalue_reference_v<D>;
+    = ArrayOneDimRealType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
 
 
-template <typename D> concept ArrayOneDimTypeRvalueWith
-    = OneDimBaseType<RemoveRef<D>> && ArrayOneDimTypeRvalue<D>;
+template <typename D> concept ArrayOneDimBooleanTypeRvalue
+    = ArrayOneDimBooleanType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
 
-template <typename D> concept ArrayOneDimRealTypeRvalueWith
-    = OneDimRealBaseType<RemoveRef<D>> && ArrayOneDimRealTypeRvalue<D>;
 
-template <typename D> concept ArrayOneDimIntegerTypeRvalueWith
-    = OneDimIntegerBaseType<RemoveRef<D>> && ArrayOneDimRealTypeRvalue<D>;
+template <typename D> concept ArrayOneDimIntegerTypeRvalue
+    = ArrayOneDimIntegerType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
 
-template <typename D> concept ArrayOneDimFloatTypeRvalueWith
-    = OneDimFloatingBaseType<RemoveRef<D>> && ArrayOneDimRealTypeRvalue<D>;
+
+template <typename D> concept ArrayOneDimFloatingTypeRvalue
+    = ArrayOneDimFloatingType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
+
+
+template <OneDimNonConstBaseType Base>
+class GenArrayMutable1D;
+
+
+template <typename Base>
+class GenArray1D;
+
+
+}  // namespace detail
+
+
+template <Builtin T, AlignmentFlag AF = Aligned>
+using Array1D = detail::GenArray1D<detail::ArrayBase1D<T, AF>>;
+
+
+template <Builtin T, ImplicitIntStatic sz>
+using FixedArray1D = detail::GenArray1D<detail::FixedArrayBase1D<T, sz>>;
+
+
+namespace detail {
 
 
 template <OneDimBaseType Base>
-class STRICT_NODISCARD Derived1D final : public Base {
-private:
-   using ThisType = Derived1D<Base>;
-
+class STRICT_NODISCARD GenArrayBase1D : public Base {
 public:
-   using Base::Base;
-
    using size_type = index_t;
    using typename Base::builtin_type;
    using typename Base::value_type;
 
-   // assignments
-   // assignment operators are not constrained because it leads to more obscure errors
-   // for expression templates, which have a single deleted assignment
-   STRICT_CONSTEXPR Derived1D& operator=(value_type x);
-   STRICT_CONSTEXPR Derived1D& operator=(std::initializer_list<value_type> list);
-   STRICT_CONSTEXPR Derived1D& operator=(OneDimBaseType auto const& A);
+   using Base::Base;
+   STRICT_NODISCARD_CONSTEXPR GenArrayBase1D(const GenArrayBase1D&) = default;
+   STRICT_NODISCARD_CONSTEXPR GenArrayBase1D(GenArrayBase1D&&) = default;
+   STRICT_CONSTEXPR GenArrayBase1D& operator=(const GenArrayBase1D&) = delete;
+   STRICT_CONSTEXPR GenArrayBase1D& operator=(const auto&) = delete;
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   template <typename I>
-   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) operator[](I i);
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   template <IndexType Index>
+   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) operator[](Index i) {
+      ASSERT_STRICT_RANGE_DEBUG(valid_index(*this, index_helper(*this, i)));
+      return Base::un(index_helper(*this, i));
+   }
 
-   template <typename I>
-   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) operator[](I i) const;
+   template <IndexType Index>
+   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) operator[](Index i) const {
+      ASSERT_STRICT_RANGE_DEBUG(valid_index(*this, index_helper(*this, i)));
+      return Base::un(index_helper(*this, i));
+   }
 
-   template <typename I>
-   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(I i);
+   template <IndexType Index>
+   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(Index i) {
+      return Base::un(index_helper(*this, i));
+   }
 
-   template <typename I>
-   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(I i) const;
+   template <IndexType Index>
+   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(Index i) const {
+      return Base::un(index_helper(*this, i));
+   }
 
-   template <typename I>
-   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) at(I i);
+   template <IndexType Index>
+   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) at(Index i) {
+      ASSERT_STRICT_RANGE_ALWAYS(valid_index(*this, index_helper(*this, i)));
+      return Base::un(index_helper(*this, i));
+   }
 
-   template <typename I>
-   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) at(I i) const;
+   template <IndexType Index>
+   STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) at(Index i) const {
+      ASSERT_STRICT_RANGE_ALWAYS(valid_index(*this, index_helper(*this, i)));
+      return Base::un(index_helper(*this, i));
+   }
 
-   STRICT_NODISCARD_CONSTEXPR StrictBool empty() const;
-   STRICT_NODISCARD_CONSTEXPR index_t size_m1() const;
+   STRICT_CONSTEXPR StrictBool empty() const {
+      return Base::size() == 0_sl;
+   }
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_NODISCARD_CONSTEXPR auto begin() &;
-   STRICT_NODISCARD_CONSTEXPR auto begin() const&;
-   STRICT_NODISCARD_CONSTEXPR auto end() &;
-   STRICT_NODISCARD_CONSTEXPR auto end() const&;
-   STRICT_NODISCARD_CONSTEXPR auto cbegin() const&;
-   STRICT_NODISCARD_CONSTEXPR auto cend() const&;
+   STRICT_CONSTEXPR index_t size_m1() const {
+      return Base::size() - 1_sl;
+   }
 
-   STRICT_NODISCARD_CONSTEXPR auto rbegin() &;
-   STRICT_NODISCARD_CONSTEXPR auto rbegin() const&;
-   STRICT_NODISCARD_CONSTEXPR auto rend() &;
-   STRICT_NODISCARD_CONSTEXPR auto rend() const&;
-   STRICT_NODISCARD_CONSTEXPR auto crbegin() const&;
-   STRICT_NODISCARD_CONSTEXPR auto crend() const&;
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR auto begin() & {
+      if constexpr(NonConstBaseType<Base>) {
+         return Iterator{*this, 0_sl};
+      } else {
+         return ConstIterator{*this, 0_sl};
+      }
+   }
 
-   // disallow pointers to temporaries to reduce the risk of dangling iterators
+   STRICT_CONSTEXPR auto begin() const& {
+      return ConstIterator{*this, 0_sl};
+   }
+
+   STRICT_CONSTEXPR auto end() & {
+      if constexpr(NonConstBaseType<Base>) {
+         return Iterator{*this, Base::size()};
+      } else {
+         return ConstIterator{*this, Base::size()};
+      }
+   }
+
+   STRICT_CONSTEXPR auto end() const& {
+      return ConstIterator{*this, Base::size()};
+   }
+
+   STRICT_CONSTEXPR auto cbegin() const& {
+      return this->begin();
+   }
+
+   STRICT_CONSTEXPR auto cend() const& {
+      return this->end();
+   }
+
+   STRICT_CONSTEXPR auto rbegin() & {
+      return std::reverse_iterator{this->end()};
+   }
+
+   STRICT_CONSTEXPR auto rbegin() const& {
+      return std::reverse_iterator{this->end()};
+   }
+
+   STRICT_CONSTEXPR auto rend() & {
+      return std::reverse_iterator{this->begin()};
+   }
+
+   STRICT_CONSTEXPR auto rend() const& {
+      return std::reverse_iterator{this->begin()};
+   }
+
+   STRICT_CONSTEXPR auto crbegin() const& {
+      return std::reverse_iterator{this->rbegin()};
+   }
+
+   STRICT_CONSTEXPR auto crend() const& {
+      return std::reverse_iterator{this->rend()};
+   }
+
+   // Disallow pointers to temporaries to reduce the risk of dangling iterators.
    STRICT_CONSTEXPR auto begin() && = delete;
    STRICT_CONSTEXPR auto begin() const&& = delete;
    STRICT_CONSTEXPR auto end() && = delete;
@@ -118,854 +203,465 @@ public:
    STRICT_CONSTEXPR auto crbegin() const&& = delete;
    STRICT_CONSTEXPR auto crend() const&& = delete;
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR Derived1D& operator+=(value_type x)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator-=(value_type x)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator*=(value_type x)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator/=(value_type x)
-      requires NonConstBaseType<ThisType>;
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   // For slices, initializer_list overloads are needed so that initializer_list
+   // can be deduced implicitly.
+   template <SliceType Slice>
+   STRICT_CONSTEXPR auto operator()(Slice slice) & {
+      auto sh = slice_helper(*this, std::move(slice));
+      if constexpr(NonConstBaseType<Base>) {
+         return GenArrayMutable1D<SliceArrayBase1D<GenArrayBase1D, decltype(sh)>>{*this,
+                                                                                  std::move(sh)};
+      } else {
+         return GenArrayBase1D<ConstSliceArrayBase1D<GenArrayBase1D, decltype(sh)>>{*this,
+                                                                                    std::move(sh)};
+      }
+   }
 
-   STRICT_CONSTEXPR Derived1D& operator%=(value_type x)
-      requires NonConstBaseType<ThisType> && Integer<builtin_type>;
-   STRICT_CONSTEXPR Derived1D& operator<<=(value_type x)
-      requires NonConstBaseType<ThisType> && Integer<builtin_type>;
-   STRICT_CONSTEXPR Derived1D& operator>>=(value_type x)
-      requires NonConstBaseType<ThisType> && Integer<builtin_type>;
-   STRICT_CONSTEXPR Derived1D& operator&=(value_type x)
-      requires NonConstBaseType<ThisType> && Integer<builtin_type>;
-   STRICT_CONSTEXPR Derived1D& operator|=(value_type x)
-      requires NonConstBaseType<ThisType> && Integer<builtin_type>;
-   STRICT_CONSTEXPR Derived1D& operator^=(value_type x)
-      requires NonConstBaseType<ThisType> && Integer<builtin_type>;
+   STRICT_CONSTEXPR auto operator()(use::IndexList list) & {
+      auto sh = slice_helper(*this, list);
+      return operator()(std::move(sh));
+   }
 
-   STRICT_CONSTEXPR Derived1D& operator+=(OneDimRealBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator-=(OneDimRealBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator*=(OneDimRealBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator/=(OneDimRealBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
+   STRICT_CONSTEXPR auto view1D() & {
+      return operator()(place::all);
+   }
 
-   STRICT_CONSTEXPR Derived1D& operator%=(OneDimIntegerBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator<<=(OneDimIntegerBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator>>=(OneDimIntegerBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator&=(OneDimIntegerBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator|=(OneDimIntegerBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
-   STRICT_CONSTEXPR Derived1D& operator^=(OneDimIntegerBaseType auto const& A)
-      requires NonConstBaseType<ThisType>;
+   // Implemented in attach2D.hpp.
+   STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) &;
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_NODISCARD_CONSTEXPR auto operator()(seqN s) &;
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   template <SliceType Slice>
+   STRICT_CONSTEXPR auto operator()(Slice slice) const& {
+      auto sh = slice_helper(*this, std::move(slice));
+      return GenArrayBase1D<ConstSliceArrayBase1D<GenArrayBase1D, decltype(sh)>>{*this,
+                                                                                 std::move(sh)};
+   }
 
-   template <typename S>
-   STRICT_NODISCARD_CONSTEXPR auto operator()(S s) &;
+   STRICT_CONSTEXPR auto operator()(use::IndexList list) const& {
+      auto sh = slice_helper(*this, list);
+      return operator()(std::move(sh));
+   }
 
-   STRICT_NODISCARD_CONSTEXPR auto operator()(std::vector<ImplicitInt> indexes) &;
-   STRICT_NODISCARD_CONSTEXPR auto operator()(std::initializer_list<ImplicitInt> indexes) &;
-   STRICT_NODISCARD_CONSTEXPR auto operator()(const place::complement& indexes) &;
+   STRICT_CONSTEXPR auto view1D() const& {
+      return operator()(place::all);
+   }
 
-   STRICT_NODISCARD_CONSTEXPR auto view1D() &;
+   // Implemented in attach2D.hpp.
+   STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) const&;
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_NODISCARD_CONSTEXPR auto operator()(seqN s) const&;
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   // Must define for rvalues otherwise const& overload is selected, which returns
+   // constant slice array in situations when non-constant slice array is needed.
+   template <SliceType Slice>
+   STRICT_CONSTEXPR auto operator()(Slice slice) &&
+      requires(!ArrayOneDimType<GenArrayBase1D>)
+   {
+      return operator()(std::move(slice));
+   }
 
-   template <typename S>
-   STRICT_NODISCARD_CONSTEXPR auto operator()(S s) const&;
+   STRICT_CONSTEXPR auto operator()(use::IndexList list) && {
+      return operator()(std::move(list));
+   }
 
-   STRICT_NODISCARD_CONSTEXPR auto operator()(std::vector<ImplicitInt> indexes) const&;
-   STRICT_NODISCARD_CONSTEXPR auto operator()(std::initializer_list<ImplicitInt> indexes) const&;
-   STRICT_NODISCARD_CONSTEXPR auto operator()(const place::complement& indexes) const&;
+   STRICT_CONSTEXPR auto view1D() &&
+      requires(!ArrayOneDimType<GenArrayBase1D>)
+   {
+      return this->view1D();
+   }
 
-   STRICT_NODISCARD_CONSTEXPR auto view1D() const&;
+   // Implemented in attach2D.hpp.
+   STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) &&
+      requires(!ArrayOneDimType<GenArrayBase1D>);
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   // must define for rvalues otherwise const& overload is selected, which returns
-   // constant slice array in situations when non-constant slice array is needed
-   STRICT_NODISCARD_CONSTEXPR auto operator()(seqN s) &&
-      requires(!ArrayOneDimType<ThisType>);
-
-   template <typename S>
-   STRICT_NODISCARD_CONSTEXPR auto operator()(S s) &&
-      requires(!ArrayOneDimType<ThisType>);
-
-   STRICT_NODISCARD_CONSTEXPR auto operator()(std::vector<ImplicitInt> indexes) &&
-      requires(!ArrayOneDimType<ThisType>);
-   STRICT_NODISCARD_CONSTEXPR auto operator()(std::initializer_list<ImplicitInt> indexes) &&
-      requires(!ArrayOneDimType<ThisType>);
-   STRICT_NODISCARD_CONSTEXPR auto operator()(const place::complement& indexes) &&
-      requires(!ArrayOneDimType<ThisType>);
-
-   STRICT_NODISCARD_CONSTEXPR auto view1D() &&
-      requires(!ArrayOneDimType<ThisType>);
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   // disallow slicing of temporaries that own data to reduce the risk of dangling references
-   template <typename S>
-   STRICT_CONSTEXPR auto operator()(S s) const&&
-      requires ArrayOneDimType<ThisType>
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   // Disallow slicing of temporaries that own data to reduce the risk of dangling references.
+   template <typename T>
+   STRICT_CONSTEXPR auto operator()(T slice) const&&
+      requires ArrayOneDimType<GenArrayBase1D>
    = delete;
 
    STRICT_CONSTEXPR auto view1D() const&&
-      requires ArrayOneDimType<ThisType>
+      requires ArrayOneDimType<GenArrayBase1D>
    = delete;
 
-   STRICT_CONSTEXPR Derived1D& lval() & = delete;
-   STRICT_CONSTEXPR const Derived1D& lval() const& = delete;
-   STRICT_NODISCARD_CONSTEXPR Derived1D& lval() &&;
-   STRICT_NODISCARD_CONSTEXPR const Derived1D& lval() const&&;
+   STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) const&&
+      requires ArrayOneDimType<GenArrayBase1D>
+   = delete;
 
-   STRICT_NODISCARD_CONSTEXPR decltype(auto) eval() const&;
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR GenArrayBase1D& lval() & = delete;
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   // pass through functions for ArrayBase1D class
-   // although not strictly necessary, requires clause ensures it
-   STRICT_CONSTEXPR Derived1D& resize(ImplicitInt n)
-      requires Array1DType<ThisType>;
+   STRICT_CONSTEXPR const GenArrayBase1D& lval() const& = delete;
 
+   STRICT_NODISCARD_CONSTEXPR GenArrayBase1D& lval() && {
+      return this->lval_impl();
+   }
 
-   STRICT_CONSTEXPR Derived1D& resize_forget(ImplicitInt n)
-      requires Array1DType<ThisType>;
+   STRICT_NODISCARD_CONSTEXPR const GenArrayBase1D& lval() const&& {
+      return this->lval_impl();
+   }
 
+   //  Return unaligned array so that it can be constexpr.
+   STRICT_NODISCARD_CONSTEXPR Array1D<builtin_type, Unaligned> eval() const& {
+      return Array1D<builtin_type, Unaligned>(*this);
+   }
 
-   // forwarding references are not used for resize_and_assign because passing arguments is more subtle
-   STRICT_CONSTEXPR Derived1D& resize_and_assign(OneDimBaseType auto const& A)
-      requires Array1DType<ThisType>;
-
-
-   // optimized implementation
-   STRICT_CONSTEXPR Derived1D& resize_and_assign(Derived1D&& A)
-      requires Array1DType<ThisType>;
-
-
-   template <typename... Args>
-   STRICT_CONSTEXPR Derived1D& remove(Args&&... args)
-      requires Array1DType<ThisType>;
-
-
-   template <typename... Args>
-   STRICT_CONSTEXPR Derived1D& remove_front(Args&&... args)
-      requires Array1DType<ThisType>;
-
-
-   template <typename... Args>
-   STRICT_CONSTEXPR Derived1D& remove_back(Args&&... args)
-      requires Array1DType<ThisType>;
-
-
-   template <typename... Args>
-   STRICT_CONSTEXPR Derived1D& insert(Args&&... args)
-      requires Array1DType<ThisType>;
-
-
-   template <typename... Args>
-   STRICT_CONSTEXPR Derived1D& insert_front(Args&&... args)
-      requires Array1DType<ThisType>;
-
-
-   template <typename... Args>
-   STRICT_CONSTEXPR Derived1D& insert_back(Args&&... args)
-      requires Array1DType<ThisType>;
-
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_NODISCARD_CONSTEXPR StrictLong bytes() const
-      requires ArrayOneDimType<ThisType>;
-
-
-   STRICT_NODISCARD_CONSTEXPR Strict64 kbytes() const
-      requires ArrayOneDimType<ThisType>;
-
-
-   STRICT_NODISCARD_CONSTEXPR Strict64 mbytes() const
-      requires ArrayOneDimType<ThisType>;
-
-
-   STRICT_NODISCARD_CONSTEXPR Strict64 gbytes() const
-      requires ArrayOneDimType<ThisType>;
-
-
-   STRICT_NODISCARD_CONSTEXPR static index_t dimension() {
+   STRICT_CONSTEXPR static index_t dimension() {
       return 1_sl;
    }
 
-private:
-   STRICT_CONSTEXPR Derived1D& lval_impl();
-   STRICT_CONSTEXPR const Derived1D& lval_impl() const;
+protected:
+   STRICT_CONSTEXPR GenArrayBase1D& lval_impl() {
+      return *this;
+   }
+
+   STRICT_CONSTEXPR const GenArrayBase1D& lval_impl() const {
+      return *this;
+   }
 };
 
 
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator=(value_type x) {
-   Base::operator=(x);
-   return *this;
-}
+template <OneDimNonConstBaseType Base>
+class STRICT_NODISCARD GenArrayMutable1D : public GenArrayBase1D<Base> {
+   using CommonBase1D = GenArrayBase1D<Base>;
 
+public:
+   using typename CommonBase1D::size_type;
+   using typename CommonBase1D::builtin_type;
+   using typename CommonBase1D::value_type;
 
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator=(std::initializer_list<value_type> list) {
-   Base::operator=(list);
-   return *this;
-}
+   using GenArrayBase1D<Base>::GenArrayBase1D;
+   STRICT_NODISCARD_CONSTEXPR GenArrayMutable1D(const GenArrayMutable1D&) = default;
+   STRICT_NODISCARD_CONSTEXPR GenArrayMutable1D(GenArrayMutable1D&&) = default;
 
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator=(OneDimBaseType auto const& A) {
-   Base::operator=(A);
-   return *this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <OneDimBaseType Base>
-template <typename I>
-STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) Derived1D<Base>::operator[](I i) {
-   ASSERT_STRICT_RANGE_DEBUG(internal::valid_index(*this, internal::index_helper(*this, i)));
-   return Base::index(internal::index_helper(*this, i));
-}
-
-
-template <OneDimBaseType Base>
-template <typename I>
-STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) Derived1D<Base>::operator[](I i) const {
-   ASSERT_STRICT_RANGE_DEBUG(internal::valid_index(*this, internal::index_helper(*this, i)));
-   return Base::index(internal::index_helper(*this, i));
-}
-
-
-template <OneDimBaseType Base>
-template <typename I>
-STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) Derived1D<Base>::un(I i) {
-   return Base::index(internal::index_helper(*this, i));
-}
-
-
-template <OneDimBaseType Base>
-template <typename I>
-STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) Derived1D<Base>::un(I i) const {
-   return Base::index(internal::index_helper(*this, i));
-}
-
-
-template <OneDimBaseType Base>
-template <typename I>
-STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) Derived1D<Base>::at(I i) {
-   ASSERT_STRICT_RANGE_ALWAYS(internal::valid_index(*this, internal::index_helper(*this, i)));
-   return Base::index(internal::index_helper(*this, i));
-}
-
-
-template <OneDimBaseType Base>
-template <typename I>
-STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) Derived1D<Base>::at(I i) const {
-   ASSERT_STRICT_RANGE_ALWAYS(internal::valid_index(*this, internal::index_helper(*this, i)));
-   return Base::index(internal::index_helper(*this, i));
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR StrictBool Derived1D<Base>::empty() const {
-   return Base::size() == 0_sl;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::size_m1() const -> index_t {
-   return Base::size() - 1_sl;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::begin() & {
-   if constexpr(NonConstBaseType<Base>) {
-      return Iterator{*this, 0_sl};
-   } else {
-      return ConstIterator{*this, 0_sl};
+   // Assignments are not inherited because it returns reference to base class.
+   STRICT_CONSTEXPR GenArrayMutable1D& operator=(const GenArrayMutable1D& A) {
+      return static_cast<GenArrayMutable1D&>(Base::operator=(A));
    }
-}
 
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::begin() const& {
-   return ConstIterator{*this, 0_sl};
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::end() & {
-   if constexpr(NonConstBaseType<Base>) {
-      return Iterator{*this, Base::size()};
-   } else {
-      return ConstIterator{*this, Base::size()};
+   STRICT_CONSTEXPR GenArrayMutable1D& operator=(GenArrayMutable1D&& A) {
+      return static_cast<GenArrayMutable1D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
    }
-}
 
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::end() const& {
-   return ConstIterator{*this, Base::size()};
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::cbegin() const& {
-   return this->begin();
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::cend() const& {
-   return this->end();
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::rbegin() & {
-   return std::reverse_iterator{this->end()};
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::rbegin() const& {
-   return std::reverse_iterator{this->end()};
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::rend() & {
-   return std::reverse_iterator{this->begin()};
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::rend() const& {
-   return std::reverse_iterator{this->begin()};
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::crbegin() const& {
-   return std::reverse_iterator{this->rbegin()};
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::crend() const& {
-   return std::reverse_iterator{this->rend()};
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator+=(value_type x)
-   requires NonConstBaseType<ThisType>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) += x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator-=(value_type x)
-   requires NonConstBaseType<ThisType>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) -= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator*=(value_type x)
-   requires NonConstBaseType<ThisType>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) *= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator/=(value_type x)
-   requires NonConstBaseType<ThisType>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) /= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator%=(value_type x)
-   requires NonConstBaseType<ThisType> && Integer<builtin_type>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) %= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator<<=(value_type x)
-   requires NonConstBaseType<ThisType> && Integer<builtin_type>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) <<= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator>>=(value_type x)
-   requires NonConstBaseType<ThisType> && Integer<builtin_type>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) >>= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator&=(value_type x)
-   requires NonConstBaseType<ThisType> && Integer<builtin_type>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) &= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator|=(value_type x)
-   requires NonConstBaseType<ThisType> && Integer<builtin_type>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) |= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator^=(value_type x)
-   requires NonConstBaseType<ThisType> && Integer<builtin_type>
-{
-   internal::apply0(*this, [x, this](index_t i) { Base::index(i) ^= x; });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator+=(OneDimRealBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) += A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator-=(OneDimRealBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) -= A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator*=(OneDimRealBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) *= A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator/=(OneDimRealBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) /= A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator%=(OneDimIntegerBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) %= A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator<<=(OneDimIntegerBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) <<= A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator>>=(OneDimIntegerBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) >>= A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator&=(OneDimIntegerBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) &= A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator|=(OneDimIntegerBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) |= A.index(i); });
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::operator^=(OneDimIntegerBaseType auto const& A)
-   requires NonConstBaseType<ThisType>
-{
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
-   internal::apply1(*this, A, [&](index_t i) { Base::index(i) ^= A.index(i); });
-   return *this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(seqN s) & {
-   ASSERT_STRICT_DEBUG(s.valid(*this));
-   if constexpr(NonConstBaseType<Base>) {
-      return Derived1D<SliceArrayBase1D<ThisType>>{*this, s};
-   } else {
-      return Derived1D<ConstSliceArrayBase1D<ThisType>>{*this, s};
+   STRICT_CONSTEXPR GenArrayMutable1D& operator=(value_type x) {
+      return static_cast<GenArrayMutable1D&>(Base::operator=(x));
    }
-}
 
-
-template <OneDimBaseType Base>
-template <typename S>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(S s) & {
-   return operator()(internal::slice_helper(*this, s));
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(std::vector<ImplicitInt> indexes) & {
-   if constexpr(NonConstBaseType<Base>) {
-      return Derived1D<RandSliceArrayBase1D<ThisType>>{*this, std::move(indexes)};
-   } else {
-      return Derived1D<RandConstSliceArrayBase1D<ThisType>>{*this, std::move(indexes)};
+   STRICT_CONSTEXPR GenArrayMutable1D& operator=(use::List1D<builtin_type> list) {
+      return static_cast<GenArrayMutable1D&>(Base::operator=(list));
    }
-}
 
+   STRICT_CONSTEXPR GenArrayMutable1D& operator=(OneDimBaseType auto const& A) {
+      return static_cast<GenArrayMutable1D&>(Base::operator=(A));
+   }
 
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(std::initializer_list<ImplicitInt> indexes) & {
-   return operator()(std::vector<ImplicitInt>(indexes));
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(const place::complement& indexes) & {
-   return operator()(internal::complement_index_vector(*this, indexes.get()));
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::view1D() & {
-   return operator()(place::all);
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(seqN s) const& {
-   ASSERT_STRICT_DEBUG(s.valid(*this));
-   return Derived1D<ConstSliceArrayBase1D<ThisType>>{*this, s};
-}
-
-
-template <OneDimBaseType Base>
-template <typename S>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(S s) const& {
-   return operator()(internal::slice_helper(*this, s));
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(std::vector<ImplicitInt> indexes) const& {
-   return Derived1D<RandConstSliceArrayBase1D<ThisType>>{*this, std::move(indexes)};
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(
-    std::initializer_list<ImplicitInt> indexes) const& {
-   return operator()(std::vector<ImplicitInt>{indexes});
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(const place::complement& indexes) const& {
-   return operator()(complement_index_vector(*this, indexes.get()));
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::view1D() const& {
-   return operator()(place::all);
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(seqN s) &&
-   requires(!ArrayOneDimType<ThisType>)
-{
-   return operator()(s);
-}
-
-
-template <OneDimBaseType Base>
-template <typename S>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(S s) &&
-   requires(!ArrayOneDimType<ThisType>)
-{
-   return operator()(s);
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(std::vector<ImplicitInt> indexes) &&
-   requires(!ArrayOneDimType<ThisType>)
-{
-   return operator()(std::move(indexes));
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(std::initializer_list<ImplicitInt> indexes) &&
-   requires(!ArrayOneDimType<ThisType>)
-{
-   return operator()(indexes);
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::operator()(const place::complement& indexes) &&
-   requires(!ArrayOneDimType<ThisType>)
-{
-   return operator()(indexes);
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR auto Derived1D<Base>::view1D() &&
-   requires(!ArrayOneDimType<ThisType>)
-{
-   return this->view1D();
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR Derived1D<Base>& Derived1D<Base>::lval() && {
-   return this->lval_impl();
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR const Derived1D<Base>& Derived1D<Base>::lval() const&& {
-   return this->lval_impl();
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR decltype(auto) Derived1D<Base>::eval() const& {
-   if constexpr(ArrayOneDimType<Base>) {
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR GenArrayMutable1D& operator+=(value_type x) {
+      apply0(*this, [x, this](index_t i) { Base::un(i) += x; });
       return *this;
-   } else {
-      return Derived1D<ArrayBase1D<builtin_type, Unaligned>>(*this);
    }
-}
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator-=(value_type x) {
+      apply0(*this, [x, this](index_t i) { Base::un(i) -= x; });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator*=(value_type x) {
+      apply0(*this, [x, this](index_t i) { Base::un(i) *= x; });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator/=(value_type x) {
+      apply0(*this, [x, this](index_t i) { Base::un(i) /= x; });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator%=(value_type x)
+      requires Integer<builtin_type>
+   {
+      apply0(*this, [x, this](index_t i) { Base::un(i) %= x; });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator<<=(value_type x)
+      requires Integer<builtin_type>
+   {
+      apply0(*this, [x, this](index_t i) { Base::un(i) <<= x; });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator>>=(value_type x)
+      requires Integer<builtin_type>
+   {
+      apply0(*this, [x, this](index_t i) { Base::un(i) >>= x; });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator&=(value_type x)
+      requires Integer<builtin_type>
+   {
+      apply0(*this, [x, this](index_t i) { Base::un(i) &= x; });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator|=(value_type x)
+      requires Integer<builtin_type>
+   {
+      apply0(*this, [x, this](index_t i) { Base::un(i) |= x; });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator^=(value_type x)
+      requires Integer<builtin_type>
+   {
+      apply0(*this, [x, this](index_t i) { Base::un(i) ^= x; });
+      return *this;
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR GenArrayMutable1D& operator+=(OneDimRealBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) += A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator-=(OneDimRealBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) -= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator*=(OneDimRealBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) *= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator/=(OneDimRealBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) /= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator%=(OneDimIntegerBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) %= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator<<=(OneDimIntegerBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) <<= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator>>=(OneDimIntegerBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) >>= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator&=(OneDimIntegerBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) &= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator|=(OneDimIntegerBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) |= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& operator^=(OneDimIntegerBaseType auto const& A) {
+      ASSERT_STRICT_DEBUG(same_size(*this, A));
+      apply1(*this, A, [&](index_t i) { Base::un(i) ^= A.un(i); });
+      return *this;
+   }
+
+   STRICT_CONSTEXPR GenArrayMutable1D& lval() & = delete;
+
+   STRICT_CONSTEXPR const GenArrayMutable1D& lval() const& = delete;
+
+   STRICT_NODISCARD_CONSTEXPR GenArrayMutable1D& lval() && {
+      return static_cast<GenArrayMutable1D&>(CommonBase1D::lval_impl());
+   }
+
+   STRICT_NODISCARD_CONSTEXPR const GenArrayMutable1D& lval() const&& {
+      return static_cast<GenArrayMutable1D&>(CommonBase1D::lval_impl());
+   }
+};
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::resize(ImplicitInt n)
-   requires Array1DType<ThisType>
-{
-   Base::resize(n);
-   return *this;
-}
+template <typename Base>
+class STRICT_NODISCARD GenArray1D final : public GenArrayMutable1D<Base> {
+   using CommonBase1D = GenArrayBase1D<Base>;
+   using MutableBase1D = GenArrayMutable1D<Base>;
+
+public:
+   // static_assert is used instead of concept to avoid complications
+   // with forward declarations in files that implement base classes.
+   static_assert(ArrayOneDimType<Base>);
+   using size_type = MutableBase1D::size_type;
+   using typename MutableBase1D::builtin_type;
+   using typename MutableBase1D::value_type;
+
+   using GenArrayMutable1D<Base>::GenArrayMutable1D;
+   // Compiler would generate non-explicit default.
+   STRICT_NODISCARD_CONSTEXPR explicit GenArray1D() = default;
+   STRICT_NODISCARD_CONSTEXPR GenArray1D(const GenArray1D&) = default;
+   STRICT_NODISCARD_CONSTEXPR GenArray1D(GenArray1D&&) = default;
+
+   // Assignments are not inherited because it returns reference to base class.
+   // Further, for Arrays that own data lvalue qualifier for assignment is preferred.
+   STRICT_CONSTEXPR GenArray1D& operator=(const GenArray1D& A) & {
+      return static_cast<GenArray1D&>(Base::operator=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator=(GenArray1D&& A) & {
+      return static_cast<GenArray1D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator=(value_type x) & {
+      return static_cast<GenArray1D&>(Base::operator=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator=(use::List1D<builtin_type> list) & {
+      return static_cast<GenArray1D&>(Base::operator=(list));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator=(OneDimBaseType auto const& A) & {
+      return static_cast<GenArray1D&>(Base::operator=(A));
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR GenArray1D& operator+=(value_type x) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator+=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator-=(value_type x) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator-=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator*=(value_type x) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator*=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator/=(value_type x) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator/=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator%=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<GenArray1D&>(MutableBase1D::operator%=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator<<=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<GenArray1D&>(MutableBase1D::operator<<=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator>>=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<GenArray1D&>(MutableBase1D::operator>>=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator&=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<GenArray1D&>(MutableBase1D::operator&=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator|=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<GenArray1D&>(MutableBase1D::operator|=(x));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator^=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<GenArray1D&>(MutableBase1D::operator^=(x));
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR GenArray1D& operator+=(OneDimRealBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator+=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator-=(OneDimRealBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator-=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator*=(OneDimRealBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator*=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator/=(OneDimRealBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator/=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator%=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator%=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator<<=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator<<=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator>>=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator>>=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator&=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator&=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator|=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator|=(A));
+   }
+
+   STRICT_CONSTEXPR GenArray1D& operator^=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<GenArray1D&>(MutableBase1D::operator^=(A));
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR StrictLong bytes() const {
+      return Base::size() * to_index_t(sizeof(value_type));
+   }
+
+   STRICT_CONSTEXPR Strict64 kbytes() const {
+      return this->bytes().sd() / 1024._sd;
+   }
+
+   STRICT_CONSTEXPR Strict64 mbytes() const {
+      return this->bytes().sd() / squares(1024_sl).sd();
+   }
+
+   STRICT_CONSTEXPR Strict64 gbytes() const {
+      return this->bytes().sd() / cubes(1024_sl).sd();
+   }
+
+   STRICT_CONSTEXPR GenArray1D& lval() & = delete;
+
+   STRICT_CONSTEXPR const GenArray1D& lval() const& = delete;
+
+   STRICT_NODISCARD_CONSTEXPR GenArray1D& lval() && {
+      return static_cast<GenArray1D&>(CommonBase1D::lval_impl());
+   }
+
+   STRICT_NODISCARD_CONSTEXPR const GenArray1D& lval() const&& {
+      return static_cast<GenArray1D&>(CommonBase1D::lval_impl());
+   }
+};
 
 
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::resize_forget(ImplicitInt n)
-   requires Array1DType<ThisType>
-{
-   Base::resize_forget(n);
-   return *this;
-}
+}  // namespace detail
 
 
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::resize_and_assign(OneDimBaseType auto const& A)
-   requires Array1DType<ThisType>
-{
-   Base::resize_and_assign(A);
-   return *this;
-}
+}  // namespace spp
 
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::resize_and_assign(Derived1D<Base>&& A)
-   requires Array1DType<ThisType>
-{
-   Base::resize_and_assign(static_cast<Base&&>(A));
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-template <typename... Args>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::remove(Args&&... args)
-   requires Array1DType<ThisType>
-{
-   Base::remove(std::forward<Args>(args)...);
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-template <typename... Args>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::remove_front(Args&&... args)
-   requires Array1DType<ThisType>
-{
-   Base::remove_front(std::forward<Args>(args)...);
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-template <typename... Args>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::remove_back(Args&&... args)
-   requires Array1DType<ThisType>
-{
-   Base::remove_back(std::forward<Args>(args)...);
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-template <typename... Args>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::insert(Args&&... args)
-   requires Array1DType<ThisType>
-{
-   Base::insert(std::forward<Args>(args)...);
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-template <typename... Args>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::insert_front(Args&&... args)
-   requires Array1DType<ThisType>
-{
-   Base::insert_front(std::forward<Args>(args)...);
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-template <typename... Args>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::insert_back(Args&&... args)
-   requires Array1DType<ThisType>
-{
-   Base::insert_back(std::forward<Args>(args)...);
-   return *this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR StrictLong Derived1D<Base>::bytes() const
-   requires ArrayOneDimType<ThisType>
-{
-   return Base::size() * from_size_t<long int>(sizeof(value_type));
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR Strict64 Derived1D<Base>::kbytes() const
-   requires ArrayOneDimType<ThisType>
-{
-   return this->bytes().sd() / 1024._sd;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR Strict64 Derived1D<Base>::mbytes() const
-   requires ArrayOneDimType<ThisType>
-{
-   return this->bytes().sd() / squares(1024_sl).sd();
-}
-
-
-template <OneDimBaseType Base>
-STRICT_NODISCARD_CONSTEXPR Strict64 Derived1D<Base>::gbytes() const
-   requires ArrayOneDimType<ThisType>
-{
-   return this->bytes().sd() / cubes(1024_sl).sd();
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR Derived1D<Base>& Derived1D<Base>::lval_impl() {
-   return *this;
-}
-
-
-template <OneDimBaseType Base>
-STRICT_CONSTEXPR const Derived1D<Base>& Derived1D<Base>::lval_impl() const {
-   return *this;
-}
-
-
-}  // namespace slib
-
-
-namespace slib {
-
-
-template <Builtin T, AlignmentFlag AF = Aligned>
-using Array1D = Derived1D<ArrayBase1D<T, AF>>;
-
-
-template <Builtin T, ImplicitIntStatic sz>
-using FixedArray1D = Derived1D<FixedArrayBase1D<T, sz>>;
-
-
-}  // namespace slib

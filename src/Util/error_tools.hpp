@@ -1,29 +1,30 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
 
 
-#include <limits>    // numeric_limits
-#include <optional>  // optional, nullopt
+#include <limits>
+#include <optional>
 
+#include "../ArrayCommon/array_auxiliary.hpp"
+#include "../ArrayCommon/array_traits.hpp"
+#include "../StrictCommon/strict_common.hpp"
 #include "../array_ops.hpp"
 
 
-namespace slib {
+namespace spp {
 
 
 template <Floating T>
-struct default_tol {
+struct DefaultTol {
    static constexpr Strict<T> x{100 * std::numeric_limits<T>::epsilon()};
 };
 
 
 #ifdef STRICT_QUAD_PRECISION
 template <>
-struct default_tol<float128> {
+struct DefaultTol<float128> {
    static constexpr Strict x{100 * FLT128_EPSILON};
 };
 #endif
@@ -31,15 +32,16 @@ struct default_tol<float128> {
 
 template <Floating T>
 STRICT_CONSTEXPR_INLINE StrictBool within_tol_abs(Strict<T> x, Strict<T> y,
-                                                  Strict<T> tol = default_tol<T>::x) {
+                                                  Strict<T> tol = DefaultTol<T>::x) {
    ASSERT_STRICT_DEBUG(tol >= Zero<T>);
    return abss(x - y) <= tol;
 }
 
 
 template <Floating T>
-STRICT_CONSTEXPR_INLINE StrictBool within_tol_rel(Strict<T> x, Strict<T> y, Strict<T> tol = default_tol<T>::x,
-                                                  Strict<T> near_zero = default_tol<T>::x) {
+STRICT_CONSTEXPR_INLINE StrictBool within_tol_rel(Strict<T> x, Strict<T> y,
+                                                  Strict<T> tol = DefaultTol<T>::x,
+                                                  Strict<T> near_zero = DefaultTol<T>::x) {
    ASSERT_STRICT_DEBUG(tol >= Zero<T>);
    ASSERT_STRICT_DEBUG(near_zero >= Zero<T>);
 
@@ -52,10 +54,11 @@ STRICT_CONSTEXPR_INLINE StrictBool within_tol_rel(Strict<T> x, Strict<T> y, Stri
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <FloatingBaseType Base1, FloatingBaseType Base2>
 STRICT_CONSTEXPR StrictBool within_tol_abs(const Base1& A1, const Base2& A2,
-                                           ValueTypeOf<Base1> tol = default_tol<RealTypeOf<Base1>>::x) {
+                                           ValueTypeOf<Base1> tol
+                                           = DefaultTol<RealTypeOf<Base1>>::x) {
    static_assert(same_dimension<Base1, Base2>());
    ASSERT_STRICT_DEBUG(!A1.empty());
    ASSERT_STRICT_DEBUG(same_size(A1, A2));
@@ -65,8 +68,10 @@ STRICT_CONSTEXPR StrictBool within_tol_abs(const Base1& A1, const Base2& A2,
 
 template <FloatingBaseType Base1, FloatingBaseType Base2>
 STRICT_CONSTEXPR StrictBool within_tol_rel(const Base1& A1, const Base2& A2,
-                                           ValueTypeOf<Base1> tol = default_tol<RealTypeOf<Base1>>::x,
-                                           ValueTypeOf<Base1> near_zero = default_tol<RealTypeOf<Base1>>::x) {
+                                           ValueTypeOf<Base1> tol
+                                           = DefaultTol<RealTypeOf<Base1>>::x,
+                                           ValueTypeOf<Base1> near_zero
+                                           = DefaultTol<RealTypeOf<Base1>>::x) {
    static_assert(same_dimension<Base1, Base2>());
    ASSERT_STRICT_DEBUG(!A1.empty());
    ASSERT_STRICT_DEBUG(same_size(A1, A2));
@@ -76,7 +81,7 @@ STRICT_CONSTEXPR StrictBool within_tol_rel(const Base1& A1, const Base2& A2,
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Floating T>
 STRICT_CONSTEXPR Strict<T> abs_error(Strict<T> approx, Strict<T> exact) {
    return abss(approx - exact);
@@ -92,7 +97,7 @@ STRICT_CONSTEXPR std::optional<Strict<T>> rel_error(Strict<T> approx, Strict<T> 
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <FloatingBaseType Base1, FloatingBaseType Base2>
 STRICT_CONSTEXPR ValueTypeOf<Base1> max_abs_error(const Base1& approx, const Base2& exact) {
    static_assert(same_dimension<Base1, Base2>());
@@ -116,4 +121,4 @@ STRICT_NODISCARD_CONSTEXPR std::optional<ValueTypeOf<Base1>> max_rel_error(const
 }
 
 
-}  // namespace slib
+}  // namespace spp

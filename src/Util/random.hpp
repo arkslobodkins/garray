@@ -1,6 +1,4 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
@@ -8,14 +6,15 @@
 
 #include <random>
 
-#include "../Common/common.hpp"
-#include "../Expr/array_expr1D.hpp"
+#include "../ArrayCommon/array_traits.hpp"
+#include "../Expr/expr.hpp"
+#include "../StrictCommon/strict_common.hpp"
 
 
-namespace slib {
+namespace spp {
 
 
-namespace internal {
+namespace detail {
 
 
 template <typename T>
@@ -67,11 +66,13 @@ private:
 };
 
 
-// generates quadruple precision numbers that are double precision numbers
+// Generates quadruple precision numbers that are double precision numbers.
 #ifdef STRICT_QUAD_PRECISION
 template <Quadruple T>
 struct Generator<T> {
-   Generator(Strict<T> l, Strict<T> h) : gen{std::random_device{}()}, dst{l.sd().val(), h.sd().val()} {
+   Generator(Strict<T> l, Strict<T> h)
+       : gen{std::random_device{}()},
+         dst{l.sd().val(), h.sd().val()} {
    }
 
    auto random() const {
@@ -109,11 +110,12 @@ auto random(ImplicitInt n, Strict<T> low, Strict<T> high) {
    ASSERT_STRICT_DEBUG(low <= high);
    Generator<T> g{low, high};
    auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
-   return generate1D<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
+   return generate1D<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>),
+                                                                          G);
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 Strict<T> rands_not0(Strict<T> low, Strict<T> high) {
    ASSERT_STRICT_DEBUG(low <= high);
@@ -159,101 +161,101 @@ auto random_not0(ImplicitInt n, Strict<T> low, Strict<T> high) {
          }
       }
    };
-   return generate1D<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
+   return generate1D<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>),
+                                                                          G);
 }
 
 
-}  // namespace internal
+}  // namespace detail
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 Strict<T> rands(Strict<T> low, Strict<T> high) {
-   return internal::rands(low, high);
+   return detail::rands(low, high);
 }
 
 
 template <Real T>
 Strict<T> rands(Low<T> low, High<T> high) {
-   return internal::rands(low.get(), high.get());
+   return detail::rands(low.get(), high.get());
 }
 
 
 template <Builtin T>
 Strict<T> rands() {
-   return internal::rands(Zero<T>, One<T>);
+   return detail::rands(Zero<T>, One<T>);
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 Strict<T> rands_not0(Strict<T> low, Strict<T> high) {
-   return internal::rands_not0(low, high);
+   return detail::rands_not0(low, high);
 }
 
 
 template <Real T>
 Strict<T> rands_not0(Low<T> low, High<T> high) {
-   return internal::rands_not0(low.get(), high.get());
+   return detail::rands_not0(low.get(), high.get());
 }
 
 
 template <Real T>
 Strict<T> rands_not0() {
-   return internal::rands_not0(Zero<T>, One<T>);
+   return detail::rands_not0(Zero<T>, One<T>);
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename Base>
-   requires NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
+   requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
 void random(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Base> high) {
-   internal::random(A, low, high);
+   detail::random(A, low, high);
 }
 
 
 template <typename Base>
-   requires NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
+   requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
 void random(Base&& A, Low<BuiltinTypeOf<Base>> low, High<BuiltinTypeOf<Base>> high) {
-   internal::random(A, low.get(), high.get());
+   detail::random(A, low.get(), high.get());
 }
 
 
 template <typename... Base>
-   requires AllNonConstBases<RemoveRef<Base>...>
+   requires detail::AllNonConstBases<RemoveRef<Base>...>
 void random(Base&&... A) {
-   using T = RealTypeOf<LastPack_t<Base...>>;
-   (..., internal::random(A, Zero<T>, One<T>));
+   (..., detail::random(A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>));
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename Base>
-   requires NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
+   requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
 void random_not0(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Base> high) {
-   internal::random_not0(A, low, high);
+   detail::random_not0(A, low, high);
 }
 
 
 template <typename Base>
-   requires NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
+   requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
 void random_not0(Base&& A, Low<BuiltinTypeOf<Base>> low, High<BuiltinTypeOf<Base>> high) {
-   internal::random_not0(A, low.get(), high.get());
+   detail::random_not0(A, low.get(), high.get());
 }
 
 
 template <typename... Base>
-   requires AllNonConstBases<RemoveRef<Base>...> && Real<BuiltinTypeOf<LastPack_t<Base...>>>
+   requires detail::AllNonConstBases<RemoveRef<Base>...>
+         && Real<BuiltinTypeOf<detail::LastPack_t<Base...>>>
 void random_not0(Base&&... A) {
-   using T = RealTypeOf<LastPack_t<Base...>>;
-   (..., internal::random_not0(A, Zero<T>, One<T>));
+   (..., detail::random_not0(A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>));
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 auto random(ImplicitInt n, Strict<T> low, Strict<T> high) {
-   return internal::random<T>(n, low, high);
+   return detail::random<T>(n, low, high);
 }
 
 
@@ -265,7 +267,7 @@ auto random(Size n, Low<T> low, High<T> high) {
 
 template <Builtin T>
 auto random(ImplicitInt n) {
-   return internal::random<T>(n, Zero<T>, One<T>);
+   return detail::random<T>(n, Zero<T>, One<T>);
 }
 
 
@@ -275,10 +277,10 @@ auto random(Size n) {
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 auto random_not0(ImplicitInt n, Strict<T> low, Strict<T> high) {
-   return internal::random_not0<T>(n, low, high);
+   return detail::random_not0<T>(n, low, high);
 }
 
 
@@ -290,7 +292,7 @@ auto random_not0(Size n, Low<T> low, High<T> high) {
 
 template <Real T>
 auto random_not0(ImplicitInt n) {
-   return internal::random_not0<T>(n, Zero<T>, One<T>);
+   return detail::random_not0<T>(n, Zero<T>, One<T>);
 }
 
 
@@ -300,4 +302,4 @@ auto random_not0(Size n) {
 }
 
 
-}  // namespace slib
+}  // namespace spp

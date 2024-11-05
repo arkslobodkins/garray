@@ -1,6 +1,4 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
@@ -8,34 +6,32 @@
 
 #include <tuple>
 #include <type_traits>
+#include <utility>
 
-#include "../Common/concepts.hpp"
-
-
-namespace slib {
+#include "../StrictCommon/strict_traits.hpp"
 
 
-namespace internal {
+namespace spp::detail {
 
 
-///////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename Tuple, int... I>
-constexpr auto FirstNTupleValue(Tuple&& tuple, std::integer_sequence<int, I...>) {
-   return std::forward_as_tuple(std::get<I>(tuple)...);
+constexpr auto firstN_tuple_value(Tuple&& tuple, std::integer_sequence<int, I...>) {
+   return std::forward_as_tuple(std::get<I>(std::forward<Tuple>(tuple))...);
 }
 
 
 template <typename... Args>
-constexpr auto ExcludeLastTupleValue(Args&&... args) {
-   return FirstNTupleValue(std::forward_as_tuple(args...),
-                           std::make_integer_sequence<int, sizeof...(Args) - 1>{});
+constexpr auto exclude_last_tuple_value(Args&&... args) {
+   return firstN_tuple_value(std::forward_as_tuple(std::forward<Args>(args)...),
+                             std::make_integer_sequence<int, sizeof...(Args) - 1>{});
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename... Args>
 struct ExcludeLastTuple {
-   using type = std::invoke_result_t<decltype(ExcludeLastTupleValue<Args...>), Args...>;
+   using type = std::invoke_result_t<decltype(exclude_last_tuple_value<Args...>), Args...>;
 };
 
 
@@ -44,17 +40,14 @@ using ExcludeLastTuple_t = typename ExcludeLastTuple<Args...>::type;
 
 
 template <typename... Args>
-consteval bool AllTupleStrict(std::tuple<Args...>) {
+consteval bool all_tuple_strict(std::tuple<Args...>) {
    return AllStrict<Args...>;
 }
 
 
-}  // namespace internal
-
-
 template <typename... Args> concept AllStrictExceptLast
-    = internal::AllTupleStrict(internal::ExcludeLastTuple_t<Args...>{});
+    = all_tuple_strict(ExcludeLastTuple_t<Args...>{});
 
 
-}  // namespace slib
+}  // namespace spp::detail
 

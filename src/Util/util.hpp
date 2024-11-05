@@ -1,6 +1,4 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
@@ -8,4 +6,5 @@
 
 #include "error_tools.hpp"
 #include "random.hpp"
+#include "semi_random.hpp"
 #include "timer.hpp"

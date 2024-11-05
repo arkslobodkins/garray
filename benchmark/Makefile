@@ -2,12 +2,12 @@ compiler = gcc
 
 all: array1D fixedarray1D
 
+CXXFLAGS = -std=c++20 -O3 -no-pie
 LFLAGS = -lm -lbenchmark -lpthread
-
-CXXFLAGS=-std=c++20 -O3 -no-pie
+IPATH = -I ../src/
 
 ifeq ($(compiler), gcc)
-CXX = g++-12.3
+CXX = g++
 CXXFLAGS += -march=native
 exe1 = array_gcc.x
 exe2 = fixedarray_gcc.x
@@ -24,12 +24,13 @@ CXXFLAGS += -march=native
 exe1 = array_clang.x
 exe2 = fixedarray_clang.x
 endif
+CXXFLAGS += -DSTRICT_DEBUG_OFF -DEIGEN_NO_DEBUG
 
 array1D: array1D_bm.cpp
-	$(CXX) $(CXXFLAGS) array1D_bm.cpp -o $(exe1) -DSTRICT_DEBUG_OFF -DEIGEN_NO_DEBUG $(LFLAGS)
+	$(CXX) $(CXXFLAGS) array1D_bm.cpp -o $(exe1) $(LFLAGS) $(IPATH)
 
 fixedarray1D: fixedarray1D_bm.cpp
-	$(CXX) $(CXXFLAGS) fixedarray1D_bm.cpp -o $(exe2) -DSTRICT_DEBUG_OFF -DEIGEN_NO_DEBUG $(LFLAGS)
+	$(CXX) $(CXXFLAGS) fixedarray1D_bm.cpp -o $(exe2) $(LFLAGS) $(IPATH)
 
 clean:
 	rm -rf *.x

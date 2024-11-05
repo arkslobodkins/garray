@@ -11,3 +11,5 @@ echo -e ""
 ./fixedarray_icpx.x
 echo -e ""
 ./fixedarray_clang.x
+
+make clean

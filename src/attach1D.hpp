@@ -1,15 +1,27 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
 
 
+#include "ArrayCommon/array_traits.hpp"
+#include "StrictCommon/strict_common.hpp"
 #include "derived1D.hpp"
+#include "slice.hpp"
 
 
-namespace slib {
+namespace spp {
+
+
+namespace detail {
+
+
+template <NonConstBaseType Base, typename Sl>
+class SliceArrayBase1D;
+
+
+template <BaseType Base, typename Sl>
+class ConstSliceArrayBase1D;
 
 
 template <Builtin T>
@@ -23,11 +35,11 @@ public:
          n_{n.get()} {
    }
 
-   STRICT_NODISCARD_INLINE value_type& index(ImplicitInt i) {
+   STRICT_NODISCARD_INLINE value_type& un(ImplicitInt i) {
       return data_[i.get().val()];
    }
 
-   STRICT_NODISCARD_INLINE const value_type& index(ImplicitInt i) const {
+   STRICT_NODISCARD_INLINE const value_type& un(ImplicitInt i) const {
       return data_[i.get().val()];
    }
 
@@ -52,7 +64,7 @@ public:
          n_{n.get()} {
    }
 
-   STRICT_NODISCARD_INLINE const value_type& index(ImplicitInt i) const {
+   STRICT_NODISCARD_INLINE const value_type& un(ImplicitInt i) const {
       return data_[i.get().val()];
    }
 
@@ -66,19 +78,25 @@ private:
 };
 
 
-template <Builtin T>
-STRICT_NODISCARD auto attach1D(T* data, ImplicitInt n) {
+}  // namespace detail
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <CompatibleBuiltin T>
+auto attach1D(T* data, ImplicitInt n) {
+   using namespace detail;
    auto proxy = strict_attach_ptr1D(data, n);
-   return Derived1D<SliceArrayBase1D<decltype(proxy)>>{proxy, seqN{0, n}};
+   return GenArrayMutable1D<SliceArrayBase1D<decltype(proxy), seqN>>{proxy, seqN{0, n}};
 }
 
 
-template <Builtin T>
-STRICT_NODISCARD auto attach1D(const T* data, ImplicitInt n) {
+template <CompatibleBuiltin T>
+auto attach1D(const T* data, ImplicitInt n) {
+   using namespace detail;
    auto proxy = const_strict_attach_ptr1D(data, n);
-   return Derived1D<ConstSliceArrayBase1D<decltype(proxy)>>{proxy, seqN{0, n}};
+   return GenArrayBase1D<ConstSliceArrayBase1D<decltype(proxy), seqN>>{proxy, seqN{0, n}};
 }
 
 
-}  // namespace slib
+}  // namespace spp
 

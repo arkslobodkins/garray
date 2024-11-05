@@ -1,69 +1,62 @@
-#include <cassert>
 #include <cstdlib>
-#include <stdexcept>
-#include <strict_lib.hpp>
-#include <tuple>
+#include <iostream>
+#include <string>
+
+#include <strict.hpp>
 
 
-using namespace slib;
+using namespace spp;
 
 
-// example 3 solves first order ODE y' = y, y(t0) = y0, for any t0 and y0
-// using trapezoidal method. Exact solution is y(t) = y0/exp(t0) exp(t)
+void output_results(Strict64 x, Strict64 y, Strict128 z, std::string op);
 
 
-consteval auto ode_init() {
-   constexpr StrictLong nsteps = pows(2_sl, 24_sl);
-   constexpr Strict128 h = invs(nsteps.sq());
-   constexpr Strict128 t_init{0.Q};
-   constexpr Strict128 y_init{1.Q};  // y(t_init), t_init is not necessarily 0
-   return std::tuple{nsteps, h, t_init, y_init};
-}
-
-
-Array1D<float128> ode_solve(StrictLong nsteps, Strict128 h, Strict128 t_init, Strict128 y_init) {
-   ASSERT_STRICT_DEBUG(nsteps > 0_sl);
-   ASSERT_STRICT_DEBUG(h > 0_sq);
-
-   Array1D<float128> y(nsteps + 1_sl);
-   y[0] = y_init;
-
-   // trapezoidal method
-   for(const auto i : irange_m1(y)) {
-      y[i + 1_sl] = (y[i] + y[i] * h / 2._sq) / (1._sq - h / 2._sq);
-   }
-   return y;
-}
-
-
-Array1D<float128> ode_exact(StrictLong nsteps, Strict128 h, Strict128 t_init, Strict128 y_init) {
-   ASSERT_STRICT_DEBUG(nsteps > 0_sl);
-   ASSERT_STRICT_DEBUG(h > 0._sq);
-
-   Array1D<float128> y(nsteps + 1_sl);
-   Strict128 c = y_init / exps(t_init);
-
-#pragma omp parallel for default(none) shared(c, nsteps, h, t_init, y)
-   for(auto i = 0L; i < nsteps.val() + 1; ++i) {
-      auto t_cur = t_init + strict_cast<float128>(i) * h;
-      y[i] = c * exps(t_cur);
-   }
-   return y;
-}
-
-
+// example3 performs product, sum, and dot product on ill-conditioned problems
+// using standard and stable variants. Stable norm operation is presented as well.
+// Results are compared against results obtained in quadruple precision.
 int main() {
-   config_info();
+   using namespace spp::place;
 
-   auto [nsteps, h, t_init, y_init] = ode_init();
-   auto y = ode_solve(nsteps, h, t_init, y_init);
-   auto y_exact = ode_exact(nsteps, h, t_init, y_init);
 
-   if(auto rel_error = max_rel_error(y, y_exact)) {
-      std::cout << "maximum relative error: " << *rel_error << std::endl;
-   } else {
-      throw std::runtime_error{"maximum relative error could not be computed"};
-   }
+   // 1.
+   index_t n = 100'000_sl;
+   Array1D<float64> A = random(n, -2.71_sd, 2.71_sd);
+   auto AQ = array_cast<float128>(A);
+   output_results(prod(A), stable_prod(A), prod(AQ), "product");
 
-   return EXIT_SUCCESS;
+
+   // 2.
+   n = Million<long>;
+   Array1D<double> B(n);
+   random(B(even), 0._sd, 10._sd);
+   B(odd) = -B(even) + 1.E-16_sd;
+   auto BQ = array_cast<float128>(B);
+   output_results(sum(B), stable_sum(B), sum(BQ), "sum");
+
+
+   // 3.
+   Array1D<double> C1(n), C2(n);
+   random(C1(even), 0._sd, 10._sd);
+   random(C2(even), 0._sd, 10._sd);
+   C1(odd) = C1(even) + 1.E-8_sd;
+   C2(odd) = -C2(even) + 1.E-8_sd;
+   auto CQ1 = array_cast<float128>(C1);
+   auto CQ2 = array_cast<float128>(C2);
+   output_results(dot_prod(C1, C2), stable_dot_prod(C1, C2), dot_prod(CQ1, CQ2), "dot product");
+
+
+   // 4.
+   auto D = const1D(Size{n}, Value{0.1});
+   auto DQ = array_cast<float128>(D);
+   output_results(norm_lp(D, 3), stable_norm_lp(D, 3), norm_lp(DQ, 3), "3-norm");
+}
+
+
+void output_results(Strict64 x, Strict64 y, Strict128 z, std::string op) {
+   spp::format.precision(16);
+   using std::cout, std::endl;
+   std::string st_op = "stable " + op;
+   cout << op + " using double precision:        " << x << endl;
+   cout << st_op + " using double precision: " << y << endl;
+   cout << op + " using quadruple precision:     " << z << endl << endl;
 }

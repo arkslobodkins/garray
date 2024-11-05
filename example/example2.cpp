@@ -1,15 +1,12 @@
 #include <cstdlib>
-#include <iostream>
-#include <strict_lib.hpp>
+#include <strict.hpp>
 
+using namespace spp;
 
-using namespace slib;
-
-
-// example 2 puts more emphasis on slicing features of 1-d array class
+// example 2 puts more emphasis on slicing features of 1-d array class.
 int main() {
    Array1D<double> A = random(Size{10}, Low{-1._sd}, High{1._sd});
-   A.remove(last - 1);
+   std::cout << A.remove(last - 1) << std::endl;
 
    auto slice_1A = A(seq(First{0}, Endmost{2}));
    auto slice_1B = A(seq(0, 2));
@@ -24,16 +21,24 @@ int main() {
    auto slice_5 = A({0, 2, 4}) = A({6, 6, 6});
 
    auto slice_6 = in_closed_range(A, Low{-0.5}, High{0.5});
-   A.remove(slice_6.indexes());
+   // A.remove(slice_6.indexes());
 
-   auto dst1 = norm2(A(place::even));
-   // generate1D evaluates on the fly, no memory allocation is performed
+   auto dst1 = A.empty() ? norm2(A(place::even)) : 0._sd;
+   // generate1D evaluates on the fly, no memory allocation is performed.
    auto dst2 = norm2(generate1D(A(place::even), [](auto x) { return x > 0._sd ? x : squares(x); }));
 
-   // suppress unused variable warnings
-   []<typename... Args>([[maybe_unused]] Args&&...) {}(
-       slice_1A, slice_1B, slice_2A, slice_2B, slice_3A, slice_3B, slice_4, slice_5, slice_6, dst1, dst2);
-
+   // Suppress unused variable warnings.
+   []<typename... Args>([[maybe_unused]] Args&&...) {}(slice_1A,
+                                                       slice_1B,
+                                                       slice_2A,
+                                                       slice_2B,
+                                                       slice_3A,
+                                                       slice_3B,
+                                                       slice_4,
+                                                       slice_5,
+                                                       slice_6,
+                                                       dst1,
+                                                       dst2);
    return EXIT_SUCCESS;
 }
 

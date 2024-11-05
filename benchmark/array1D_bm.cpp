@@ -1,12 +1,11 @@
 #include <benchmark/benchmark.h>
 
 #include <Eigen/Dense>
+#include <strict.hpp>
 #include <tuple>
 
-#include "../src/strict_lib.hpp"
 
-
-using namespace slib;
+using namespace spp;
 
 
 static auto eig_array_init(long int n) {
@@ -50,7 +49,8 @@ static void bm_eig_slice(benchmark::State& state) {
    auto [A, B, C] = eig_array_init_all(n);
    using Eigen::seqN;
    for(auto _ : state) {
-      benchmark::DoNotOptimize(C(seqN(0, n / 2, 2)) = A(seqN(0, n / 2, 2)) + B(seqN(0, n / 2, 2)) + 2.5);
+      benchmark::DoNotOptimize(C(seqN(0, n / 2, 2))
+                               = A(seqN(0, n / 2, 2)) + B(seqN(0, n / 2, 2)) + 2.5);
    }
 }
 

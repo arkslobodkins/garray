@@ -1,18 +1,16 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
 
 
-#include "../Common/auxiliary_types.hpp"
-#include "../Common/strict_val.hpp"
+#include "../StrictCommon/strict_common.hpp"
 
 
-namespace slib {
+namespace spp::expr {
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 struct UnaryPlus {
    template <Real T>
    STRICT_CONSTEXPR Strict<T> operator()(Strict<T> x) const {
@@ -32,12 +30,15 @@ struct UnaryMinus {
 };
 
 
-struct UnaryNot {
+struct UnaryBitwiseNot {
    template <Integer T>
    STRICT_CONSTEXPR Strict<T> operator()(Strict<T> x) const {
       return ~x;
    }
+};
 
+
+struct UnaryLogicalNot {
    template <Boolean T>
    STRICT_CONSTEXPR Strict<T> operator()(Strict<T> x) const {
       return !x;
@@ -171,7 +172,7 @@ struct UnaryCast {
 };
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 struct BinaryPlus {
    template <Real T>
    STRICT_CONSTEXPR Strict<T> operator()(Strict<T> x, Strict<T> y) const {
@@ -252,6 +253,30 @@ struct BinaryBitwiseXor {
 };
 
 
+struct BinaryBooleanAnd {
+   template <Boolean T>
+   STRICT_CONSTEXPR Strict<T> operator()(Strict<T> x, Strict<T> y) const {
+      return x && y;
+   }
+};
+
+
+struct BinaryBooleanOr {
+   template <Boolean T>
+   STRICT_CONSTEXPR Strict<T> operator()(Strict<T> x, Strict<T> y) const {
+      return x || y;
+   }
+};
+
+
+struct BinaryBooleanXor {
+   template <Boolean T>
+   STRICT_CONSTEXPR Strict<T> operator()(Strict<T> x, Strict<T> y) const {
+      return x ^ y;
+   }
+};
+
+
 struct BinaryTwoProdFirst {
    template <Floating T>
    Strict<T> operator()(Strict<T> x, Strict<T> y) const {
@@ -268,5 +293,21 @@ struct BinaryTwoProdSecond {
 };
 
 
-}  // namespace slib
+struct BinaryPowProdFirst {
+   template <Floating T>
+   Strict<T> operator()(Strict<T> x, ImplicitInt y) const {
+      return pow_prods(x, y).first;
+   }
+};
+
+
+struct BinaryPowProdSecond {
+   template <Floating T>
+   Strict<T> operator()(Strict<T> x, ImplicitInt y) const {
+      return pow_prods(x, y).second;
+   }
+};
+
+
+}  // namespace spp::expr
 

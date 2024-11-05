@@ -1,23 +1,27 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
 
 
+#ifdef STRICT_QUAD_PRECISION
 #include <cstddef>  // ptrdiff_t
+#endif
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <string>
 
 #include "auxiliary_types.hpp"
+#include "common_traits.hpp"
+#include "error.hpp"
+#include "strict_traits.hpp"
 #include "strict_val.hpp"
 
 
-namespace slib {
+namespace spp {
 
 
 template <NotQuadruple T>
@@ -36,7 +40,7 @@ template <StandardFloating T>
 std::ostream& operator<<(std::ostream& os, Strict<T> x);
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef STRICT_QUAD_PRECISION
 template <Quadruple T>
 std::istream& operator>>(std::istream& is, T& x);
@@ -59,22 +63,23 @@ template <Builtin T>
 void print(Strict<T> x, const std::string& name = "");
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace internal {
+void print(StrictType auto const&... x);
 
 
-// scientific, precision, and reset routines are provided so that
+template <Builtin T>
+void printn(Strict<T> x, const std::string& name = "");
+
+
+void printn(StrictType auto const&... x);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+namespace detail {
+
+
+// Scientific, precision, and reset routines are provided so that
 // the user can choose the IO format for all floating-point types.
-struct StrictFormat {
-private:
-   static constexpr int float_precision = std::numeric_limits<float>::digits10 + 1;
-   static constexpr int double_precision = std::numeric_limits<double>::digits10 + 1;
-   static constexpr int long_double_precision = std::numeric_limits<long double>::digits10 + 1;
-   static constexpr int quad_precision = 33;
-
-   StrictBool scientific_{true};
-   int precision_[4]{float_precision, double_precision, long_double_precision, quad_precision};
-
+class StrictFormat {
 public:
    StrictFormat& reset() {
       scientific_ = true_sb;
@@ -85,9 +90,26 @@ public:
       return *this;
    }
 
+   StrictBool is_scientific() const {
+      return scientific_;
+   }
+
    StrictFormat& scientific(ImplicitBool b) {
       scientific_ = b.get();
       return *this;
+   }
+
+   template <Floating PT>
+   int precision() const {
+      if constexpr(SameAs<PT, float>) {
+         return precision_[0];
+      } else if constexpr(SameAs<PT, double>) {
+         return precision_[1];
+      } else if constexpr(SameAs<PT, long double>) {
+         return precision_[2];
+      } else {
+         return precision_[3];
+      }
    }
 
    StrictFormat& precision(ImplicitNonNegInt n) {
@@ -97,7 +119,6 @@ public:
       precision_[3] = int(n.get().val());
       return *this;
    }
-
 
    StrictFormat& precision_float(ImplicitNonNegInt n) {
       precision_[0] = int(n.get().val());
@@ -121,22 +142,31 @@ public:
    }
 #endif
 
-   // must explicitly qualify namespace
+   // Must explicitly qualify namespace.
    template <StandardFloating T>
-   friend std::ostream& slib::operator<<(std::ostream& os, Strict<T> x);
+   friend std::ostream& spp::operator<<(std::ostream& os, Strict<T> x);
 
 #ifdef STRICT_QUAD_PRECISION
    template <Quadruple T>
-   friend std::ostream& slib::operator<<(std::ostream& os, T x);
+   friend std::ostream& spp::operator<<(std::ostream& os, T x);
 #endif
+
+private:
+   static constexpr int float_precision = std::numeric_limits<float>::digits10 + 1;
+   static constexpr int double_precision = std::numeric_limits<double>::digits10 + 1;
+   static constexpr int long_double_precision = std::numeric_limits<long double>::digits10 + 1;
+   static constexpr int quad_precision = 33;
+
+   StrictBool scientific_{true};
+   int precision_[4]{float_precision, double_precision, long_double_precision, quad_precision};
 };
 
 
-}  // namespace internal
-static inline internal::StrictFormat format;
+}  // namespace detail
+inline detail::StrictFormat format;
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <NotQuadruple T>
 std::istream& operator>>(std::istream& is, Strict<T>& x) {
    T v;
@@ -156,8 +186,8 @@ std::ostream& operator<<(std::ostream& os, Strict<T> x) {
 
 template <Integer T>
 std::ostream& operator<<(std::ostream& os, Strict<T> x) {
-   // sign of unsigned integers is not printed so that
-   // one can distinguish signed and unsigned integers
+   // Sign of unsigned integers is not printed so that
+   // one can distinguish signed and unsigned integers.
    os << std::showpos << T{x};
    return os;
 }
@@ -188,9 +218,9 @@ std::ostream& operator<<(std::ostream& os, Strict<T> x) {
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef STRICT_QUAD_PRECISION
-// implementation from boost/multiprecision/float128.hpp
+// Implementation from boost/multiprecision/float128.hpp.
 template <Quadruple T>
 std::istream& operator>>(std::istream& is, T& x) {
    std::string str;
@@ -206,14 +236,16 @@ std::istream& operator>>(std::istream& is, T& x) {
 
 template <Quadruple T>
 std::istream& operator>>(std::istream& is, Strict<T>& x) {
-   is >> x.v_;
+   float128 v;
+   is >> v;
+   x = Strict{v};
    return is;
 }
 
 
 template <Quadruple T>
 std::ostream& operator<<(std::ostream& os, T x) {
-   char buf[128];  // not declared static since it is not thread safe
+   char buf[128];  // Not declared static since it is not thread safe.
    if(format.scientific_) {
       std::string frmt = "%+-#*." + std::to_string(format.precision_[3]) + std::string("QE");
       int width = format.precision_[3] + 7;
@@ -237,12 +269,32 @@ std::ostream& operator<<(std::ostream& os, Strict<T> x) {
 
 template <Builtin T>
 void print(Strict<T> x, const std::string& name) {
+   std::ostringstream stream;
    if(!name.empty()) {
-      std::cout << name << ":" << '\n';
+      stream << name << ":" << '\n';
    }
-   std::cout << x << std::endl;
+   stream << x;
+   std::cout << stream.str() << '\n';
 }
 
 
-}  // namespace slib
+void print(StrictType auto const&... x) {
+   (..., print(x, ""));
+}
+
+
+template <Builtin T>
+void printn(Strict<T> x, const std::string& name) {
+   print(x, name);
+   std::cout << '\n';
+}
+
+
+void printn(StrictType auto const&... x) {
+   (..., print(x, ""));
+   std::cout << '\n';
+}
+
+
+}  // namespace spp
 

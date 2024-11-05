@@ -1,29 +1,27 @@
-//  Copyright (C) 2024 Arkadijs Slobodkins - All Rights Reserved
-// License is 3-clause BSD:
-// https://github.com/arkslobodkins/strict-lib
+// Arkadijs Slobodkins, 2023
 
 
 #pragma once
 
 
 #include <chrono>
-#include <iomanip>   // setprecision
-#include <iostream>  // cout, scientific(from ios)
+#include <iomanip>
+#include <iostream>
 
-#include "../Common/common.hpp"
+#include "../StrictCommon/strict_common.hpp"
 
 
-// removed std::format since Intel and clang compilers do not support it(at this time)
-#define STRICT_TIME(a)                                                                                 \
-   do {                                                                                                \
-      slib::util::timer t;                                                                             \
-      a;                                                                                               \
-      std::cout << (#a) << " took: " << std::setprecision(4) << std::scientific << t.wall_time().val() \
-                << " seconds\n";                                                                       \
+// Removed std::format since Intel and clang compilers do not support it(at this time).
+#define STRICT_TIME(a)                                                          \
+   do {                                                                         \
+      spp::util::timer t;                                                       \
+      a;                                                                        \
+      std::cout << (#a) << " took: " << std::setprecision(4) << std::scientific \
+                << t.wall_time().val() << " seconds\n";                         \
    } while(0)
 
 
-namespace slib::util {
+namespace spp::util {
 
 
 struct timer {
@@ -46,4 +44,4 @@ private:
 };
 
 
-}  // namespace slib::util
+}  // namespace spp::util
