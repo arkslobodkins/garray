@@ -174,19 +174,19 @@ STRICT_CONSTEXPR auto exclude(Base&& A, detail::Last lst) = delete;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <OneDimBaseType Base, OneDimBaseType... BaseArgs>
 STRICT_CONSTEXPR auto merge(const Base& A, const BaseArgs&... AArgs) {
-   auto AE = generate1D(A, [](auto x) { return x; });
+   auto AE = generate(A, [](auto x) { return x; });
    auto ArgsE = merge(AArgs...);
    auto op = [AE, ArgsE](auto i) { return i < AE.size() ? AE.un(i) : ArgsE.un(i - AE.size()); };
-   return generate1D(irange(AE.size() + ArgsE.size()), op);
+   return generate(irange(AE.size() + ArgsE.size()), op);
 }
 
 
 template <OneDimBaseType Base1, OneDimBaseType Base2>
 STRICT_CONSTEXPR auto merge(const Base1& A1, const Base2& A2) {
-   auto A1E = generate1D(A1, [](auto x) { return x; });
-   auto A2E = generate1D(A2, [](auto x) { return x; });
+   auto A1E = generate(A1, [](auto x) { return x; });
+   auto A2E = generate(A2, [](auto x) { return x; });
    auto op = [A1E, A2E](auto i) { return i < A1E.size() ? A1E.un(i) : A2E.un(i - A1E.size()); };
-   return generate1D(irange(A1.size() + A2.size()), op);
+   return generate(irange(A1.size() + A2.size()), op);
 }
 
 
@@ -198,9 +198,9 @@ STRICT_CONSTEXPR auto merge(const Base& A, Strict_t x, StrictArgs... xargs) {
 
 template <OneDimBaseType Base, StrictType Strict_t>
 STRICT_CONSTEXPR auto merge(const Base& A, Strict_t x) {
-   auto AE = generate1D(A, [](auto z) { return z; });
+   auto AE = generate(A, [](auto z) { return z; });
    auto op = [AE, x](auto i) { return i == AE.size() ? x : AE.un(i); };
-   return generate1D(irange(AE.size() + 1_sl), op);
+   return generate(irange(AE.size() + 1_sl), op);
 }
 
 
@@ -214,9 +214,9 @@ STRICT_CONSTEXPR auto merge(Strict_t1 x1, Strict_t2 x2, const StrictAndBase&... 
 
 template <StrictType Strict_t, OneDimBaseType Base>
 STRICT_CONSTEXPR auto merge(Strict_t x, const Base& A) {
-   auto AE = generate1D(A, [](auto z) { return z; });
+   auto AE = generate(A, [](auto z) { return z; });
    auto op = [AE, x](auto i) { return i == 0_sl ? x : AE.un(i - 1_sl); };
-   return generate1D(irange(AE.size() + 1_sl), op);
+   return generate(irange(AE.size() + 1_sl), op);
 }
 
 
@@ -226,8 +226,8 @@ STRICT_CONSTEXPR auto exclude(const Base& A, ImplicitInt pos, ImplicitInt count)
    ASSERT_STRICT_DEBUG(count.get() > 0_sl);
    ASSERT_STRICT_DEBUG(detail::valid_index(A, pos.get()));
    ASSERT_STRICT_DEBUG(detail::valid_index(A, pos.get() + count.get() - 1_sl));
-   auto AE = generate1D(A, [](auto x) { return x; });
-   return generate1D(irange(A.size() - count.get()), [pos, count, AE](auto j) {
+   auto AE = generate(A, [](auto x) { return x; });
+   return generate(irange(A.size() - count.get()), [pos, count, AE](auto j) {
       return j < pos.get() ? AE.un(j) : AE.un(j + count.get());
    });
 }
@@ -320,8 +320,8 @@ template <Real T>
 STRICT_CONSTEXPR auto e_unit(ImplicitInt unit_index, ImplicitInt size) {
    ASSERT_STRICT_DEBUG(unit_index.get() > -1_sl);
    ASSERT_STRICT_DEBUG(size.get() > unit_index.get());
-   return generate1D(irange(size),
-                     [unit_index](auto i) { return i == unit_index.get() ? One<T> : Zero<T>; });
+   return generate(irange(size),
+                   [unit_index](auto i) { return i == unit_index.get() ? One<T> : Zero<T>; });
 }
 
 
@@ -335,7 +335,7 @@ STRICT_CONSTEXPR auto e_unit(Index unit_index, Size size) {
 template <Builtin T>
 STRICT_CONSTEXPR auto const1D(ImplicitInt size, Strict<T> c) {
    ASSERT_STRICT_DEBUG(size.get() > -1_sl);
-   return generate1D(irange(size), [c]([[maybe_unused]] auto i) { return c; });
+   return generate(irange(size), [c]([[maybe_unused]] auto i) { return c; });
 }
 
 

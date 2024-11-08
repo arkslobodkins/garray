@@ -110,8 +110,7 @@ auto random(ImplicitInt n, Strict<T> low, Strict<T> high) {
    ASSERT_STRICT_DEBUG(low <= high);
    Generator<T> g{low, high};
    auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
-   return generate1D<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>),
-                                                                          G);
+   return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
 }
 
 
@@ -161,8 +160,7 @@ auto random_not0(ImplicitInt n, Strict<T> low, Strict<T> high) {
          }
       }
    };
-   return generate1D<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>),
-                                                                          G);
+   return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
 }
 
 

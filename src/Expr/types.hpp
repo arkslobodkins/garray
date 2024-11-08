@@ -100,13 +100,13 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete = false>
    requires expr::BinaryOperation<Base1, Base2, Op>
-class STRICT_NODISCARD BinaryExpr1D
+class STRICT_NODISCARD BinaryExpr
     : private std::conditional_t<OneDimBaseType<Base1>, CopyBase1D, CopyBase2D> {
 public:
    using value_type = decltype(std::declval<Op>()(ValueTypeOf<Base1>{}, ValueTypeOf<Base2>{}));
    using builtin_type = value_type::value_type;
 
-   STRICT_NODISCARD_CONSTEXPR explicit BinaryExpr1D(const Base1& A1, const Base2& A2, Op op)
+   STRICT_NODISCARD_CONSTEXPR explicit BinaryExpr(const Base1& A1, const Base2& A2, Op op)
        : A1_{A1},
          A2_{A2},
          op_{op} {
@@ -114,18 +114,15 @@ public:
       static_assert(same_dimension<Base1, Base2>());
    }
 
-   STRICT_NODISCARD_CONSTEXPR BinaryExpr1D(const BinaryExpr1D& E)
-       : A1_{E.A1_},
-         A2_{E.A2_},
-         op_{E.op_} {
+   STRICT_NODISCARD_CONSTEXPR BinaryExpr(const BinaryExpr& E) : A1_{E.A1_}, A2_{E.A2_}, op_{E.op_} {
       if constexpr(copy_delete) {
          static_assert(static_false<decltype(*this)>,
                        "Copying this expression template is not allowed for additional safety");
       }
    }
 
-   STRICT_CONSTEXPR BinaryExpr1D& operator=(const BinaryExpr1D&) = delete;
-   STRICT_CONSTEXPR ~BinaryExpr1D() = default;
+   STRICT_CONSTEXPR BinaryExpr& operator=(const BinaryExpr&) = delete;
+   STRICT_CONSTEXPR ~BinaryExpr() = default;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
       return op_(A1_.un(i), A2_.un(i));

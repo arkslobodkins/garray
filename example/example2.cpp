@@ -24,8 +24,8 @@ int main() {
    // A.remove(slice_6.indexes());
 
    auto dst1 = A.empty() ? norm2(A(place::even)) : 0._sd;
-   // generate1D evaluates on the fly, no memory allocation is performed.
-   auto dst2 = norm2(generate1D(A(place::even), [](auto x) { return x > 0._sd ? x : squares(x); }));
+   // generate evaluates on the fly, no memory allocation is performed.
+   auto dst2 = norm2(generate(A(place::even), [](auto x) { return x > 0._sd ? x : squares(x); }));
 
    // Suppress unused variable warnings.
    []<typename... Args>([[maybe_unused]] Args&&...) {}(slice_1A,
@@ -39,6 +39,9 @@ int main() {
                                                        slice_6,
                                                        dst1,
                                                        dst2);
+
+   auto B = Array2D<double>(3, 3);
+   std::cout << B + A << std::endl;
    return EXIT_SUCCESS;
 }
 

@@ -12,24 +12,28 @@
 namespace spp::detail {
 
 
-template <typename Base1, typename Base2> concept OneDimRealExprRvalues
-    = (OneDimRealBaseType<RemoveRef<Base1>> && OneDimRealBaseType<RemoveRef<Base2>>)
-   && (ArrayOneDimRealTypeRvalue<Base1> || ArrayOneDimRealTypeRvalue<Base2>);
+template <typename Base1, typename Base2> concept RealExprDeleted
+    = (RealBaseType<RemoveRef<Base1>> && RealBaseType<RemoveRef<Base2>>)
+   && (ArrayRealTypeRvalue<Base1> || ArrayRealTypeRvalue<Base2>
+       || !same_dimension_b<RemoveRef<Base1>, RemoveRef<Base2>>());
 
 
-template <typename Base1, typename Base2> concept OneDimIntegerExprRvalues
-    = (OneDimIntegerBaseType<RemoveRef<Base1>> && OneDimIntegerBaseType<RemoveRef<Base2>>)
-   && (ArrayOneDimIntegerTypeRvalue<Base1> || ArrayOneDimIntegerTypeRvalue<Base2>);
+template <typename Base1, typename Base2> concept IntegerExprDeleted
+    = (IntegerBaseType<RemoveRef<Base1>> && IntegerBaseType<RemoveRef<Base2>>)
+   && (ArrayIntegerTypeRvalue<Base1> || ArrayIntegerTypeRvalue<Base2>
+       || !same_dimension_b<RemoveRef<Base1>, RemoveRef<Base2>>());
 
 
-template <typename Base1, typename Base2> concept OneDimBooleanExprRvalues
-    = (OneDimBooleanBaseType<RemoveRef<Base1>> && OneDimBooleanBaseType<RemoveRef<Base2>>)
-   && (ArrayOneDimBooleanTypeRvalue<Base1> || ArrayOneDimBooleanTypeRvalue<Base2>);
+template <typename Base1, typename Base2> concept BooleanExprDeleted
+    = (BooleanBaseType<RemoveRef<Base1>> && BooleanBaseType<RemoveRef<Base2>>)
+   && (ArrayBooleanTypeRvalue<Base1> || ArrayBooleanTypeRvalue<Base2>
+       || !same_dimension_b<RemoveRef<Base1>, RemoveRef<Base2>>());
 
 
-template <typename Base1, typename Base2> concept OneDimFloatingExprRvalues
-    = (OneDimFloatingBaseType<RemoveRef<Base1>> && OneDimFloatingBaseType<RemoveRef<Base2>>)
-   && (ArrayOneDimFloatingTypeRvalue<Base1> || ArrayOneDimFloatingTypeRvalue<Base2>);
+template <typename Base1, typename Base2> concept FloatingExprDeleted
+    = (FloatingBaseType<RemoveRef<Base1>> && FloatingBaseType<RemoveRef<Base2>>)
+   && (ArrayFloatingTypeRvalue<Base1> || ArrayFloatingTypeRvalue<Base2>
+       || !same_dimension_b<RemoveRef<Base1>, RemoveRef<Base2>>());
 
 
 }  // namespace spp::detail

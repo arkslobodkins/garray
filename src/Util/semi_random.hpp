@@ -80,8 +80,7 @@ constexpr auto semi_random(ImplicitInt n, Strict<T> low, Strict<T> high, Strict<
    ASSERT_STRICT_DEBUG(low <= high);
    SemiGenerator<T> g{seed + n.get().sui(), low, high};
    auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
-   return generate1D<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>),
-                                                                          G);
+   return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
 }
 
 
@@ -133,8 +132,7 @@ constexpr auto semi_random_not0(ImplicitInt n, Strict<T> low, Strict<T> high,
          }
       }
    };
-   return generate1D<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>),
-                                                                          G);
+   return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
 }
 
 

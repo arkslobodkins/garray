@@ -19,7 +19,7 @@ namespace spp {
 // Unary operations.
 template <BaseType Base, typename F, bool copy_delete = false>
    requires expr::UnaryOperation<Base, F>
-STRICT_CONSTEXPR auto generate1D(const Base& A, F f);
+STRICT_CONSTEXPR auto generate(const Base& A, F f);
 
 
 template <RealBaseType Base>
@@ -198,126 +198,128 @@ STRICT_CONSTEXPR auto array_cast(Base&& A) = delete;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <BaseType Base, typename F, bool copy_delete>
    requires expr::UnaryOperation<Base, F>
-STRICT_CONSTEXPR auto generate1D(const Base& A, F f) {
+STRICT_CONSTEXPR auto generate(const Base& A, F f) {
+   using E = detail::UnaryExpr<Base, F, copy_delete>;
+
    if constexpr(OneDimBaseType<Base>) {
-      return detail::GenArrayBase1D<detail::UnaryExpr<Base, F, copy_delete>>{A, f};
+      return detail::GenArrayBase1D<E>{A, f};
    } else {
-      return detail::GenArrayBase2D<detail::UnaryExpr<Base, F, copy_delete>>{A, f};
+      return detail::GenArrayBase2D<E>{A, f};
    }
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator+(const Base& A) {
-   return generate1D(A, expr::UnaryPlus{});
+   return generate(A, expr::UnaryPlus{});
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator-(const Base& A) {
-   return generate1D(A, expr::UnaryMinus{});
+   return generate(A, expr::UnaryMinus{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator~(const Base& A) {
-   return generate1D(A, expr::UnaryBitwiseNot{});
+   return generate(A, expr::UnaryBitwiseNot{});
 }
 
 
 template <BooleanBaseType Base>
 STRICT_CONSTEXPR auto operator!(const Base& A) {
-   return generate1D(A, expr::UnaryLogicalNot{});
+   return generate(A, expr::UnaryLogicalNot{});
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto abs(const Base& A) {
-   return generate1D(A, expr::UnaryAbs{});
+   return generate(A, expr::UnaryAbs{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto exp(const Base& A) {
-   return generate1D(A, expr::UnaryExp{});
+   return generate(A, expr::UnaryExp{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto log(const Base& A) {
-   return generate1D(A, expr::UnaryLog{});
+   return generate(A, expr::UnaryLog{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto log2(const Base& A) {
-   return generate1D(A, expr::UnaryLog2{});
+   return generate(A, expr::UnaryLog2{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto log10(const Base& A) {
-   return generate1D(A, expr::UnaryLog10{});
+   return generate(A, expr::UnaryLog10{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto sqrt(const Base& A) {
-   return generate1D(A, expr::UnarySqrt{});
+   return generate(A, expr::UnarySqrt{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto cbrt(const Base& A) {
-   return generate1D(A, expr::UnaryCbrt{});
+   return generate(A, expr::UnaryCbrt{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto sin(const Base& A) {
-   return generate1D(A, expr::UnarySin{});
+   return generate(A, expr::UnarySin{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto cos(const Base& A) {
-   return generate1D(A, expr::UnaryCos{});
+   return generate(A, expr::UnaryCos{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto tan(const Base& A) {
-   return generate1D(A, expr::UnaryTan{});
+   return generate(A, expr::UnaryTan{});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto pow(const Base& A, ValueTypeOf<Base> pw) {
-   return generate1D(A, expr::UnaryPow{pw});
+   return generate(A, expr::UnaryPow{pw});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR_2026 auto pow_int(const Base& A, ImplicitInt pw) {
-   return generate1D(A, expr::UnaryPow{strict_cast<BuiltinTypeOf<Base>>(pw.get())});
+   return generate(A, expr::UnaryPow{strict_cast<BuiltinTypeOf<Base>>(pw.get())});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR auto fast_pow_int(const Base& A, ImplicitInt pw) {
-   return generate1D(A, expr::UnaryFastPowInt{pw.get()});
+   return generate(A, expr::UnaryFastPowInt{pw.get()});
 }
 
 
 template <FloatingBaseType Base>
 STRICT_CONSTEXPR auto inv(const Base& A) {
-   return generate1D(A, expr::UnaryInv{});
+   return generate(A, expr::UnaryInv{});
 }
 
 
 template <Builtin T, BaseType Base>
 STRICT_CONSTEXPR auto array_cast(const Base& A) {
-   return generate1D(A, expr::UnaryCast<T>{});
+   return generate(A, expr::UnaryCast<T>{});
 }
 
 
