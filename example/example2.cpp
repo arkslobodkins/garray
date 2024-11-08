@@ -39,9 +39,6 @@ int main() {
                                                        slice_6,
                                                        dst1,
                                                        dst2);
-
-   auto B = Array2D<double>(3, 3);
-   std::cout << B + A << std::endl;
    return EXIT_SUCCESS;
 }
 

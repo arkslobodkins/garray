@@ -357,6 +357,22 @@ template <typename Base>
 STRICT_CONSTEXPR auto operator^(Base&& A, ValueTypeOf<Base> x) = delete;
 
 
+namespace detail {
+
+
+template <BaseType Base>
+STRICT_CONSTEXPR auto generate_const(const Base& A, ValueTypeOf<Base> x) {
+   if constexpr(OneDimBaseType<Base>) {
+      return const1D<BuiltinTypeOf<Base>>(A.size(), x);
+   } else {
+      return const2D<BuiltinTypeOf<Base>>(A.rows(), A.cols(), x);
+   }
+}
+
+
+}  // namespace detail
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <BaseType Base1, BaseType Base2, typename F, bool copy_delete>
    requires expr::BinaryOperation<Base1, Base2, F>
@@ -466,122 +482,122 @@ auto pow_prod(const Base1& A1, const Base2& A2) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator+(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryPlus{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryPlus{});
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator-(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryMinus{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryMinus{});
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator*(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryMult{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryMult{});
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator/(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryDivide{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryDivide{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator%(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryModulo{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryModulo{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator<<(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryRightShift{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryRightShift{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator>>(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryLeftShift{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryLeftShift{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator&(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryBitwiseAnd{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryBitwiseAnd{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator|(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryBitwiseOr{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryBitwiseOr{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(const1D<BuiltinTypeOf<Base>>(A2.size(), x), A2, expr::BinaryBitwiseXor{});
+   return generate(detail::generate_const(A2, x), A2, expr::BinaryBitwiseXor{});
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator+(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryPlus{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryPlus{});
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator-(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryMinus{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryMinus{});
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator*(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryMult{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryMult{});
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR auto operator/(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryDivide{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryDivide{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator%(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryModulo{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryModulo{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator<<(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryRightShift{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryRightShift{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator>>(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryLeftShift{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryLeftShift{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator&(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryBitwiseAnd{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryBitwiseAnd{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator|(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryBitwiseOr{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryBitwiseOr{});
 }
 
 
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator^(const Base& A, ValueTypeOf<Base> x) {
-   return generate(A, const1D<BuiltinTypeOf<Base>>(A.size(), x), expr::BinaryBitwiseXor{});
+   return generate(A, detail::generate_const(A, x), expr::BinaryBitwiseXor{});
 }
 
 

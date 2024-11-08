@@ -132,6 +132,14 @@ template <Builtin T>
 STRICT_CONSTEXPR auto const1D(Size size, Value<T> c);
 
 
+template <Builtin T>
+STRICT_CONSTEXPR auto const2D(ImplicitInt rows, ImplicitInt cols, Strict<T> c);
+
+
+template <Builtin T>
+STRICT_CONSTEXPR auto const2D(Rows rows, Cols cols, Value<T> c);
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace detail {
 
@@ -169,6 +177,18 @@ STRICT_CONSTEXPR auto exclude(Base&& A, Pos pos, Count count = Count{1}) = delet
 template <typename Base>
    requires detail::ArrayOneDimTypeRvalue<Base>
 STRICT_CONSTEXPR auto exclude(Base&& A, detail::Last lst) = delete;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+namespace detail {
+
+
+STRICT_CONSTEXPR_INLINE auto irange2D(ImplicitInt m, ImplicitInt n) {
+   return GenArrayBase2D<SequenceExpr2D<long int>>{0_sl, m.get(), n.get(), 1_sl};
+}
+
+
+}  // namespace detail
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -342,6 +362,18 @@ STRICT_CONSTEXPR auto const1D(ImplicitInt size, Strict<T> c) {
 template <Builtin T>
 STRICT_CONSTEXPR auto const1D(Size size, Value<T> c) {
    return const1D<T>(size.get(), c.get());
+}
+
+
+template <Builtin T>
+STRICT_CONSTEXPR auto const2D(ImplicitInt rows, ImplicitInt cols, Strict<T> c) {
+   return generate(detail::irange2D(rows, cols), [c]([[maybe_unused]] auto i) { return c; });
+}
+
+
+template <Builtin T>
+STRICT_CONSTEXPR auto const2D(Rows rows, Cols cols, Value<T> c) {
+   return const2D<T>(rows.get(), cols.get(), c.get());
 }
 
 
