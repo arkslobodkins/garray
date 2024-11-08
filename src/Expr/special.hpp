@@ -123,6 +123,11 @@ template <Real T>
 STRICT_CONSTEXPR auto e_unit(Index unit_index, Size size);
 
 
+// Similarly, generates standard identity on the fly.
+template <Real T>
+STRICT_CONSTEXPR auto identity(ImplicitInt n);
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 STRICT_CONSTEXPR auto const1D(ImplicitInt size, Strict<T> c);
@@ -348,6 +353,14 @@ STRICT_CONSTEXPR auto e_unit(ImplicitInt unit_index, ImplicitInt size) {
 template <Real T>
 STRICT_CONSTEXPR auto e_unit(Index unit_index, Size size) {
    return e_unit<T>(unit_index.get(), size.get());
+}
+
+
+template <Real T>
+STRICT_CONSTEXPR auto identity(ImplicitInt n) {
+   ASSERT_STRICT_DEBUG(n.get() > -1_sl);
+   return generate(detail::irange2D(n, n),
+                   [n](auto i) { return i / n.get() == i % n.get() ? One<T> : Zero<T>; });
 }
 
 
