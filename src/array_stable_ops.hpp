@@ -227,13 +227,8 @@ ValueTypeOf<Base> stable_norm_lp(const Base& A, ImplicitInt lp) {
    using real_type = RealTypeOf<Base>;
    auto coeff = const1D(Size{sz}, Value{real_type(1)});
    auto P = const1D(Size{sz}, Value(pw));
-   if constexpr(OneDimBaseType<Base>) {
-      auto s = stable_gpolynomial(coeff, abs(A), P);
-      return pows(s, invs(value_type_cast<Base>(pw)));
-   } else {
-      auto s = stable_gpolynomial(coeff, abs(A.view1D()), P);
-      return pows(s, invs(value_type_cast<Base>(pw)));
-   }
+   auto s = stable_gpolynomial(coeff, abs(A.view1D()), P);
+   return pows(s, invs(value_type_cast<Base>(pw)));
 }
 
 

@@ -22,23 +22,13 @@ enum AlignmentFlag { Aligned, Unaligned };
 namespace detail {
 
 
-template <Builtin T, AlignmentFlag AF>
-class ArrayBase1D;
-
-
 template <typename Base>
 class GenArray1D;
 
 
-template <typename D> concept ArrayBase1DType
-    = OneDimBaseType<D>
-   && (DerivedFrom<D, ArrayBase1D<BuiltinTypeOf<D>, Aligned>>
-       || DerivedFrom<D, ArrayBase1D<BuiltinTypeOf<D>, Unaligned>>);
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T, AlignmentFlag AF>
-class STRICT_NODISCARD ArrayBase1D : private ReferenceBase1D {
+class STRICT_NODISCARD ArrayBase1D : private ReferenceBase1D, private OneDimArrayBase {
 public:
    using value_type = Strict<T>;
    using builtin_type = T;

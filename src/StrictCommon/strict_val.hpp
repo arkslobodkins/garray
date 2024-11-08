@@ -272,6 +272,12 @@ STRICT_CONSTEXPR_INLINE auto false_sb = StrictBool{false};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
+STRICT_NODISCARD_CONSTEXPR_INLINE std::size_t to_size_t(T x) {
+   return static_cast<std::size_t>(x);
+}
+
+
+template <Builtin T>
 STRICT_NODISCARD_CONSTEXPR_INLINE std::size_t to_size_t(Strict<T> x) {
    return static_cast<std::size_t>(x.val());
 }
@@ -279,6 +285,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE std::size_t to_size_t(Strict<T> x) {
 
 template <Builtin T>
 STRICT_NODISCARD_CONSTEXPR_INLINE index_t to_index_t(T x) {
+   return strict_cast<index_t::value_type>(x);
+}
+
+
+template <Builtin T>
+STRICT_NODISCARD_CONSTEXPR_INLINE index_t to_index_t(Strict<T> x) {
    return strict_cast<index_t::value_type>(x);
 }
 

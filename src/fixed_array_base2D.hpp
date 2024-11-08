@@ -12,17 +12,9 @@
 namespace spp::detail {
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-class FixedArrayBase2D;
-
-
-template <typename D> concept FixedArrayBase2DType
-    = TwoDimBaseType<D> && DerivedFrom<D, FixedArrayBase2D<BuiltinTypeOf<D>, D::rows(), D::cols()>>;
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-class STRICT_NODISCARD FixedArrayBase2D : private ReferenceBase2D {
+class STRICT_NODISCARD FixedArrayBase2D : private ReferenceBase2D, private TwoDimArrayBase {
 public:
    using value_type = Strict<T>;
    using builtin_type = T;

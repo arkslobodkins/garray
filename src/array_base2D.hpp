@@ -16,23 +16,13 @@
 namespace spp { namespace detail {
 
 
-template <Builtin T, AlignmentFlag AF>
-class ArrayBase2D;
-
-
 template <typename Base>
 class GenArray2D;
 
 
-template <typename D> concept ArrayBase2DType
-    = TwoDimBaseType<D>
-   && (DerivedFrom<D, ArrayBase2D<BuiltinTypeOf<D>, Aligned>>
-       || DerivedFrom<D, ArrayBase2D<BuiltinTypeOf<D>, Unaligned>>);
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T, AlignmentFlag AF>
-class STRICT_NODISCARD ArrayBase2D : private ReferenceBase2D {
+class STRICT_NODISCARD ArrayBase2D : private ReferenceBase2D, private TwoDimArrayBase {
 public:
    using value_type = Strict<T>;
    using builtin_type = T;

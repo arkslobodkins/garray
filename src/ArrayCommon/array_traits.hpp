@@ -21,6 +21,10 @@ namespace detail {
 class DimBase {};
 class OneDimBase : protected DimBase {};
 class TwoDimBase : protected DimBase {};
+
+class ArrayBase {};
+class OneDimArrayBase : protected ArrayBase {};
+class TwoDimArrayBase : protected ArrayBase {};
 }  // namespace detail
 
 
@@ -152,6 +156,61 @@ using RealTypeOf = std::remove_reference_t<T>::builtin_type;
 template <typename T> concept IndexType = SignedInteger<T> || SameAs<T, StrictInt>
                                        || SameAs<T, StrictLong> || SameAs<T, ImplicitInt>
                                        || SameAs<T, detail::Last>;
+
+
+namespace detail {
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename T, bool cnd>
+concept RvalueOf = !std::is_lvalue_reference_v<T> && cnd;
+
+
+template <typename T> concept ArrayType = BaseOf<ArrayBase, T>;
+template <typename T> concept ArrayRealType = ArrayType<T> && Real<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayBooleanType = ArrayType<T> && Boolean<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayIntegerType = ArrayType<T> && Integer<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayFloatingType = ArrayType<T> && Floating<BuiltinTypeOf<T>>;
+
+
+template <typename T> concept ArrayTypeRvalue = RvalueOf<T, ArrayType<RemoveRef<T>>>;
+template <typename T> concept ArrayRealTypeRvalue = RvalueOf<T, ArrayRealType<RemoveRef<T>>>;
+template <typename T> concept ArrayBooleanTypeRvalue = RvalueOf<T, ArrayBooleanType<RemoveRef<T>>>;
+template <typename T> concept ArrayIntegerTypeRvalue = RvalueOf<T, ArrayIntegerType<RemoveRef<T>>>;
+template <typename T> concept ArrayFloatingTypeRvalue = RvalueOf<T, ArrayFloatingType<RemoveRef<T>>>;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> concept ArrayOneDimType = BaseOf<OneDimArrayBase, T>;
+template <typename T> concept ArrayOneDimRealType = ArrayOneDimType<T> && Real<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayOneDimBooleanType = ArrayOneDimType<T> && Boolean<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayOneDimIntegerType = ArrayOneDimType<T> && Integer<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayOneDimFloatingType = ArrayOneDimType<T> && Floating<BuiltinTypeOf<T>>;
+
+
+template <typename T> concept ArrayOneDimTypeRvalue = RvalueOf<T, ArrayOneDimType<RemoveRef<T>>>;
+template <typename T> concept ArrayOneDimRealTypeRvalue = RvalueOf<T, ArrayOneDimRealType<RemoveRef<T>>>;
+template <typename T> concept ArrayOneDimBooleanTypeRvalue = RvalueOf<T, ArrayOneDimBooleanType<RemoveRef<T>>>;
+template <typename T> concept ArrayOneDimIntegerTypeRvalue = RvalueOf<T, ArrayOneDimIntegerType<RemoveRef<T>>>;
+template <typename T> concept ArrayOneDimFloatingTypeRvalue = RvalueOf<T, ArrayOneDimFloatingType<RemoveRef<T>>>;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> concept ArrayTwoDimType = BaseOf<TwoDimArrayBase, T>;
+template <typename T> concept ArrayTwoDimRealType = ArrayTwoDimType<T> && Real<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayTwoDimBooleanType = ArrayTwoDimType<T> && Boolean<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayTwoDimIntegerType = ArrayTwoDimType<T> && Integer<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayTwoDimFloatingType = ArrayTwoDimType<T> && Floating<BuiltinTypeOf<T>>;
+
+
+template <typename T> concept ArrayTwoDimTypeRvalue = RvalueOf<T, ArrayTwoDimType<RemoveRef<T>>>;
+template <typename T> concept ArrayTwoDimRealTypeRvalue = RvalueOf<T, ArrayTwoDimRealType<RemoveRef<T>>>;
+template <typename T> concept ArrayTwoDimBooleanTypeRvalue = RvalueOf<T, ArrayTwoDimBooleanType<RemoveRef<T>>>;
+template <typename T> concept ArrayTwoDimIntegerTypeRvalue = RvalueOf<T, ArrayTwoDimIntegerType<RemoveRef<T>>>;
+template <typename T> concept ArrayTwoDimFloatingTypeRvalue = RvalueOf<T, ArrayTwoDimFloatingType<RemoveRef<T>>>;
+
+
+}  // namespace detail
 
 
 }  // namespace spp

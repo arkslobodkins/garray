@@ -23,36 +23,6 @@ namespace spp {
 namespace detail {
 
 
-template <typename D> concept ArrayOneDimType = FixedArrayBase1DType<D> || ArrayBase1DType<D>;
-template <typename D> concept ArrayOneDimRealType = ArrayOneDimType<D> && Real<BuiltinTypeOf<D>>;
-template <typename D> concept ArrayOneDimBooleanType
-    = ArrayOneDimType<D> && Boolean<BuiltinTypeOf<D>>;
-template <typename D> concept ArrayOneDimIntegerType
-    = ArrayOneDimType<D> && Integer<BuiltinTypeOf<D>>;
-template <typename D> concept ArrayOneDimFloatingType
-    = ArrayOneDimType<D> && Floating<BuiltinTypeOf<D>>;
-
-
-template <typename D> concept ArrayOneDimTypeRvalue
-    = ArrayOneDimType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
-template <typename D> concept ArrayOneDimRealTypeRvalue
-    = ArrayOneDimRealType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
-template <typename D> concept ArrayOneDimBooleanTypeRvalue
-    = ArrayOneDimBooleanType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
-template <typename D> concept ArrayOneDimIntegerTypeRvalue
-    = ArrayOneDimIntegerType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
-template <typename D> concept ArrayOneDimFloatingTypeRvalue
-    = ArrayOneDimFloatingType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
 template <OneDimNonConstBaseType Base>
 class GenArrayMutable1D;
 

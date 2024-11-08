@@ -25,36 +25,6 @@ namespace spp {
 namespace detail {
 
 
-template <typename D> concept ArrayTwoDimType = FixedArrayBase2DType<D> || ArrayBase2DType<D>;
-template <typename D> concept ArrayTwoDimRealType = ArrayTwoDimType<D> && Real<BuiltinTypeOf<D>>;
-template <typename D> concept ArrayTwoDimBooleanType
-    = ArrayTwoDimType<D> && Boolean<BuiltinTypeOf<D>>;
-template <typename D> concept ArrayTwoDimIntegerType
-    = ArrayTwoDimType<D> && Integer<BuiltinTypeOf<D>>;
-template <typename D> concept ArrayTwoDimFloatingType
-    = ArrayTwoDimType<D> && Floating<BuiltinTypeOf<D>>;
-
-
-template <typename D> concept ArrayTwoDimTypeRvalue
-    = ArrayTwoDimType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
-template <typename D> concept ArrayTwoDimRealTypeRvalue
-    = ArrayTwoDimRealType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
-template <typename D> concept ArrayTwoDimBooleanTypeRvalue
-    = ArrayTwoDimBooleanType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
-template <typename D> concept ArrayTwoDimIntegerTypeRvalue
-    = ArrayTwoDimIntegerType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
-template <typename D> concept ArrayTwoDimFloatingTypeRvalue
-    = ArrayTwoDimFloatingType<RemoveRef<D>> && !std::is_lvalue_reference_v<D>;
-
-
 template <TwoDimNonConstBaseType Base>
 class GenArrayMutable2D;
 

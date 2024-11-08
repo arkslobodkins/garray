@@ -12,17 +12,9 @@
 namespace spp::detail {
 
 
-template <Builtin T, ImplicitIntStatic N>
-class FixedArrayBase1D;
-
-
-template <typename D> concept FixedArrayBase1DType
-    = OneDimBaseType<D> && DerivedFrom<D, FixedArrayBase1D<BuiltinTypeOf<D>, D::size()>>;
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T, ImplicitIntStatic N>
-class STRICT_NODISCARD FixedArrayBase1D : private ReferenceBase1D {
+class STRICT_NODISCARD FixedArrayBase1D : private ReferenceBase1D, private OneDimArrayBase {
 public:
    using value_type = Strict<T>;
    using builtin_type = T;
