@@ -10,6 +10,7 @@
 
 #include "../ArrayCommon/array_auxiliary.hpp"
 #include "../ArrayCommon/array_traits.hpp"
+#include "../ArrayCommon/valid.hpp"
 #include "../StrictCommon/strict_common.hpp"
 
 
@@ -209,6 +210,7 @@ public:
          incr_{incr} {
       ASSERT_STRICT_DEBUG(rows_ > -1_sl);
       ASSERT_STRICT_DEBUG(cols_ > -1_sl);
+      ASSERT_STRICT_DEBUG(semi_valid_row_col_sizes(rows_, cols_));
    }
 
    STRICT_NODISCARD_CONSTEXPR SequenceExpr2D(const SequenceExpr2D&) = default;

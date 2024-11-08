@@ -114,6 +114,16 @@ auto random(ImplicitInt n, Strict<T> low, Strict<T> high) {
 }
 
 
+template <Builtin T>
+auto random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high) {
+   ASSERT_STRICT_DEBUG(low <= high);
+   Generator<T> g{low, high};
+   auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
+   return generate<decltype(const2D<T>(m, n, Zero<T>)), decltype(G), true>(
+       const2D<T>(m, n, Zero<T>), G);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 Strict<T> rands_not0(Strict<T> low, Strict<T> high) {
@@ -161,6 +171,24 @@ auto random_not0(ImplicitInt n, Strict<T> low, Strict<T> high) {
       }
    };
    return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
+}
+
+
+template <Real T>
+auto random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high) {
+   ASSERT_STRICT_DEBUG(low <= high);
+   ASSERT_STRICT_DEBUG(!(low == Zero<T> && high == Zero<T>));
+
+   Generator<T> g{low, high};
+   auto G = [g]([[maybe_unused]] auto x) {
+      while(true) {
+         if(auto r = g.random(); r != Zero<T>) {
+            return r;
+         }
+      }
+   };
+   return generate<decltype(const2D<T>(m, n, Zero<T>)), decltype(G), true>(
+       const2D<T>(m, n, Zero<T>), G);
 }
 
 
@@ -275,6 +303,30 @@ auto random(Size n) {
 }
 
 
+template <Real T>
+auto random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high) {
+   return detail::random<T>(m, n, low, high);
+}
+
+
+template <Real T>
+auto random(Rows m, Cols n, Low<T> low, High<T> high) {
+   return random<T>(m.get(), n.get(), low.get(), high.get());
+}
+
+
+template <Builtin T>
+auto random(ImplicitInt m, ImplicitInt n) {
+   return detail::random<T>(m, n, Zero<T>, One<T>);
+}
+
+
+template <Builtin T>
+auto random(Rows m, Cols n) {
+   return random<T>(m.get(), n.get());
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 auto random_not0(ImplicitInt n, Strict<T> low, Strict<T> high) {
@@ -297,6 +349,30 @@ auto random_not0(ImplicitInt n) {
 template <Real T>
 auto random_not0(Size n) {
    return random_not0<T>(n.get());
+}
+
+
+template <Real T>
+auto random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high) {
+   return detail::random_not0<T>(m, n, low, high);
+}
+
+
+template <Real T>
+auto random_not0(Rows m, Cols n, Low<T> low, High<T> high) {
+   return random_not0<T>(m.get(), n.get(), low.get(), high.get());
+}
+
+
+template <Real T>
+auto random_not0(ImplicitInt m, ImplicitInt n) {
+   return detail::random_not0<T>(m, n, Zero<T>, One<T>);
+}
+
+
+template <Real T>
+auto random_not0(Rows m, Cols n) {
+   return random_not0<T>(m.get(), n.get());
 }
 
 

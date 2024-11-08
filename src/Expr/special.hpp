@@ -380,6 +380,9 @@ STRICT_CONSTEXPR auto const1D(Size size, Value<T> c) {
 
 template <Builtin T>
 STRICT_CONSTEXPR auto const2D(ImplicitInt rows, ImplicitInt cols, Strict<T> c) {
+   ASSERT_STRICT_DEBUG(rows.get() > -1_sl);
+   ASSERT_STRICT_DEBUG(cols.get() > -1_sl);
+   ASSERT_STRICT_DEBUG(detail::semi_valid_row_col_sizes(rows.get(), cols.get()));
    return generate(detail::irange2D(rows, cols), [c]([[maybe_unused]] auto i) { return c; });
 }
 
