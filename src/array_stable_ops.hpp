@@ -145,7 +145,7 @@ ValueTypeOf<Base> stable_prod(const Base& A) {
    }
 
    Strict<real_type> prod_temp{real_type(1)};
-   auto offset = generate(irange_m1(A), [&A, &res, &prod_temp](auto i) {
+   auto offset = generate(irange(A.size() - 1_sl), [&A, &res, &prod_temp](auto i) {
       auto t = prod_temp * res.un(res.size() - 1_sl - i);
       prod_temp *= A.un(A.size() - 1_sl - i);
       return t;

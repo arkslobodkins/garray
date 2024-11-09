@@ -28,6 +28,9 @@ echo -e "\nRUNNING ARRAY STABLE OPERATIONS TESTS"
 echo -e "\nRUNNING ERROR TOOLS TESTS"
 ./error_tools.x
 
+echo -e "\nRUNNING Array 1D vs 2D TESTS"
+./array_1Dvs2D.x
+
 echo -e ""
 make clean
 echo -e ""
