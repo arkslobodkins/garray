@@ -216,7 +216,7 @@ private:
 template <BaseType Base>
 STRICT_NODISCARD_CONSTEXPR auto convert2D(Base& A, ImplicitInt m, ImplicitInt n) {
    auto proxy = strict_convert_slice2D{A, m, n};
-   return GenArrayMutable2D<SliceArrayBase2D<decltype(proxy), seqN, seqN>>{
+   return StrictArrayMutable2D<SliceArrayBase2D<decltype(proxy), seqN, seqN>>{
        proxy, seqN{0, m}, seqN{0, n}};
 }
 
@@ -224,16 +224,16 @@ STRICT_NODISCARD_CONSTEXPR auto convert2D(Base& A, ImplicitInt m, ImplicitInt n)
 template <BaseType Base>
 STRICT_NODISCARD_CONSTEXPR auto const_convert2D(const Base& A, ImplicitInt m, ImplicitInt n) {
    auto proxy = const_strict_convert_slice2D{A, m, n};
-   return GenArrayBase2D<ConstSliceArrayBase2D<decltype(proxy), seqN, seqN>>{
+   return StrictArrayBase2D<ConstSliceArrayBase2D<decltype(proxy), seqN, seqN>>{
        proxy, seqN{0, m}, seqN{0, n}};
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <OneDimBaseType Base>
-STRICT_CONSTEXPR auto GenArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) & {
+STRICT_CONSTEXPR auto StrictArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) & {
    ASSERT_STRICT_ALWAYS(nrows.get() * ncols.get() == Base::size());
-   if constexpr(NonConstBaseType<GenArrayBase1D>) {
+   if constexpr(NonConstBaseType<StrictArrayBase1D>) {
       return convert2D(*this, nrows, ncols);
    } else {
       return const_convert2D(*this, nrows, ncols);
@@ -242,15 +242,15 @@ STRICT_CONSTEXPR auto GenArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitIn
 
 
 template <OneDimBaseType Base>
-STRICT_CONSTEXPR auto GenArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) const& {
+STRICT_CONSTEXPR auto StrictArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) const& {
    ASSERT_STRICT_ALWAYS(nrows.get() * ncols.get() == Base::size());
    return const_convert2D(*this, nrows, ncols);
 }
 
 
 template <OneDimBaseType Base>
-STRICT_CONSTEXPR auto GenArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) &&
-   requires(!ArrayOneDimType<GenArrayBase1D>)
+STRICT_CONSTEXPR auto StrictArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) &&
+   requires(!ArrayOneDimType<StrictArrayBase1D>)
 {
    return this->view2D(nrows, ncols);
 }
@@ -258,9 +258,9 @@ STRICT_CONSTEXPR auto GenArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitIn
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <TwoDimBaseType Base>
-STRICT_CONSTEXPR auto GenArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) & {
+STRICT_CONSTEXPR auto StrictArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) & {
    ASSERT_STRICT_ALWAYS(nrows.get() * ncols.get() == Base::size());
-   if constexpr(NonConstBaseType<GenArrayBase2D>) {
+   if constexpr(NonConstBaseType<StrictArrayBase2D>) {
       return convert2D(*this, nrows, ncols);
    } else {
       return const_convert2D(*this, nrows, ncols);
@@ -269,15 +269,15 @@ STRICT_CONSTEXPR auto GenArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitIn
 
 
 template <TwoDimBaseType Base>
-STRICT_CONSTEXPR auto GenArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) const& {
+STRICT_CONSTEXPR auto StrictArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) const& {
    ASSERT_STRICT_ALWAYS(nrows.get() * ncols.get() == Base::size());
    return const_convert2D(*this, nrows, ncols);
 }
 
 
 template <TwoDimBaseType Base>
-STRICT_CONSTEXPR auto GenArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) &&
-   requires(!ArrayTwoDimType<GenArrayBase2D>)
+STRICT_CONSTEXPR auto StrictArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) &&
+   requires(!ArrayTwoDimType<StrictArrayBase2D>)
 {
    return this->view2D(nrows, ncols);
 }
@@ -291,7 +291,7 @@ template <CompatibleBuiltin T>
 auto attach2D(T* data, ImplicitInt m, ImplicitInt n) {
    using namespace detail;
    auto proxy = strict_attach_ptr2D(data, m, n);
-   return GenArrayMutable2D<SliceArrayBase2D<decltype(proxy), seqN, seqN>>{
+   return StrictArrayMutable2D<SliceArrayBase2D<decltype(proxy), seqN, seqN>>{
        proxy, seqN{0, m}, seqN{0, n}};
 }
 
@@ -300,7 +300,7 @@ template <CompatibleBuiltin T>
 auto attach2D(const T* data, ImplicitInt m, ImplicitInt n) {
    using namespace detail;
    auto proxy = const_strict_attach_ptr2D(data, m, n);
-   return GenArrayBase2D<ConstSliceArrayBase2D<decltype(proxy), seqN, seqN>>{
+   return StrictArrayBase2D<ConstSliceArrayBase2D<decltype(proxy), seqN, seqN>>{
        proxy, seqN{0, m}, seqN{0, n}};
 }
 

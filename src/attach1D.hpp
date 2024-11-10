@@ -86,7 +86,7 @@ template <CompatibleBuiltin T>
 auto attach1D(T* data, ImplicitInt n) {
    using namespace detail;
    auto proxy = strict_attach_ptr1D(data, n);
-   return GenArrayMutable1D<SliceArrayBase1D<decltype(proxy), seqN>>{proxy, seqN{0, n}};
+   return StrictArrayMutable1D<SliceArrayBase1D<decltype(proxy), seqN>>{proxy, seqN{0, n}};
 }
 
 
@@ -94,7 +94,7 @@ template <CompatibleBuiltin T>
 auto attach1D(const T* data, ImplicitInt n) {
    using namespace detail;
    auto proxy = const_strict_attach_ptr1D(data, n);
-   return GenArrayBase1D<ConstSliceArrayBase1D<decltype(proxy), seqN>>{proxy, seqN{0, n}};
+   return StrictArrayBase1D<ConstSliceArrayBase1D<decltype(proxy), seqN>>{proxy, seqN{0, n}};
 }
 
 

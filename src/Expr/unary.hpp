@@ -202,9 +202,9 @@ STRICT_CONSTEXPR auto generate(const Base& A, F f) {
    using E = detail::UnaryExpr<Base, F, copy_delete>;
 
    if constexpr(OneDimBaseType<Base>) {
-      return detail::GenArrayBase1D<E>{A, f};
+      return detail::StrictArrayBase1D<E>{A, f};
    } else {
-      return detail::GenArrayBase2D<E>{A, f};
+      return detail::StrictArrayBase2D<E>{A, f};
    }
 }
 

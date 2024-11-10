@@ -24,39 +24,39 @@ namespace detail {
 
 
 template <OneDimNonConstBaseType Base>
-class GenArrayMutable1D;
+class StrictArrayMutable1D;
 
 
 template <typename Base>
-class GenArray1D;
+class StrictArray1D;
 
 
 }  // namespace detail
 
 
 template <Builtin T, AlignmentFlag AF = Aligned>
-using Array1D = detail::GenArray1D<detail::ArrayBase1D<T, AF>>;
+using Array1D = detail::StrictArray1D<detail::ArrayBase1D<T, AF>>;
 
 
 template <Builtin T, ImplicitIntStatic sz>
-using FixedArray1D = detail::GenArray1D<detail::FixedArrayBase1D<T, sz>>;
+using FixedArray1D = detail::StrictArray1D<detail::FixedArrayBase1D<T, sz>>;
 
 
 namespace detail {
 
 
 template <OneDimBaseType Base>
-class STRICT_NODISCARD GenArrayBase1D : public Base {
+class STRICT_NODISCARD StrictArrayBase1D : public Base {
 public:
    using size_type = index_t;
    using typename Base::builtin_type;
    using typename Base::value_type;
 
    using Base::Base;
-   STRICT_NODISCARD_CONSTEXPR GenArrayBase1D(const GenArrayBase1D&) = default;
-   STRICT_NODISCARD_CONSTEXPR GenArrayBase1D(GenArrayBase1D&&) = default;
-   STRICT_CONSTEXPR GenArrayBase1D& operator=(const GenArrayBase1D&) = delete;
-   STRICT_CONSTEXPR GenArrayBase1D& operator=(const auto&) = delete;
+   STRICT_NODISCARD_CONSTEXPR StrictArrayBase1D(const StrictArrayBase1D&) = default;
+   STRICT_NODISCARD_CONSTEXPR StrictArrayBase1D(StrictArrayBase1D&&) = default;
+   STRICT_CONSTEXPR StrictArrayBase1D& operator=(const StrictArrayBase1D&) = delete;
+   STRICT_CONSTEXPR StrictArrayBase1D& operator=(const auto&) = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <IndexType Index>
@@ -180,10 +180,10 @@ public:
    STRICT_CONSTEXPR auto operator()(Slice slice) & {
       auto sh = slice_helper(*this, std::move(slice));
       if constexpr(NonConstBaseType<Base>) {
-         return GenArrayMutable1D<SliceArrayBase1D<GenArrayBase1D, decltype(sh)>>{*this,
+         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{*this,
                                                                                   std::move(sh)};
       } else {
-         return GenArrayBase1D<ConstSliceArrayBase1D<GenArrayBase1D, decltype(sh)>>{*this,
+         return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{*this,
                                                                                     std::move(sh)};
       }
    }
@@ -204,7 +204,7 @@ public:
    template <SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice slice) const& {
       auto sh = slice_helper(*this, std::move(slice));
-      return GenArrayBase1D<ConstSliceArrayBase1D<GenArrayBase1D, decltype(sh)>>{*this,
+      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{*this,
                                                                                  std::move(sh)};
    }
 
@@ -225,7 +225,7 @@ public:
    // constant slice array in situations when non-constant slice array is needed.
    template <SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice slice) &&
-      requires(!ArrayOneDimType<GenArrayBase1D>)
+      requires(!ArrayOneDimType<StrictArrayBase1D>)
    {
       return operator()(std::move(slice));
    }
@@ -235,40 +235,40 @@ public:
    }
 
    STRICT_CONSTEXPR auto view1D() &&
-      requires(!ArrayOneDimType<GenArrayBase1D>)
+      requires(!ArrayOneDimType<StrictArrayBase1D>)
    {
       return this->view1D();
    }
 
    // Implemented in attach2D.hpp.
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) &&
-      requires(!ArrayOneDimType<GenArrayBase1D>);
+      requires(!ArrayOneDimType<StrictArrayBase1D>);
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    // Disallow slicing of temporaries that own data to reduce the risk of dangling references.
    template <typename T>
    STRICT_CONSTEXPR auto operator()(T slice) const&&
-      requires ArrayOneDimType<GenArrayBase1D>
+      requires ArrayOneDimType<StrictArrayBase1D>
    = delete;
 
    STRICT_CONSTEXPR auto view1D() const&&
-      requires ArrayOneDimType<GenArrayBase1D>
+      requires ArrayOneDimType<StrictArrayBase1D>
    = delete;
 
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) const&&
-      requires ArrayOneDimType<GenArrayBase1D>
+      requires ArrayOneDimType<StrictArrayBase1D>
    = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArrayBase1D& lval() & = delete;
+   STRICT_CONSTEXPR StrictArrayBase1D& lval() & = delete;
 
-   STRICT_CONSTEXPR const GenArrayBase1D& lval() const& = delete;
+   STRICT_CONSTEXPR const StrictArrayBase1D& lval() const& = delete;
 
-   STRICT_NODISCARD_CONSTEXPR GenArrayBase1D& lval() && {
+   STRICT_NODISCARD_CONSTEXPR StrictArrayBase1D& lval() && {
       return this->lval_impl();
    }
 
-   STRICT_NODISCARD_CONSTEXPR const GenArrayBase1D& lval() const&& {
+   STRICT_NODISCARD_CONSTEXPR const StrictArrayBase1D& lval() const&& {
       return this->lval_impl();
    }
 
@@ -282,107 +282,107 @@ public:
    }
 
 protected:
-   STRICT_CONSTEXPR GenArrayBase1D& lval_impl() {
+   STRICT_CONSTEXPR StrictArrayBase1D& lval_impl() {
       return *this;
    }
 
-   STRICT_CONSTEXPR const GenArrayBase1D& lval_impl() const {
+   STRICT_CONSTEXPR const StrictArrayBase1D& lval_impl() const {
       return *this;
    }
 };
 
 
 template <OneDimNonConstBaseType Base>
-class STRICT_NODISCARD GenArrayMutable1D : public GenArrayBase1D<Base> {
-   using CommonBase1D = GenArrayBase1D<Base>;
+class STRICT_NODISCARD StrictArrayMutable1D : public StrictArrayBase1D<Base> {
+   using CommonBase1D = StrictArrayBase1D<Base>;
 
 public:
    using typename CommonBase1D::size_type;
    using typename CommonBase1D::builtin_type;
    using typename CommonBase1D::value_type;
 
-   using GenArrayBase1D<Base>::GenArrayBase1D;
-   STRICT_NODISCARD_CONSTEXPR GenArrayMutable1D(const GenArrayMutable1D&) = default;
-   STRICT_NODISCARD_CONSTEXPR GenArrayMutable1D(GenArrayMutable1D&&) = default;
+   using StrictArrayBase1D<Base>::StrictArrayBase1D;
+   STRICT_NODISCARD_CONSTEXPR StrictArrayMutable1D(const StrictArrayMutable1D&) = default;
+   STRICT_NODISCARD_CONSTEXPR StrictArrayMutable1D(StrictArrayMutable1D&&) = default;
 
    // Assignments are not inherited because it returns reference to base class.
-   STRICT_CONSTEXPR GenArrayMutable1D& operator=(const GenArrayMutable1D& A) {
-      return static_cast<GenArrayMutable1D&>(Base::operator=(A));
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator=(const StrictArrayMutable1D& A) {
+      return static_cast<StrictArrayMutable1D&>(Base::operator=(A));
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator=(GenArrayMutable1D&& A) {
-      return static_cast<GenArrayMutable1D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator=(StrictArrayMutable1D&& A) {
+      return static_cast<StrictArrayMutable1D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator=(value_type x) {
-      return static_cast<GenArrayMutable1D&>(Base::operator=(x));
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator=(value_type x) {
+      return static_cast<StrictArrayMutable1D&>(Base::operator=(x));
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator=(use::List1D<builtin_type> list) {
-      return static_cast<GenArrayMutable1D&>(Base::operator=(list));
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator=(use::List1D<builtin_type> list) {
+      return static_cast<StrictArrayMutable1D&>(Base::operator=(list));
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator=(OneDimBaseType auto const& A) {
-      return static_cast<GenArrayMutable1D&>(Base::operator=(A));
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator=(OneDimBaseType auto const& A) {
+      return static_cast<StrictArrayMutable1D&>(Base::operator=(A));
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArrayMutable1D& operator+=(value_type x) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator+=(value_type x) {
       apply0(*this, [x, this](index_t i) { Base::un(i) += x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator-=(value_type x) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator-=(value_type x) {
       apply0(*this, [x, this](index_t i) { Base::un(i) -= x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator*=(value_type x) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator*=(value_type x) {
       apply0(*this, [x, this](index_t i) { Base::un(i) *= x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator/=(value_type x) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator/=(value_type x) {
       apply0(*this, [x, this](index_t i) { Base::un(i) /= x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator%=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator%=(value_type x)
       requires Integer<builtin_type>
    {
       apply0(*this, [x, this](index_t i) { Base::un(i) %= x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator<<=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator<<=(value_type x)
       requires Integer<builtin_type>
    {
       apply0(*this, [x, this](index_t i) { Base::un(i) <<= x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator>>=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator>>=(value_type x)
       requires Integer<builtin_type>
    {
       apply0(*this, [x, this](index_t i) { Base::un(i) >>= x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator&=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator&=(value_type x)
       requires Integer<builtin_type>
    {
       apply0(*this, [x, this](index_t i) { Base::un(i) &= x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator|=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator|=(value_type x)
       requires Integer<builtin_type>
    {
       apply0(*this, [x, this](index_t i) { Base::un(i) |= x; });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator^=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator^=(value_type x)
       requires Integer<builtin_type>
    {
       apply0(*this, [x, this](index_t i) { Base::un(i) ^= x; });
@@ -390,84 +390,84 @@ public:
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArrayMutable1D& operator+=(OneDimRealBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator+=(OneDimRealBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) += A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator-=(OneDimRealBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator-=(OneDimRealBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) -= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator*=(OneDimRealBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator*=(OneDimRealBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) *= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator/=(OneDimRealBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator/=(OneDimRealBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) /= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator%=(OneDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator%=(OneDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) %= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator<<=(OneDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator<<=(OneDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) <<= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator>>=(OneDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator>>=(OneDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) >>= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator&=(OneDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator&=(OneDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) &= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator|=(OneDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator|=(OneDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) |= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& operator^=(OneDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable1D& operator^=(OneDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       apply1(*this, A, [&](index_t i) { Base::un(i) ^= A.un(i); });
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable1D& lval() & = delete;
+   STRICT_CONSTEXPR StrictArrayMutable1D& lval() & = delete;
 
-   STRICT_CONSTEXPR const GenArrayMutable1D& lval() const& = delete;
+   STRICT_CONSTEXPR const StrictArrayMutable1D& lval() const& = delete;
 
-   STRICT_NODISCARD_CONSTEXPR GenArrayMutable1D& lval() && {
-      return static_cast<GenArrayMutable1D&>(CommonBase1D::lval_impl());
+   STRICT_NODISCARD_CONSTEXPR StrictArrayMutable1D& lval() && {
+      return static_cast<StrictArrayMutable1D&>(CommonBase1D::lval_impl());
    }
 
-   STRICT_NODISCARD_CONSTEXPR const GenArrayMutable1D& lval() const&& {
-      return static_cast<GenArrayMutable1D&>(CommonBase1D::lval_impl());
+   STRICT_NODISCARD_CONSTEXPR const StrictArrayMutable1D& lval() const&& {
+      return static_cast<StrictArrayMutable1D&>(CommonBase1D::lval_impl());
    }
 };
 
 
 template <typename Base>
-class STRICT_NODISCARD GenArray1D final : public GenArrayMutable1D<Base> {
-   using CommonBase1D = GenArrayBase1D<Base>;
-   using MutableBase1D = GenArrayMutable1D<Base>;
+class STRICT_NODISCARD StrictArray1D final : public StrictArrayMutable1D<Base> {
+   using CommonBase1D = StrictArrayBase1D<Base>;
+   using MutableBase1D = StrictArrayMutable1D<Base>;
 
 public:
    // static_assert is used instead of concept to avoid complications
@@ -477,125 +477,125 @@ public:
    using typename MutableBase1D::builtin_type;
    using typename MutableBase1D::value_type;
 
-   using GenArrayMutable1D<Base>::GenArrayMutable1D;
-   STRICT_NODISCARD_CONSTEXPR GenArray1D() = default;
-   STRICT_NODISCARD_CONSTEXPR GenArray1D(const GenArray1D&) = default;
-   STRICT_NODISCARD_CONSTEXPR GenArray1D(GenArray1D&&) = default;
+   using StrictArrayMutable1D<Base>::StrictArrayMutable1D;
+   STRICT_NODISCARD_CONSTEXPR StrictArray1D() = default;
+   STRICT_NODISCARD_CONSTEXPR StrictArray1D(const StrictArray1D&) = default;
+   STRICT_NODISCARD_CONSTEXPR StrictArray1D(StrictArray1D&&) = default;
 
    // Assignments are not inherited because it returns reference to base class.
    // Further, for Arrays that own data lvalue qualifier for assignment is preferred.
-   STRICT_CONSTEXPR GenArray1D& operator=(const GenArray1D& A) & {
-      return static_cast<GenArray1D&>(Base::operator=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator=(const StrictArray1D& A) & {
+      return static_cast<StrictArray1D&>(Base::operator=(A));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator=(GenArray1D&& A) & {
-      return static_cast<GenArray1D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
+   STRICT_CONSTEXPR StrictArray1D& operator=(StrictArray1D&& A) & {
+      return static_cast<StrictArray1D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator=(value_type x) & {
-      return static_cast<GenArray1D&>(Base::operator=(x));
+   STRICT_CONSTEXPR StrictArray1D& operator=(value_type x) & {
+      return static_cast<StrictArray1D&>(Base::operator=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator=(use::List1D<builtin_type> list) & {
-      return static_cast<GenArray1D&>(Base::operator=(list));
+   STRICT_CONSTEXPR StrictArray1D& operator=(use::List1D<builtin_type> list) & {
+      return static_cast<StrictArray1D&>(Base::operator=(list));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator=(OneDimBaseType auto const& A) & {
-      return static_cast<GenArray1D&>(Base::operator=(A));
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArray1D& operator+=(value_type x) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator+=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator-=(value_type x) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator-=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator*=(value_type x) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator*=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator/=(value_type x) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator/=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator%=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray1D&>(MutableBase1D::operator%=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator<<=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray1D&>(MutableBase1D::operator<<=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator>>=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray1D&>(MutableBase1D::operator>>=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator&=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray1D&>(MutableBase1D::operator&=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator|=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray1D&>(MutableBase1D::operator|=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray1D& operator^=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray1D&>(MutableBase1D::operator^=(x));
+   STRICT_CONSTEXPR StrictArray1D& operator=(OneDimBaseType auto const& A) & {
+      return static_cast<StrictArray1D&>(Base::operator=(A));
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArray1D& operator+=(OneDimRealBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator+=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator+=(value_type x) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator+=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator-=(OneDimRealBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator-=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator-=(value_type x) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator-=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator*=(OneDimRealBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator*=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator*=(value_type x) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator*=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator/=(OneDimRealBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator/=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator/=(value_type x) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator/=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator%=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator%=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator%=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator%=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator<<=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator<<=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator<<=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator<<=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator>>=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator>>=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator>>=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator>>=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator&=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator&=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator&=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator&=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator|=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator|=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator|=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator|=(x));
    }
 
-   STRICT_CONSTEXPR GenArray1D& operator^=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray1D&>(MutableBase1D::operator^=(A));
+   STRICT_CONSTEXPR StrictArray1D& operator^=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator^=(x));
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR StrictArray1D& operator+=(OneDimRealBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator+=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator-=(OneDimRealBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator-=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator*=(OneDimRealBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator*=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator/=(OneDimRealBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator/=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator%=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator%=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator<<=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator<<=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator>>=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator>>=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator&=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator&=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator|=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator|=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray1D& operator^=(OneDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray1D&>(MutableBase1D::operator^=(A));
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -615,16 +615,16 @@ public:
       return this->bytes().sd() / cubes(1024_sl).sd();
    }
 
-   STRICT_CONSTEXPR GenArray1D& lval() & = delete;
+   STRICT_CONSTEXPR StrictArray1D& lval() & = delete;
 
-   STRICT_CONSTEXPR const GenArray1D& lval() const& = delete;
+   STRICT_CONSTEXPR const StrictArray1D& lval() const& = delete;
 
-   STRICT_NODISCARD_CONSTEXPR GenArray1D& lval() && {
-      return static_cast<GenArray1D&>(CommonBase1D::lval_impl());
+   STRICT_NODISCARD_CONSTEXPR StrictArray1D& lval() && {
+      return static_cast<StrictArray1D&>(CommonBase1D::lval_impl());
    }
 
-   STRICT_NODISCARD_CONSTEXPR const GenArray1D& lval() const&& {
-      return static_cast<GenArray1D&>(CommonBase1D::lval_impl());
+   STRICT_NODISCARD_CONSTEXPR const StrictArray1D& lval() const&& {
+      return static_cast<StrictArray1D&>(CommonBase1D::lval_impl());
    }
 };
 

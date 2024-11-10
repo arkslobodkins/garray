@@ -26,29 +26,29 @@ namespace detail {
 
 
 template <TwoDimNonConstBaseType Base>
-class GenArrayMutable2D;
+class StrictArrayMutable2D;
 
 
 template <typename Base>
-class GenArray2D;
+class StrictArray2D;
 
 
 }  // namespace detail
 
 
 template <Builtin T, AlignmentFlag AF = Aligned>
-using Array2D = detail::GenArray2D<detail::ArrayBase2D<T, AF>>;
+using Array2D = detail::StrictArray2D<detail::ArrayBase2D<T, AF>>;
 
 
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-using FixedArray2D = detail::GenArray2D<detail::FixedArrayBase2D<T, M, N>>;
+using FixedArray2D = detail::StrictArray2D<detail::FixedArrayBase2D<T, M, N>>;
 
 
 namespace detail {
 
 
 template <TwoDimBaseType Base>
-class STRICT_NODISCARD GenArrayBase2D : public Base {
+class STRICT_NODISCARD StrictArrayBase2D : public Base {
 public:
    using size_type = index_t;
    using typename Base::builtin_type;
@@ -59,10 +59,10 @@ public:
    using Base::rows;
 
    using Base::Base;
-   STRICT_NODISCARD_CONSTEXPR GenArrayBase2D(const GenArrayBase2D&) = default;
-   STRICT_NODISCARD_CONSTEXPR GenArrayBase2D(GenArrayBase2D&&) = default;
-   STRICT_CONSTEXPR GenArrayBase2D& operator=(const GenArrayBase2D&) = delete;
-   STRICT_CONSTEXPR GenArrayBase2D& operator=(const auto&) = delete;
+   STRICT_NODISCARD_CONSTEXPR StrictArrayBase2D(const StrictArrayBase2D&) = default;
+   STRICT_NODISCARD_CONSTEXPR StrictArrayBase2D(StrictArrayBase2D&&) = default;
+   STRICT_CONSTEXPR StrictArrayBase2D& operator=(const StrictArrayBase2D&) = delete;
+   STRICT_CONSTEXPR StrictArrayBase2D& operator=(const auto&) = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <IndexType Index1, IndexType Index2>
@@ -239,10 +239,10 @@ public:
 
    STRICT_CONSTEXPR auto view1D() & {
       if constexpr(NonConstBaseType<Base>) {
-         return GenArrayMutable1D<SliceArrayBase1D<GenArrayBase2D, seqN>>{*this,
+         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase2D, seqN>>{*this,
                                                                           seqN{0, Base::size(), 1}};
       } else {
-         return GenArrayBase1D<ConstSliceArrayBase1D<GenArrayBase2D, seqN>>{
+         return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
              *this, seqN{0, Base::size(), 1}};
       }
    }
@@ -277,7 +277,7 @@ public:
    }
 
    STRICT_CONSTEXPR auto view1D() const& {
-      return GenArrayBase1D<ConstSliceArrayBase1D<GenArrayBase2D, seqN>>{*this,
+      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{*this,
                                                                          seqN{0, Base::size(), 1}};
    }
 
@@ -289,65 +289,65 @@ public:
    // constant slice array in situations when non-constant slice array is needed.
    template <IndexType Index>
    STRICT_CONSTEXPR auto row(Index i) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->row(i);
    }
 
    template <IndexType Index>
    STRICT_CONSTEXPR auto col(Index j) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->col(j);
    }
 
    STRICT_CONSTEXPR auto diag() &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->diag();
    }
 
    STRICT_CONSTEXPR auto diag(ImplicitInt i) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->diag(i);
    }
 
    STRICT_CONSTEXPR auto view1D() &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->view1D();
    }
 
    // Implemented in attach2D.hpp.
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>);
+      requires(!ArrayTwoDimType<StrictArrayBase2D>);
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <IndexType Index>
    STRICT_CONSTEXPR auto row(Index i) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <IndexType Index>
    STRICT_CONSTEXPR auto col(Index j) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto diag() const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto diag(ImplicitInt i) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto view1D() const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,10 +358,10 @@ public:
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) & {
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(row_slice), std::move(col_slice));
       if constexpr(NonConstBaseType<Base>) {
-         return GenArrayMutable2D<SliceArrayBase2D<GenArrayBase2D, decltype(s1h), decltype(s2h)>>{
+         return StrictArrayMutable2D<SliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
              *this, std::move(s1h), std::move(s2h)};
       } else {
-         return GenArrayBase2D<ConstSliceArrayBase2D<GenArrayBase2D, decltype(s1h), decltype(s2h)>>{
+         return StrictArrayBase2D<ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
              *this, std::move(s1h), std::move(s2h)};
       }
    }
@@ -425,7 +425,7 @@ public:
    template <SliceType Slice1, SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) const& {
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(row_slice), std::move(col_slice));
-      return GenArrayBase2D<ConstSliceArrayBase2D<GenArrayBase2D, decltype(s1h), decltype(s2h)>>{
+      return StrictArrayBase2D<ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
           *this, std::move(s1h), std::move(s2h)};
    }
 
@@ -487,53 +487,53 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <SliceType Slice1, SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return operator()(std::move(row_slice), std::move(col_slice));
    }
 
    template <SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice row_slice, use::IndexList col_list) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return operator()(std::move(row_slice), std::move(col_list));
    }
 
    template <SliceType Slice>
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, Slice col_slice) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return operator()(std::move(row_list), std::move(col_slice));
    }
 
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, use::IndexList col_list) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return operator()(std::move(row_list), std::move(col_list));
    }
 
    template <SliceType Slice>
    STRICT_CONSTEXPR auto rows(Slice slice) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->rows(std::move(slice));
    }
 
    STRICT_CONSTEXPR auto rows(use::IndexList list) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->rows(std::move(list));
    }
 
    template <SliceType Slice>
    STRICT_CONSTEXPR auto cols(Slice slice) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->cols(std::move(slice));
    }
 
    STRICT_CONSTEXPR auto cols(use::IndexList list) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->cols(std::move(list));
    }
@@ -541,7 +541,7 @@ public:
    template <IndexType Index1, IndexType Index2, IndexType Index3, IndexType Index4>
    STRICT_CONSTEXPR auto block(Index1 first_row, Index2 first_col, Index3 last_row,
                                Index4 last_col) &&
-      requires(!ArrayTwoDimType<GenArrayBase2D>)
+      requires(!ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->block(first_row, first_col, last_row, last_col);
    }
@@ -549,7 +549,7 @@ public:
    template <IndexType Index1, IndexType Index2>
    STRICT_CONSTEXPR auto blockN(Index1 first_row, Index2 first_col, ImplicitInt nrows,
                                 ImplicitInt ncols) &&
-      requires(!ArrayTwoDimType< GenArrayBase2D>)
+      requires(!ArrayTwoDimType< StrictArrayBase2D>)
    {
       return this->blockN(first_row, first_col, nrows, ncols);
    }
@@ -557,63 +557,63 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <SliceType Slice1, SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice row_slice, use::IndexList col_list) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <SliceType Slice>
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, Slice col_slice) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, use::IndexList col_list) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <SliceType Slice>
    STRICT_CONSTEXPR auto rows(Slice slice) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto rows(use::IndexList) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <SliceType Slice>
    STRICT_CONSTEXPR auto cols(Slice slice) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto cols(use::IndexList) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <IndexType Index1, IndexType Index2, IndexType Index3, IndexType Index4>
    STRICT_CONSTEXPR auto block(Index1 first_row, Index2 first_col, Index3 last_row,
                                Index4 last_col) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <IndexType Index1, IndexType Index2>
    STRICT_CONSTEXPR auto blockN(Index1 first_row, Index2 first_col, ImplicitInt nrows,
                                 ImplicitInt ncols) const&&
-      requires ArrayTwoDimType<GenArrayBase2D>
+      requires ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArrayBase2D& lval() & = delete;
+   STRICT_CONSTEXPR StrictArrayBase2D& lval() & = delete;
 
-   STRICT_CONSTEXPR const GenArrayBase2D& lval() const& = delete;
+   STRICT_CONSTEXPR const StrictArrayBase2D& lval() const& = delete;
 
-   STRICT_NODISCARD_CONSTEXPR GenArrayBase2D& lval() && {
+   STRICT_NODISCARD_CONSTEXPR StrictArrayBase2D& lval() && {
       return this->lval_impl();
    }
 
-   STRICT_NODISCARD_CONSTEXPR const GenArrayBase2D& lval() const&& {
+   STRICT_NODISCARD_CONSTEXPR const StrictArrayBase2D& lval() const&& {
       return this->lval_impl();
    }
 
@@ -627,11 +627,11 @@ public:
    }
 
 protected:
-   STRICT_CONSTEXPR GenArrayBase2D& lval_impl() {
+   STRICT_CONSTEXPR StrictArrayBase2D& lval_impl() {
       return *this;
    }
 
-   STRICT_CONSTEXPR const GenArrayBase2D& lval_impl() const {
+   STRICT_CONSTEXPR const StrictArrayBase2D& lval_impl() const {
       return *this;
    }
 
@@ -651,96 +651,96 @@ private:
 
 
 template <TwoDimNonConstBaseType Base>
-class STRICT_NODISCARD GenArrayMutable2D : public GenArrayBase2D<Base> {
-   using CommonBase2D = GenArrayBase2D<Base>;
+class STRICT_NODISCARD StrictArrayMutable2D : public StrictArrayBase2D<Base> {
+   using CommonBase2D = StrictArrayBase2D<Base>;
 
 public:
    using typename CommonBase2D::size_type;
    using typename CommonBase2D::builtin_type;
    using typename CommonBase2D::value_type;
 
-   using GenArrayBase2D<Base>::GenArrayBase2D;
-   STRICT_NODISCARD_CONSTEXPR GenArrayMutable2D(const GenArrayMutable2D&) = default;
-   STRICT_NODISCARD_CONSTEXPR GenArrayMutable2D(GenArrayMutable2D&&) = default;
+   using StrictArrayBase2D<Base>::StrictArrayBase2D;
+   STRICT_NODISCARD_CONSTEXPR StrictArrayMutable2D(const StrictArrayMutable2D&) = default;
+   STRICT_NODISCARD_CONSTEXPR StrictArrayMutable2D(StrictArrayMutable2D&&) = default;
 
    // Assignments are not inherited because it returns reference to base class.
-   STRICT_CONSTEXPR GenArrayMutable2D& operator=(const GenArrayMutable2D& A) {
-      return static_cast<GenArrayMutable2D&>(Base::operator=(A));
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator=(const StrictArrayMutable2D& A) {
+      return static_cast<StrictArrayMutable2D&>(Base::operator=(A));
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator=(GenArrayMutable2D&& A) {
-      return static_cast<GenArrayMutable2D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator=(StrictArrayMutable2D&& A) {
+      return static_cast<StrictArrayMutable2D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator=(value_type x) {
-      return static_cast<GenArrayMutable2D&>(Base::operator=(x));
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator=(value_type x) {
+      return static_cast<StrictArrayMutable2D&>(Base::operator=(x));
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator=(use::List2D<builtin_type> list) {
-      return static_cast<GenArrayMutable2D&>(Base::operator=(list));
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator=(use::List2D<builtin_type> list) {
+      return static_cast<StrictArrayMutable2D&>(Base::operator=(list));
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator=(TwoDimBaseType auto const& A) {
-      return static_cast<GenArrayMutable2D&>(Base::operator=(A));
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator=(TwoDimBaseType auto const& A) {
+      return static_cast<StrictArrayMutable2D&>(Base::operator=(A));
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArrayMutable2D& operator+=(value_type x) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator+=(value_type x) {
       CommonBase2D::view1D() += x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator-=(value_type x) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator-=(value_type x) {
       CommonBase2D::view1D() -= x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator*=(value_type x) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator*=(value_type x) {
       CommonBase2D::view1D() *= x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator/=(value_type x) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator/=(value_type x) {
       CommonBase2D::view1D() /= x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator%=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator%=(value_type x)
       requires Integer<builtin_type>
    {
       CommonBase2D::view1D() %= x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator<<=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator<<=(value_type x)
       requires Integer<builtin_type>
    {
       CommonBase2D::view1D() <<= x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator>>=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator>>=(value_type x)
       requires Integer<builtin_type>
    {
       CommonBase2D::view1D() >>= x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator&=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator&=(value_type x)
       requires Integer<builtin_type>
    {
       CommonBase2D::view1D() &= x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator|=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator|=(value_type x)
       requires Integer<builtin_type>
    {
       CommonBase2D::view1D() |= x;
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator^=(value_type x)
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator^=(value_type x)
       requires Integer<builtin_type>
    {
       CommonBase2D::view1D() ^= x;
@@ -748,84 +748,84 @@ public:
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArrayMutable2D& operator+=(TwoDimRealBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator+=(TwoDimRealBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() += A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator-=(TwoDimRealBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator-=(TwoDimRealBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() -= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator*=(TwoDimRealBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator*=(TwoDimRealBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() *= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator/=(TwoDimRealBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator/=(TwoDimRealBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() /= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator%=(TwoDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator%=(TwoDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() %= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator<<=(TwoDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator<<=(TwoDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() <<= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator>>=(TwoDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator>>=(TwoDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() >>= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator&=(TwoDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator&=(TwoDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() &= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator|=(TwoDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator|=(TwoDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() |= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& operator^=(TwoDimIntegerBaseType auto const& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator^=(TwoDimIntegerBaseType auto const& A) {
       ASSERT_STRICT_DEBUG(same_size(*this, A));
       CommonBase2D::view1D() ^= A.view1D();
       return *this;
    }
 
-   STRICT_CONSTEXPR GenArrayMutable2D& lval() & = delete;
+   STRICT_CONSTEXPR StrictArrayMutable2D& lval() & = delete;
 
-   STRICT_CONSTEXPR const GenArrayMutable2D& lval() const& = delete;
+   STRICT_CONSTEXPR const StrictArrayMutable2D& lval() const& = delete;
 
-   STRICT_NODISCARD_CONSTEXPR GenArrayMutable2D& lval() && {
-      return static_cast<GenArrayMutable2D&>(CommonBase2D::lval_impl());
+   STRICT_NODISCARD_CONSTEXPR StrictArrayMutable2D& lval() && {
+      return static_cast<StrictArrayMutable2D&>(CommonBase2D::lval_impl());
    }
 
-   STRICT_NODISCARD_CONSTEXPR const GenArrayMutable2D& lval() const&& {
-      return static_cast<GenArrayMutable2D&>(CommonBase2D::lval_impl());
+   STRICT_NODISCARD_CONSTEXPR const StrictArrayMutable2D& lval() const&& {
+      return static_cast<StrictArrayMutable2D&>(CommonBase2D::lval_impl());
    }
 };
 
 
 template <typename Base>
-class STRICT_NODISCARD GenArray2D final : public GenArrayMutable2D<Base> {
-   using CommonBase2D = GenArrayBase2D<Base>;
-   using MutableBase2D = GenArrayMutable2D<Base>;
+class STRICT_NODISCARD StrictArray2D final : public StrictArrayMutable2D<Base> {
+   using CommonBase2D = StrictArrayBase2D<Base>;
+   using MutableBase2D = StrictArrayMutable2D<Base>;
 
 public:
    // static_assert is used instead of concept to avoid complications
@@ -835,125 +835,125 @@ public:
    using typename MutableBase2D::builtin_type;
    using typename MutableBase2D::value_type;
 
-   using GenArrayMutable2D<Base>::GenArrayMutable2D;
-   STRICT_NODISCARD_CONSTEXPR GenArray2D() = default;
-   STRICT_NODISCARD_CONSTEXPR GenArray2D(const GenArray2D&) = default;
-   STRICT_NODISCARD_CONSTEXPR GenArray2D(GenArray2D&&) = default;
+   using StrictArrayMutable2D<Base>::StrictArrayMutable2D;
+   STRICT_NODISCARD_CONSTEXPR StrictArray2D() = default;
+   STRICT_NODISCARD_CONSTEXPR StrictArray2D(const StrictArray2D&) = default;
+   STRICT_NODISCARD_CONSTEXPR StrictArray2D(StrictArray2D&&) = default;
 
    // Assignments are not inherited because it returns reference to base class.
    // Further, for Arrays that own data lvalue qualifier for assignment is preferred.
-   STRICT_CONSTEXPR GenArray2D& operator=(const GenArray2D& A) & {
-      return static_cast<GenArray2D&>(Base::operator=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator=(const StrictArray2D& A) & {
+      return static_cast<StrictArray2D&>(Base::operator=(A));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator=(GenArray2D&& A) & {
-      return static_cast<GenArray2D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
+   STRICT_CONSTEXPR StrictArray2D& operator=(StrictArray2D&& A) & {
+      return static_cast<StrictArray2D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator=(value_type x) & {
-      return static_cast<GenArray2D&>(Base::operator=(x));
+   STRICT_CONSTEXPR StrictArray2D& operator=(value_type x) & {
+      return static_cast<StrictArray2D&>(Base::operator=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator=(use::List2D<builtin_type> list) & {
-      return static_cast<GenArray2D&>(Base::operator=(list));
+   STRICT_CONSTEXPR StrictArray2D& operator=(use::List2D<builtin_type> list) & {
+      return static_cast<StrictArray2D&>(Base::operator=(list));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator=(TwoDimBaseType auto const& A) & {
-      return static_cast<GenArray2D&>(Base::operator=(A));
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArray2D& operator+=(value_type x) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator+=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator-=(value_type x) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator-=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator*=(value_type x) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator*=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator/=(value_type x) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator/=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator%=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray2D&>(MutableBase2D::operator%=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator<<=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray2D&>(MutableBase2D::operator<<=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator>>=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray2D&>(MutableBase2D::operator>>=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator&=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray2D&>(MutableBase2D::operator&=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator|=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray2D&>(MutableBase2D::operator|=(x));
-   }
-
-   STRICT_CONSTEXPR GenArray2D& operator^=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<GenArray2D&>(MutableBase2D::operator^=(x));
+   STRICT_CONSTEXPR StrictArray2D& operator=(TwoDimBaseType auto const& A) & {
+      return static_cast<StrictArray2D&>(Base::operator=(A));
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR GenArray2D& operator+=(TwoDimRealBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator+=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator+=(value_type x) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator+=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator-=(TwoDimRealBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator-=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator-=(value_type x) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator-=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator*=(TwoDimRealBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator*=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator*=(value_type x) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator*=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator/=(TwoDimRealBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator/=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator/=(value_type x) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator/=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator%=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator%=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator%=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator%=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator<<=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator<<=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator<<=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator<<=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator>>=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator>>=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator>>=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator>>=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator&=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator&=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator&=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator&=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator|=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator|=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator|=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator|=(x));
    }
 
-   STRICT_CONSTEXPR GenArray2D& operator^=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<GenArray2D&>(MutableBase2D::operator^=(A));
+   STRICT_CONSTEXPR StrictArray2D& operator^=(value_type x)
+      requires Integer<builtin_type>
+   {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator^=(x));
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////
+   STRICT_CONSTEXPR StrictArray2D& operator+=(TwoDimRealBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator+=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator-=(TwoDimRealBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator-=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator*=(TwoDimRealBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator*=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator/=(TwoDimRealBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator/=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator%=(TwoDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator%=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator<<=(TwoDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator<<=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator>>=(TwoDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator>>=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator&=(TwoDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator&=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator|=(TwoDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator|=(A));
+   }
+
+   STRICT_CONSTEXPR StrictArray2D& operator^=(TwoDimIntegerBaseType auto const& A) {
+      return static_cast<StrictArray2D&>(MutableBase2D::operator^=(A));
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -973,16 +973,16 @@ public:
       return this->bytes().sd() / cubes(1024_sl).sd();
    }
 
-   STRICT_CONSTEXPR GenArray2D& lval() & = delete;
+   STRICT_CONSTEXPR StrictArray2D& lval() & = delete;
 
-   STRICT_CONSTEXPR const GenArray2D& lval() const& = delete;
+   STRICT_CONSTEXPR const StrictArray2D& lval() const& = delete;
 
-   STRICT_NODISCARD_CONSTEXPR GenArray2D& lval() && {
-      return static_cast<GenArray2D&>(CommonBase2D::lval_impl());
+   STRICT_NODISCARD_CONSTEXPR StrictArray2D& lval() && {
+      return static_cast<StrictArray2D&>(CommonBase2D::lval_impl());
    }
 
-   STRICT_NODISCARD_CONSTEXPR const GenArray2D& lval() const&& {
-      return static_cast<GenArray2D&>(CommonBase2D::lval_impl());
+   STRICT_NODISCARD_CONSTEXPR const StrictArray2D& lval() const&& {
+      return static_cast<StrictArray2D&>(CommonBase2D::lval_impl());
    }
 };
 

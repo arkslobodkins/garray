@@ -17,7 +17,7 @@ namespace spp { namespace detail {
 
 
 template <typename Base>
-class GenArray2D;
+class StrictArray2D;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ public:
    STRICT_CONSTEXPR auto& resize_and_assign(TwoDimBaseType auto const& A);
 
    // Optimized implementation.
-   STRICT_CONSTEXPR auto& resize_and_assign(GenArray2D<ArrayBase2D>&& A);
+   STRICT_CONSTEXPR auto& resize_and_assign(StrictArray2D<ArrayBase2D>&& A);
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    STRICT_CONSTEXPR auto& remove_rows(ImplicitInt row_pos, ImplicitInt count);
@@ -254,7 +254,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::resize(ImplicitInt m, ImplicitInt n) 
       this->swap(tmp);
    }
 
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -276,7 +276,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::resize_forget(ImplicitInt m, Implicit
       }
    }
 
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -284,15 +284,15 @@ template <Builtin T, AlignmentFlag AF>
 STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::resize_and_assign(TwoDimBaseType auto const& A) {
    ArrayBase2D tmp(A);
    this->swap(tmp);
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::resize_and_assign(GenArray2D<ArrayBase2D>&& A) {
+STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::resize_and_assign(StrictArray2D<ArrayBase2D>&& A) {
    this->swap(A);
    A.swap(ArrayBase2D{});
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -312,7 +312,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::remove_rows(ImplicitInt row_pos, Impl
              row_pos.get(),
              this->rows() - row_pos.get() - count.get());
    this->swap(tmp);
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -337,7 +337,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::remove_cols(ImplicitInt col_pos, Impl
              col_pos.get(),
              this->cols() - col_pos.get() - count.get());
    this->swap(tmp);
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -447,7 +447,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::remove_rows(const std::vector<Implici
       this->swap(tmp);
    }
 
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -467,7 +467,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::remove_cols(const std::vector<Implici
       this->swap(tmp);
    }
 
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -487,7 +487,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::insert_rows(ImplicitInt row_pos,
    copy_rows(A, tmp, 0_sl, row_pos.get(), A.rows());
    copy_rows(*this, tmp, row_pos.get(), row_pos.get() + A.rows(), this->rows() - row_pos.get());
    this->swap(tmp);
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -524,7 +524,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::insert_cols(ImplicitInt col_pos,
    copy_cols(A, tmp, 0_sl, col_pos.get(), A.cols());
    copy_cols(*this, tmp, col_pos.get(), col_pos.get() + A.cols(), this->cols() - col_pos.get());
    this->swap(tmp);
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -554,7 +554,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::insert_row(ImplicitInt row_pos,
    if(this->rows() == 0_sl && this->cols() == 0_sl && A.size() != 0_sl) {
       this->resize(1, A.size());
       copyn(A, *this, A.size());
-      return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+      return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
    }
 
    ASSERT_STRICT_DEBUG(A.size() == this->cols());
@@ -574,7 +574,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::insert_row(ImplicitInt row_pos,
    }
 
    this->swap(tmp);
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 
@@ -604,7 +604,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::insert_col(ImplicitInt col_pos,
    if(this->rows() == 0_sl && this->cols() == 0_sl && A.size() != 0_sl) {
       this->resize(A.size(), 1);
       copyn(A, *this, A.size());
-      return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+      return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
    }
 
    ASSERT_STRICT_DEBUG(A.size() == this->rows());
@@ -621,7 +621,7 @@ STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::insert_col(ImplicitInt col_pos,
    }
 
    this->swap(tmp);
-   return static_cast<GenArray2D<ArrayBase2D>&>(*this);
+   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
 }
 
 

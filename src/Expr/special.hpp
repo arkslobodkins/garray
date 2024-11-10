@@ -189,7 +189,7 @@ namespace detail {
 
 
 STRICT_CONSTEXPR_INLINE auto irange2D(ImplicitInt m, ImplicitInt n) {
-   return GenArrayBase2D<SequenceExpr2D<long int>>{0_sl, m.get(), n.get(), 1_sl};
+   return StrictArrayBase2D<SequenceExpr2D<long int>>{0_sl, m.get(), n.get(), 1_sl};
 }
 
 
@@ -273,7 +273,7 @@ STRICT_CONSTEXPR auto exclude(const Base& A, [[maybe_unused]] detail::Last lst) 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 STRICT_CONSTEXPR auto sequence(ImplicitInt size, Strict<T> start, Strict<T> incr) {
-   return detail::GenArrayBase1D<detail::SequenceExpr1D<T>>{start, size.get(), incr};
+   return detail::StrictArrayBase1D<detail::SequenceExpr1D<T>>{start, size.get(), incr};
 }
 
 
@@ -288,7 +288,7 @@ template <Floating T>
 STRICT_CONSTEXPR auto linspace(ImplicitInt size, Strict<T> start, Strict<T> end) {
    ASSERT_STRICT_DEBUG(size.get() > 0_sl);
    auto sz = size.get();
-   return detail::GenArrayBase1D<detail::SequenceExpr1D<T>>{
+   return detail::StrictArrayBase1D<detail::SequenceExpr1D<T>>{
        start, sz, (end - start) / strict_cast<T>(sz - 1_sl)};
 }
 
@@ -300,7 +300,7 @@ STRICT_CONSTEXPR auto linspace(Size size, Start<T> start, End<T> end) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 STRICT_CONSTEXPR_INLINE auto irange(ImplicitInt n) {
-   return detail::GenArrayBase1D<detail::SequenceExpr1D<long int>>{0_sl, n.get(), 1_sl};
+   return detail::StrictArrayBase1D<detail::SequenceExpr1D<long int>>{0_sl, n.get(), 1_sl};
 }
 
 

@@ -23,7 +23,7 @@ namespace detail {
 
 
 template <typename Base>
-class GenArray1D;
+class StrictArray1D;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ public:
    STRICT_CONSTEXPR auto& resize_and_assign(OneDimBaseType auto const& A);
 
    // Optimized implementation.
-   STRICT_CONSTEXPR auto& resize_and_assign(GenArray1D<ArrayBase1D>&& A);
+   STRICT_CONSTEXPR auto& resize_and_assign(StrictArray1D<ArrayBase1D>&& A);
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    STRICT_CONSTEXPR auto& remove(ImplicitInt pos, ImplicitInt count = 1);
@@ -290,7 +290,7 @@ STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize(ImplicitInt n) {
       copyn(*this, tmp, mins(n_, n_new));
       this->swap(tmp);
    }
-   return static_cast<GenArray1D<ArrayBase1D>&>(*this);
+   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
 }
 
 
@@ -303,7 +303,7 @@ STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize_forget(ImplicitInt n) {
       ArrayBase1D tmp(n_new);
       this->swap(tmp);
    }
-   return static_cast<GenArray1D<ArrayBase1D>&>(*this);
+   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
 }
 
 
@@ -311,15 +311,15 @@ template <Builtin T, AlignmentFlag AF>
 STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize_and_assign(OneDimBaseType auto const& A) {
    ArrayBase1D tmp(A);
    this->swap(tmp);
-   return static_cast<GenArray1D<ArrayBase1D>&>(*this);
+   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
 }
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize_and_assign(GenArray1D<ArrayBase1D>&& A) {
+STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize_and_assign(StrictArray1D<ArrayBase1D>&& A) {
    this->swap(A);
    A.swap(ArrayBase1D{});
-   return static_cast<GenArray1D<ArrayBase1D>&>(*this);
+   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
 }
 
 
@@ -334,7 +334,7 @@ STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::remove(ImplicitInt pos, ImplicitInt c
    copyn(*this, tmp, pos.get());
    copyn(*this, tmp, pos.get() + count.get(), pos.get(), this->size() - pos.get() - count.get());
    this->swap(tmp);
-   return static_cast<GenArray1D<ArrayBase1D>&>(*this);
+   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
 }
 
 
@@ -387,7 +387,7 @@ STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::remove(const std::vector<ImplicitInt>
       this->swap(tmp);
    }
 
-   return static_cast<GenArray1D<ArrayBase1D>&>(*this);
+   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
 }
 
 
@@ -401,7 +401,7 @@ STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::insert(ImplicitInt pos, value_type x)
    copyn(*this, tmp, pos.get(), pos.get() + 1_sl, this->size() - pos.get());
 
    this->swap(tmp);
-   return static_cast<GenArray1D<ArrayBase1D>&>(*this);
+   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
 }
 
 
@@ -444,7 +444,7 @@ STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::insert(ImplicitInt pos, OneDimBaseTyp
    copyn(*this, tmp, pos.get(), pos.get() + A.size(), this->size() - pos.get());
 
    this->swap(tmp);
-   return static_cast<GenArray1D<ArrayBase1D>&>(*this);
+   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
 }
 
 
