@@ -180,11 +180,11 @@ public:
    STRICT_CONSTEXPR auto operator()(Slice slice) & {
       auto sh = slice_helper(*this, std::move(slice));
       if constexpr(NonConstBaseType<Base>) {
-         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{*this,
-                                                                                  std::move(sh)};
+         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+             *this, std::move(sh)};
       } else {
-         return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{*this,
-                                                                                    std::move(sh)};
+         return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+             *this, std::move(sh)};
       }
    }
 
@@ -204,8 +204,8 @@ public:
    template <SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice slice) const& {
       auto sh = slice_helper(*this, std::move(slice));
-      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{*this,
-                                                                                 std::move(sh)};
+      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+          *this, std::move(sh)};
    }
 
    STRICT_CONSTEXPR auto operator()(use::IndexList list) const& {

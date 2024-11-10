@@ -358,10 +358,12 @@ public:
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) & {
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(row_slice), std::move(col_slice));
       if constexpr(NonConstBaseType<Base>) {
-         return StrictArrayMutable2D<SliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+         return StrictArrayMutable2D<
+             SliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
              *this, std::move(s1h), std::move(s2h)};
       } else {
-         return StrictArrayBase2D<ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+         return StrictArrayBase2D<
+             ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
              *this, std::move(s1h), std::move(s2h)};
       }
    }
@@ -425,7 +427,8 @@ public:
    template <SliceType Slice1, SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) const& {
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(row_slice), std::move(col_slice));
-      return StrictArrayBase2D<ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+      return StrictArrayBase2D<
+          ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
           *this, std::move(s1h), std::move(s2h)};
    }
 
