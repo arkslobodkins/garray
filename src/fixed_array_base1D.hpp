@@ -22,10 +22,10 @@ public:
    static_assert(N.get() > -1_sl);
 
    // Constructors.
-   STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase1D();
+   STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D();
    STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase1D(value_type x);
    STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase1D(Value<T> x);
-   STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase1D(use::List1D<builtin_type> list);
+   STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D(use::List1D<builtin_type> list);
 
    template <LinearIteratorType L>
    STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase1D(L b, L e);

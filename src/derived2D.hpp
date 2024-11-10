@@ -836,8 +836,7 @@ public:
    using typename MutableBase2D::value_type;
 
    using GenArrayMutable2D<Base>::GenArrayMutable2D;
-   // Compiler would generate non-explicit default.
-   STRICT_NODISCARD_CONSTEXPR explicit GenArray2D() = default;
+   STRICT_NODISCARD_CONSTEXPR GenArray2D() = default;
    STRICT_NODISCARD_CONSTEXPR GenArray2D(const GenArray2D&) = default;
    STRICT_NODISCARD_CONSTEXPR GenArray2D(GenArray2D&&) = default;
 

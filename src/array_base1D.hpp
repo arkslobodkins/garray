@@ -34,7 +34,7 @@ public:
    using builtin_type = T;
 
    // Constructors.
-   STRICT_NODISCARD_CONSTEXPR explicit ArrayBase1D();
+   STRICT_NODISCARD_CONSTEXPR ArrayBase1D();
    STRICT_NODISCARD explicit ArrayBase1D(ImplicitInt n)
       requires(AF == Aligned);
    STRICT_NODISCARD_CONSTEXPR explicit ArrayBase1D(ImplicitInt n)
@@ -42,7 +42,7 @@ public:
    STRICT_NODISCARD_CONSTEXPR explicit ArrayBase1D(Size n);
    STRICT_NODISCARD_CONSTEXPR explicit ArrayBase1D(ImplicitInt n, value_type x);
    STRICT_NODISCARD_CONSTEXPR explicit ArrayBase1D(Size n, Value<T> x);
-   STRICT_NODISCARD_CONSTEXPR explicit ArrayBase1D(use::List1D<builtin_type> list);
+   STRICT_NODISCARD_CONSTEXPR ArrayBase1D(use::List1D<builtin_type> list);
 
    template <LinearIteratorType L>
    STRICT_NODISCARD_CONSTEXPR explicit ArrayBase1D(L b, L e);

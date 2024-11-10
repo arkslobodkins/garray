@@ -26,10 +26,12 @@ public:
    static_assert(semi_valid_row_col_sizes(M.get(), N.get()));
 
    // Constructors.
-   STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase2D() = default;
+   STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D() = default;
    STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase2D(value_type x);
    STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase2D(Value<T> x);
-   STRICT_NODISCARD_CONSTEXPR explicit FixedArrayBase2D(use::List2D<T> list);
+   STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D(use::List2D<builtin_type> list);
+   // Enforce parenthesis instead of braces.
+   STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D(use::List1D<builtin_type> list) = delete;
 
    STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D(const FixedArrayBase2D& A) = default;
    STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D(FixedArrayBase2D&& A) noexcept = default;
@@ -37,7 +39,7 @@ public:
 
    // Assignments.
    STRICT_CONSTEXPR FixedArrayBase2D& operator=(value_type x);
-   STRICT_CONSTEXPR FixedArrayBase2D& operator=(use::List2D<T> list);
+   STRICT_CONSTEXPR FixedArrayBase2D& operator=(use::List2D<builtin_type> list);
    STRICT_CONSTEXPR FixedArrayBase2D& operator=(const FixedArrayBase2D& A) = default;
    STRICT_CONSTEXPR FixedArrayBase2D& operator=(FixedArrayBase2D&& A) noexcept = default;
    STRICT_CONSTEXPR FixedArrayBase2D& operator=(TwoDimBaseType auto const& A);
@@ -82,7 +84,8 @@ STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N>::FixedArrayBase2D(Value<T> 
 
 
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N>::FixedArrayBase2D(use::List2D<T> list) {
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N>::FixedArrayBase2D(
+    use::List2D<builtin_type> list) {
    ASSERT_STRICT_DEBUG(valid_list2D(list));
    auto [nrows, ncols] = list2D_row_col_sizes(list);
    ASSERT_STRICT_DEBUG(this->rows() == nrows);

@@ -478,8 +478,7 @@ public:
    using typename MutableBase1D::value_type;
 
    using GenArrayMutable1D<Base>::GenArrayMutable1D;
-   // Compiler would generate non-explicit default.
-   STRICT_NODISCARD_CONSTEXPR explicit GenArray1D() = default;
+   STRICT_NODISCARD_CONSTEXPR GenArray1D() = default;
    STRICT_NODISCARD_CONSTEXPR GenArray1D(const GenArray1D&) = default;
    STRICT_NODISCARD_CONSTEXPR GenArray1D(GenArray1D&&) = default;
 
