@@ -168,10 +168,8 @@ STRICT_NODISCARD_CONSTEXPR ArrayBase2D<T, AF>::ArrayBase2D(Rows m, Cols n, Value
 
 template <Builtin T, AlignmentFlag AF>
 STRICT_NODISCARD_CONSTEXPR ArrayBase2D<T, AF>::ArrayBase2D(use::List2D<builtin_type> list)
-    : ArrayBase2D{} {
+    : ArrayBase2D(list2D_row_col_sizes(list).first, list2D_row_col_sizes(list).second) {
    ASSERT_STRICT_DEBUG(valid_list2D(list));
-   auto [nrows, ncols] = list2D_row_col_sizes(list);
-   this->resize_forget(nrows, ncols);
    copy(list, *this);
 }
 
@@ -192,7 +190,7 @@ STRICT_CONSTEXPR ArrayBase2D<T, AF>& ArrayBase2D<T, AF>::operator=(value_type x)
 
 template <Builtin T, AlignmentFlag AF>
 STRICT_CONSTEXPR ArrayBase2D<T, AF>& ArrayBase2D<T, AF>::operator=(use::List2D<builtin_type> list) {
-   ArrayBase2D tmp{list};
+   ArrayBase2D tmp(list);
    ASSERT_STRICT_DEBUG(same_size(*this, tmp));
    return *this = std::move(tmp);
 }
@@ -208,7 +206,7 @@ STRICT_CONSTEXPR ArrayBase2D<T, AF>& ArrayBase2D<T, AF>::operator=(const ArrayBa
 
 template <Builtin T, AlignmentFlag AF>
 STRICT_CONSTEXPR ArrayBase2D<T, AF>& ArrayBase2D<T, AF>::operator=(ArrayBase2D&& A) noexcept {
-   ASSERT_STRICT_DEBUG(same_size(*this, A));
+   NORMAL_ASSERT_STRICT_DEBUG(same_size(*this, A));
    A.dims_ = 0_sl;
    data1D_ = std::move(A.data1D_);
    return *this;
