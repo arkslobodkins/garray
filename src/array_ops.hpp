@@ -316,7 +316,8 @@ STRICT_CONSTEXPR ValueTypeOf<Base> sum(const Base& A) {
    index_t nblocks = A.size() / block_size;
    index_t rem = A.size() % block_size;
 
-   Array1D<RealTypeOf<Base>> sb(nblocks);
+   //Unaligned array is used to preserve constexpr.
+   Array1D<RealTypeOf<Base>, Unaligned> sb(nblocks);
    for(index_t i = 0_sl; i < nblocks; ++i) {
       for(index_t j = 0_sl; j < block_size; ++j) {
          sb[i] += A.un(i * block_size + j);

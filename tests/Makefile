@@ -1,7 +1,7 @@
 compiler = gcc
 debug = 0
 
-all: info fixed_array1D array1D array_stable_ops error_tools array_1Dvs2D
+all: info fixed_array1D array1D array_stable_ops error_tools array_1Dvs2D constexpr
 
 
 ifeq ($(compiler), gcc)
@@ -62,6 +62,9 @@ error_tools: error_tools.cpp
 
 array_1Dvs2D: array_1Dvs2D.cpp
 	$(CXX) $(CXXFLAGS) array_1Dvs2D.cpp -o array_1Dvs2D.x $(LFLAGS)
+
+constexpr: constexpr.cpp
+	$(CXX) $(CXXFLAGS) constexpr.cpp -o constexpr.x $(LFLAGS)
 
 clean:
 	rm -rf *.x *.txt
