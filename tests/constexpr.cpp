@@ -200,11 +200,63 @@ consteval void fixed_array2D() {
 }
 
 
+template <typename T>
+consteval void array_ops() {
+   Array2D<T, Unaligned> x(3, 2);
+
+   sum(x);
+   prod(x);
+   mean(x);
+   min(x);
+   max(x);
+   min_index(x);
+   max_index(x);
+   dot_prod(x, x);
+   norm_inf(x);
+   norm1(x);
+   norm1_scaled(x);
+   polynomial(x.view1D(), Zero<T>);
+
+   has_zero(x);
+   all_zeros(x);
+   all_pos(x);
+   all_neg(x);
+   all_non_pos(x);
+   all_non_neg(x);
+
+   none_of(x, Zero<T>);
+   any_of(x, Zero<T>);
+   all_of(x, Zero<T>);
+   none_of(x, [](auto z) { return true_sb; });
+   any_of(x, [](auto z) { return true_sb; });
+   all_of(x, [](auto z) { return true_sb; });
+
+   in_open_range(x.view1D(), Zero<T>, One<T>);
+   in_closed_range(x.view1D(), Zero<T>, One<T>);
+   in_cond_range(x.view1D(), [](auto z) { return true_sb; });
+   in_open_range(x.view1D(), Low{Zero<T>}, High{One<T>});
+   in_closed_range(x.view1D(), Low{Zero<T>}, High{One<T>});
+
+   for_each(x, [](auto z) {});
+   sort(x, [](auto z1, auto z2) { return z1 < z2; });
+   sort_increasing(x);
+   sort_decreasing(x);
+
+#if __cplusplus >= 202302L
+   all_finite(x);
+   has_inf(x);
+   has_nan(x);
+   blas_array(x);
+#endif
+}
+
+
 int main() {
    TEST_ALL_TYPES(array1D);
    TEST_ALL_TYPES(fixed_array1D);
    TEST_ALL_TYPES(array2D);
    TEST_ALL_TYPES(fixed_array2D);
+   TEST_ALL_FLOAT_TYPES(array_ops);
    return EXIT_SUCCESS;
 }
 

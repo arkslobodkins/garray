@@ -10,14 +10,14 @@ using namespace spp;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T, ImplicitIntStatic n>
-void run_constr_default() {
+consteval void run_constr_default() {
    constexpr FixedArray1D<T, n> A;
    ASSERT(A.size() == n.get());
 }
 
 
 template <Builtin T, ImplicitIntStatic n>
-void run_constr_value() {
+consteval void run_constr_value() {
    constexpr FixedArray1D<T, n> A1(One<T>);
    ASSERT(A1.size() == n.get());
    ASSERT(all_of(A1, One<T>));
@@ -29,7 +29,7 @@ void run_constr_value() {
 
 
 template <Builtin T>
-void run_constr_list() {
+consteval void run_constr_list() {
    constexpr auto x0 = Zero<T>;
    constexpr auto x1 = One<T>;
    constexpr FixedArray1D<T, 4> A{x0, x0, x1, x1};
@@ -47,8 +47,8 @@ void run_constr_list_fail() {
 
 
 template <Builtin T, ImplicitIntStatic n>
-void run_constr_iterator() {
-   FixedArray1D<T, n> A1 = random<T>(n);
+consteval void run_constr_iterator() {
+   FixedArray1D<T, n> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2(A1.begin(), A1.end());
    ASSERT(A1 == A2);
 }
@@ -64,16 +64,16 @@ void run_constr_iterator_fail() {
 
 
 template <Builtin T, ImplicitIntStatic n>
-void run_constr_copy() {
-   FixedArray1D<T, n> A1 = random<T>(n);
+consteval void run_constr_copy() {
+   FixedArray1D<T, n> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2 = A1;
    ASSERT(A1 == A2);
 }
 
 
 template <Builtin T, ImplicitIntStatic n>
-void run_constr_move() {
-   FixedArray1D<T, n> A1 = random<T>(n);
+consteval void run_constr_move() {
+   FixedArray1D<T, n> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2 = A1;
    FixedArray1D<T, n> A3 = std::move(A1);
    ASSERT(A2 == A3);
@@ -82,8 +82,8 @@ void run_constr_move() {
 
 
 template <Builtin T, ImplicitIntStatic n>
-void run_constr_copy_other() {
-   FixedArray1D<T, n> A1 = random<T>(n);
+consteval void run_constr_copy_other() {
+   FixedArray1D<T, n> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2 = A1.view1D();
    ASSERT(A1 == A2);
 }
@@ -91,7 +91,7 @@ void run_constr_copy_other() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T, ImplicitIntStatic n>
-void run_assign_value() {
+consteval void run_assign_value() {
    FixedArray1D<T, n> A;
    A = One<T>;
    ASSERT(all_of(A, One<T>));
@@ -99,7 +99,7 @@ void run_assign_value() {
 
 
 template <Builtin T>
-void run_assign_list() {
+consteval void run_assign_list() {
    auto x0 = Zero<T>;
    auto x1 = One<T>;
    FixedArray1D<T, 4> A;
@@ -112,8 +112,8 @@ void run_assign_list() {
 
 
 template <Builtin T, ImplicitIntStatic n>
-void run_assign_copy() {
-   FixedArray1D<T, n> A1 = random<T>(n);
+consteval void run_assign_copy() {
+   FixedArray1D<T, n> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2;
    A2 = A1;
    ASSERT(A1 == A2);
@@ -121,8 +121,8 @@ void run_assign_copy() {
 
 
 template <Builtin T, ImplicitIntStatic n>
-void run_assign_move() {
-   FixedArray1D<T, n> A1 = random<T>(n);
+consteval void run_assign_move() {
+   FixedArray1D<T, n> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2 = A1;
    FixedArray1D<T, n> A3;
    A3 = std::move(A1);
@@ -137,8 +137,8 @@ void run_assign_move() {
 
 
 template <Builtin T, ImplicitIntStatic n>
-void run_assign_copy_other() {
-   Array1D<T> A1 = random<T>(n);
+consteval void run_assign_copy_other() {
+   Array1D<T, Unaligned> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2;
    A2 = A1;
    ASSERT(A1 == A2);
@@ -148,7 +148,7 @@ void run_assign_copy_other() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 void fixed_array_constructor() {
-   constexpr index_t n = 100_sl;
+   constexpr index_t n = 10_sl;
    run_constr_default<T, n>();
    run_constr_value<T, n>();
    run_constr_list<T>();
@@ -165,7 +165,7 @@ void fixed_array_constructor() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 void fixed_array_assignment() {
-   constexpr index_t n = 100_sl;
+   constexpr index_t n = 10_sl;
    run_assign_value<T, n>();
    run_assign_list<T>();
    run_assign_copy<T, n>();
@@ -177,7 +177,7 @@ void fixed_array_assignment() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 void fixed_array_data() {
-   constexpr index_t n = 100_sl;
+   constexpr index_t n = 10_sl;
    FixedArray1D<T, n> A1(One<T>);
    const FixedArray1D<T, n> A2(One<T>);
 
