@@ -176,10 +176,35 @@ consteval void array2D() {
 }
 
 
+template <typename T>
+consteval void fixed_array2D() {
+   FixedArray2D<T, 2, 2>{};
+   FixedArray2D<T, 2, 2>(Zero<T>);
+   FixedArray2D<T, 2, 2>(Value{Zero<T>});
+   FixedArray2D<T, 2, 2>{{Zero<T>, Zero<T>}, {Zero<T>, Zero<T>}};
+
+   FixedArray2D<T, 2, 2> A;
+   FixedArray2D<T, 2, 2> B = A;
+   FixedArray2D<T, 2, 2> C = const2D<T>(2, 2, Zero<T>);
+   FixedArray2D<T, 2, 2> D = std::move(A);
+
+   D = Zero<T>;
+   D = {{Zero<T>, Zero<T>}, {Zero<T>, Zero<T>}};
+   D = B;
+   D = const2D<T>(2, 2, Zero<T>);
+   D = std::move(B);
+
+   D.size();
+   D.un(0);
+   D.data();
+}
+
+
 int main() {
    TEST_ALL_TYPES(array1D);
    TEST_ALL_TYPES(fixed_array1D);
    TEST_ALL_TYPES(array2D);
+   TEST_ALL_TYPES(fixed_array2D);
    return EXIT_SUCCESS;
 }
 

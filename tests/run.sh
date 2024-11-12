@@ -4,7 +4,7 @@ var=$1
 mode=$2
 
 if [ "$var" == "" ]; then
-   var="gcc"
+   var="clang"
 fi
 
 if [ "$mode" == "" ]; then

@@ -115,7 +115,7 @@ STRICT_CONSTEXPR FixedArrayBase2D<T, M, N>& FixedArrayBase2D<T, M, N>::operator=
     use::List2D<T> list) {
    // Constructor of temp checks that list is valid and that it is of size M x N, same_size not
    // needed.
-   FixedArrayBase2D temp{list};
+   FixedArrayBase2D temp(list);
    return *this = temp;
 }
 

@@ -1,4 +1,4 @@
-compiler = gcc
+compiler = clang
 debug = 0
 
 all: info fixed_array1D array1D array_stable_ops error_tools array_1Dvs2D constexpr
