@@ -11,10 +11,10 @@ using namespace spp;
 template <typename T>
 consteval void array1D() {
    Array1D<T, Unaligned>{};
-   Array1D<T, Unaligned>(10);
-   Array1D<T, Unaligned>(Size{10});
-   Array1D<T, Unaligned>(10, Zero<T>);
-   Array1D<T, Unaligned>(Size{10}, Value{Zero<T>});
+   Array1D<T, Unaligned>(2);
+   Array1D<T, Unaligned>(Size{2});
+   Array1D<T, Unaligned>(2, Zero<T>);
+   Array1D<T, Unaligned>(Size{2}, Value{Zero<T>});
    Array1D<T, Unaligned>{Zero<T>};
 
    Array1D<T, Unaligned> A(2);
@@ -33,8 +33,8 @@ consteval void array1D() {
    E.swap(std::move(C));
    E.resize_and_assign(C);
    E.resize_and_assign(std::move(C));
-   E.resize(100);
-   E.resize_forget(100);
+   E.resize(20);
+   E.resize_forget(20);
 
    E.remove(0);
    E.remove(0, 1);
@@ -94,10 +94,10 @@ consteval void fixed_array1D() {
 template <typename T>
 consteval void array2D() {
    Array2D<T, Unaligned>{};
-   Array2D<T, Unaligned>(10, 10);
-   Array2D<T, Unaligned>(Rows{10}, Cols{10});
-   Array2D<T, Unaligned>(10, 10, Zero<T>);
-   Array2D<T, Unaligned>(Rows{10}, Cols{10}, Value{Zero<T>});
+   Array2D<T, Unaligned>(2, 2);
+   Array2D<T, Unaligned>(Rows{2}, Cols{2});
+   Array2D<T, Unaligned>(2, 2, Zero<T>);
+   Array2D<T, Unaligned>(Rows{2}, Cols{2}, Value{Zero<T>});
    Array2D<T, Unaligned>{{Zero<T>, Zero<T>}, {Zero<T>, Zero<T>}};
 
    Array2D<T, Unaligned> A(2, 2);
