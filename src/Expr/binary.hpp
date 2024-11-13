@@ -172,95 +172,122 @@ auto pow_prod(Base1&& A1, Base2&& A2) = delete;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Binary operations(scalars on the left).
 template <RealBaseType Base>
-STRICT_CONSTEXPR auto operator+(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator+(ValueTypeOf<Base> x, const Base& A);
 
 
 template <RealBaseType Base>
-STRICT_CONSTEXPR auto operator-(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator-(ValueTypeOf<Base> x, const Base& A);
 
 
 template <RealBaseType Base>
-STRICT_CONSTEXPR auto operator*(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator*(ValueTypeOf<Base> x, const Base& A);
 
 
 template <RealBaseType Base>
-STRICT_CONSTEXPR auto operator/(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator/(ValueTypeOf<Base> x, const Base& A);
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator%(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator%(ValueTypeOf<Base> x, const Base& A);
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator<<(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator<<(ValueTypeOf<Base> x, const Base& A);
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator>>(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator>>(ValueTypeOf<Base> x, const Base& A);
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator&(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator&(ValueTypeOf<Base> x, const Base& A);
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator|(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator|(ValueTypeOf<Base> x, const Base& A);
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, const Base& A2);
+STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, const Base& A);
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator&&(ValueTypeOf<Base> x, const Base& A);
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator||(ValueTypeOf<Base> x, const Base& A);
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, const Base& A);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Deleted overloads.
 template <typename Base>
    requires detail::ArrayRealTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator+(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator+(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayRealTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator-(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator-(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayRealTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator*(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator*(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayRealTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator/(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator/(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayIntegerTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator%(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator%(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayIntegerTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator<<(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator<<(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayIntegerTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator>>(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator>>(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayIntegerTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator&(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator&(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayIntegerTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator|(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator|(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 template <typename Base>
    requires detail::ArrayIntegerTypeRvalue<Base>
-STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, Base&& A2) = delete;
+STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, Base&& A) = delete;
+
+
+template <typename Base>
+   requires detail::ArrayBooleanTypeRvalue<Base>
+STRICT_CONSTEXPR auto operator&&(ValueTypeOf<Base> x, Base&& A) = delete;
+
+
+template <typename Base>
+   requires detail::ArrayBooleanTypeRvalue<Base>
+STRICT_CONSTEXPR auto operator||(ValueTypeOf<Base> x, Base&& A) = delete;
+
+
+template <typename Base>
+   requires detail::ArrayBooleanTypeRvalue<Base>
+STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, Base&& A) = delete;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -302,6 +329,18 @@ STRICT_CONSTEXPR auto operator|(const Base& A, ValueTypeOf<Base> x);
 
 
 template <IntegerBaseType Base>
+STRICT_CONSTEXPR auto operator^(const Base& A, ValueTypeOf<Base> x);
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator&&(const Base& A, ValueTypeOf<Base> x);
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator||(const Base& A, ValueTypeOf<Base> x);
+
+
+template <BooleanBaseType Base>
 STRICT_CONSTEXPR auto operator^(const Base& A, ValueTypeOf<Base> x);
 
 
@@ -354,6 +393,21 @@ STRICT_CONSTEXPR auto operator|(Base&& A, ValueTypeOf<Base> x) = delete;
 
 template <typename Base>
    requires detail::ArrayIntegerTypeRvalue<Base>
+STRICT_CONSTEXPR auto operator^(Base&& A, ValueTypeOf<Base> x) = delete;
+
+
+template <typename Base>
+   requires detail::ArrayBooleanTypeRvalue<Base>
+STRICT_CONSTEXPR auto operator&&(Base&& A, ValueTypeOf<Base> x) = delete;
+
+
+template <typename Base>
+   requires detail::ArrayBooleanTypeRvalue<Base>
+STRICT_CONSTEXPR auto operator||(Base&& A, ValueTypeOf<Base> x) = delete;
+
+
+template <typename Base>
+   requires detail::ArrayBooleanTypeRvalue<Base>
 STRICT_CONSTEXPR auto operator^(Base&& A, ValueTypeOf<Base> x) = delete;
 
 
@@ -481,62 +535,80 @@ auto pow_prod(const Base1& A1, const Base2& A2) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <RealBaseType Base>
-STRICT_CONSTEXPR auto operator+(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryPlus{});
+STRICT_CONSTEXPR auto operator+(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryPlus{});
 }
 
 
 template <RealBaseType Base>
-STRICT_CONSTEXPR auto operator-(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryMinus{});
+STRICT_CONSTEXPR auto operator-(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryMinus{});
 }
 
 
 template <RealBaseType Base>
-STRICT_CONSTEXPR auto operator*(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryMult{});
+STRICT_CONSTEXPR auto operator*(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryMult{});
 }
 
 
 template <RealBaseType Base>
-STRICT_CONSTEXPR auto operator/(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryDivide{});
+STRICT_CONSTEXPR auto operator/(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryDivide{});
 }
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator%(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryModulo{});
+STRICT_CONSTEXPR auto operator%(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryModulo{});
 }
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator<<(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryRightShift{});
+STRICT_CONSTEXPR auto operator<<(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryRightShift{});
 }
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator>>(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryLeftShift{});
+STRICT_CONSTEXPR auto operator>>(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryLeftShift{});
 }
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator&(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryBitwiseAnd{});
+STRICT_CONSTEXPR auto operator&(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryBitwiseAnd{});
 }
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator|(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryBitwiseOr{});
+STRICT_CONSTEXPR auto operator|(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryBitwiseOr{});
 }
 
 
 template <IntegerBaseType Base>
-STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, const Base& A2) {
-   return generate(detail::generate_const(A2, x), A2, expr::BinaryBitwiseXor{});
+STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryBitwiseXor{});
+}
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator&&(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryBooleanAnd{});
+}
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator||(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryBooleanOr{});
+}
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator^(ValueTypeOf<Base> x, const Base& A) {
+   return generate(detail::generate_const(A, x), A, expr::BinaryBooleanXor{});
 }
 
 
@@ -598,6 +670,24 @@ STRICT_CONSTEXPR auto operator|(const Base& A, ValueTypeOf<Base> x) {
 template <IntegerBaseType Base>
 STRICT_CONSTEXPR auto operator^(const Base& A, ValueTypeOf<Base> x) {
    return generate(A, detail::generate_const(A, x), expr::BinaryBitwiseXor{});
+}
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator&&(const Base& A, ValueTypeOf<Base> x) {
+   return generate(A, detail::generate_const(A, x), expr::BinaryBooleanAnd{});
+}
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator||(const Base& A, ValueTypeOf<Base> x) {
+   return generate(A, detail::generate_const(A, x), expr::BinaryBooleanOr{});
+}
+
+
+template <BooleanBaseType Base>
+STRICT_CONSTEXPR auto operator^(const Base& A, ValueTypeOf<Base> x) {
+   return generate(A, detail::generate_const(A, x), expr::BinaryBooleanXor{});
 }
 
 

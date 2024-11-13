@@ -251,12 +251,84 @@ consteval void array_ops() {
 }
 
 
+template <typename T>
+consteval void expr_ops() {
+   Array2D<T, Unaligned> x(3, 2, One<T>);
+
+   if constexpr(!Boolean<T>) {
+      +x;
+      -x;
+      abs(x);
+      array_cast<int>(x);
+
+      x + One<T>;
+      x - One<T>;
+      x * One<T>;
+      x / One<T>;
+
+      One<T> + x;
+      One<T> - x;
+      One<T> * x;
+      One<T> / x;
+
+      x + x;
+      x - x;
+      x * x;
+      x / x;
+
+      if constexpr(Integer<T>) {
+         ~x;
+         x % One<T>;
+         x << One<T>;
+         x >> One<T>;
+         x & One<T>;
+         x | One<T>;
+         x ^ One<T>;
+
+         One<T> % x;
+         One<T> << x;
+         One<T> >> x;
+         One<T> & x;
+         One<T> | x;
+         One<T> ^ x;
+
+         x % x;
+         x << x;
+         x >> x;
+         x & x;
+         x | x;
+         x ^ x;
+      }
+
+      if constexpr(Floating<T>) {
+         fast_pow_int(x, 2);
+         inv(x);
+      }
+   } else {
+      !x;
+
+      x && true_sb;
+      x || true_sb;
+      x ^ true_sb;
+
+      true_sb && x;
+      true_sb || x;
+      true_sb ^ x;
+
+      x && x;
+      x || x;
+      x ^ x;
+   }
+}
+
+
 int main() {
    TEST_ALL_TYPES(array1D);
    TEST_ALL_TYPES(fixed_array1D);
    TEST_ALL_TYPES(array2D);
    TEST_ALL_TYPES(fixed_array2D);
    TEST_ALL_FLOAT_TYPES(array_ops);
+   TEST_ALL_TYPES(expr_ops);
    return EXIT_SUCCESS;
 }
 
