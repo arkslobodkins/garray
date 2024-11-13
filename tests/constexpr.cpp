@@ -263,17 +263,17 @@ consteval void expr_ops() {
 
       x + One<T>;
       x - One<T>;
-      x * One<T>;
+      x* One<T>;
       x / One<T>;
 
       One<T> + x;
       One<T> - x;
-      One<T> * x;
+      One<T>* x;
       One<T> / x;
 
       x + x;
       x - x;
-      x * x;
+      x* x;
       x / x;
 
       e_unit<T>(0, 2);
@@ -284,14 +284,14 @@ consteval void expr_ops() {
          x % One<T>;
          x << One<T>;
          x >> One<T>;
-         x & One<T>;
+         x& One<T>;
          x | One<T>;
          x ^ One<T>;
 
          One<T> % x;
          One<T> << x;
          One<T> >> x;
-         One<T> & x;
+         One<T>& x;
          One<T> | x;
          One<T> ^ x;
 
@@ -312,15 +312,15 @@ consteval void expr_ops() {
    } else {
       !x;
 
-      x && true_sb;
+      x&& true_sb;
       x || true_sb;
       x ^ true_sb;
 
-      true_sb && x;
+      true_sb&& x;
       true_sb || x;
       true_sb ^ x;
 
-      x && x;
+      x&& x;
       x || x;
       x ^ x;
    }
@@ -389,6 +389,111 @@ consteval void derived2D() {
 }
 
 
+template <typename T>
+consteval void slice_ops_1D() {
+   Array1D<T, Unaligned> x(5);
+   const Array1D<T, Unaligned> xc(5);
+
+   x.view1D();
+   xc.view1D();
+   x.view2D(1, 5);
+   xc.view2D(1, 5);
+
+   x({0, 1, 2});
+   xc({0, 1, 2});
+
+   x(seq{0, 2});
+   xc(seq{0, 2});
+
+   x(seqN{0, 2});
+   xc(seqN{0, 2});
+
+   x(place::skipN{2});
+   xc(place::skipN{2});
+
+   x(place::firstN{2});
+   xc(place::firstN{2});
+
+   x(place::lastN{2});
+   xc(place::lastN{2});
+
+   x(place::complement({0}));
+   xc(place::complement({0}));
+
+   x(place::even);
+   xc(place::even);
+
+   x(place::odd);
+   xc(place::odd);
+
+   x(place::reverse);
+   xc(place::reverse);
+}
+
+
+template <typename T>
+consteval void slice_ops_2D() {
+   Array2D<T, Unaligned> x(5, 5);
+   const Array2D<T, Unaligned> xc(5, 5);
+
+   x.view1D();
+   xc.view1D();
+   x.view2D(25, 1);
+   xc.view2D(25, 1);
+
+   x({0, 1, 2}, {0, 1, 2});
+   xc({0, 1, 2}, {0, 1, 2});
+
+   x(seq{0, 2}, seq{0, 2});
+   xc(seq{0, 2}, seq{0, 2});
+
+   x(seqN{0, 2}, seqN{0, 2});
+   xc(seqN{0, 2}, seqN{0, 2});
+
+   x(place::skipN{2}, place::skipN{2});
+   xc(place::skipN{2}, place::skipN{2});
+
+   x(place::firstN{2}, place::firstN{2});
+   xc(place::firstN{2}, place::firstN{2});
+
+   x(place::lastN{2}, place::lastN{2});
+   xc(place::lastN{2}, place::lastN{2});
+
+   x(place::complement{0}, place::complement{0});
+   xc(place::complement{0}, place::complement{0});
+
+   x(place::even, place::even);
+   xc(place::even, place::even);
+
+   x(place::odd, place::odd);
+   xc(place::odd, place::odd);
+
+   x(place::reverse, place::reverse);
+   xc(place::reverse, place::reverse);
+
+   x.row(0);
+   xc.row(0);
+
+   x.col(0);
+   xc.col(0);
+
+   x.diag();
+   xc.diag();
+
+   x.diag(1);
+   xc.diag(1);
+
+   x.rows({0, 1});
+   x.cols({0, 1});
+
+   x.block(0, 0, 2, 2);
+   xc.block(0, 0, 2, 2);
+
+   x.blockN(0, 0, 2, 2);
+   xc.blockN(0, 0, 2, 2);
+}
+
+
 int main() {
    TEST_ALL_TYPES(array1D);
    TEST_ALL_TYPES(fixed_array1D);
@@ -398,6 +503,8 @@ int main() {
    TEST_ALL_TYPES(expr_ops);
    TEST_ALL_TYPES(derived1D);
    TEST_ALL_TYPES(derived2D);
+   TEST_ALL_TYPES(slice_ops_1D);
+   TEST_ALL_TYPES(slice_ops_2D);
    return EXIT_SUCCESS;
 }
 
