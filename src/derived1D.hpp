@@ -274,7 +274,8 @@ public:
 
    //  Return unaligned array so that it can be constexpr.
    STRICT_NODISCARD_CONSTEXPR Array1D<builtin_type, Unaligned> eval() const& {
-      return Array1D<builtin_type, Unaligned>(*this);
+      // Workaround for "inherited constructor cannot be used to copy object".
+      return (*this)(place::all);
    }
 
    STRICT_CONSTEXPR static index_t dimension() {

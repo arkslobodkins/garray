@@ -335,6 +335,60 @@ consteval void expr_ops() {
 }
 
 
+template <typename T>
+consteval void derived1D() {
+   Array1D<T, Unaligned> x(10);
+   x[0];
+   x.at(0);
+   x.empty();
+   x.size_m1();
+
+   x.begin();
+   x.end();
+   x.cbegin();
+   x.cend();
+   x.rbegin();
+   x.rend();
+   x.crbegin();
+   x.crend();
+
+   x.view1D();
+   x.view2D(2, 5);
+   x.dimension();
+
+   std::move(x).lval();
+   x.eval();
+}
+
+
+template <typename T>
+consteval void derived2D() {
+   Array2D<T, Unaligned> x(5, 2);
+   x(0, 0);
+   x.at(0, 0);
+   x.empty();
+   x.size_m1();
+   x.rows();
+   x.cols();
+
+   x.begin();
+   x.end();
+   x.cbegin();
+   x.cend();
+   x.rbegin();
+   x.rend();
+   x.crbegin();
+   x.crend();
+
+   x.view1D();
+   x.view2D(2, 5);
+   x.dimension();
+
+   std::move(x).lval();
+   x.eval();
+}
+
+
 int main() {
    TEST_ALL_TYPES(array1D);
    TEST_ALL_TYPES(fixed_array1D);
@@ -342,6 +396,8 @@ int main() {
    TEST_ALL_TYPES(fixed_array2D);
    TEST_ALL_FLOAT_TYPES(array_ops);
    TEST_ALL_TYPES(expr_ops);
+   TEST_ALL_TYPES(derived1D);
+   TEST_ALL_TYPES(derived2D);
    return EXIT_SUCCESS;
 }
 
