@@ -185,7 +185,7 @@ consteval void fixed_array2D() {
 
    FixedArray2D<T, 2, 2> A;
    FixedArray2D<T, 2, 2> B = A;
-   FixedArray2D<T, 2, 2> C = const2D<T>(2, 2, Zero<T>);
+   [[maybe_unused]] FixedArray2D<T, 2, 2> C = const2D<T>(2, 2, Zero<T>);
    FixedArray2D<T, 2, 2> D = std::move(A);
 
    D = Zero<T>;
@@ -227,17 +227,17 @@ consteval void array_ops() {
    none_of(x, Zero<T>);
    any_of(x, Zero<T>);
    all_of(x, Zero<T>);
-   none_of(x, [](auto z) { return true_sb; });
-   any_of(x, [](auto z) { return true_sb; });
-   all_of(x, [](auto z) { return true_sb; });
+   none_of(x, []([[maybe_unused]] auto z) { return true_sb; });
+   any_of(x, []([[maybe_unused]] auto z) { return true_sb; });
+   all_of(x, []([[maybe_unused]] auto z) { return true_sb; });
 
    in_open_range(x.view1D(), Zero<T>, One<T>);
    in_closed_range(x.view1D(), Zero<T>, One<T>);
-   in_cond_range(x.view1D(), [](auto z) { return true_sb; });
+   in_cond_range(x.view1D(), []([[maybe_unused]] auto z) { return true_sb; });
    in_open_range(x.view1D(), Low{Zero<T>}, High{One<T>});
    in_closed_range(x.view1D(), Low{Zero<T>}, High{One<T>});
 
-   for_each(x, [](auto z) {});
+   for_each(x, []([[maybe_unused]] auto z) {});
    sort(x, [](auto z1, auto z2) { return z1 < z2; });
    sort_increasing(x);
    sort_decreasing(x);
@@ -276,6 +276,9 @@ consteval void expr_ops() {
       x * x;
       x / x;
 
+      e_unit<T>(0, 2);
+      identity<T>(2);
+
       if constexpr(Integer<T>) {
          ~x;
          x % One<T>;
@@ -303,6 +306,8 @@ consteval void expr_ops() {
       if constexpr(Floating<T>) {
          fast_pow_int(x, 2);
          inv(x);
+         linspace<T>(4, Zero<T>, One<T>);
+         sequence<T>(4, Zero<T>, One<T>);
       }
    } else {
       !x;
@@ -319,6 +324,14 @@ consteval void expr_ops() {
       x || x;
       x ^ x;
    }
+
+   merge(x.view1D(), x.view1D(), x.view1D());
+   merge(x.view1D(), One<T>, One<T>);
+   merge(One<T>, One<T>, x.view1D());
+   exclude(x.view1D(), 0);
+   exclude(x.view1D(), last);
+   const1D<T>(2, One<T>);
+   const2D<T>(2, 2, One<T>);
 }
 
 
