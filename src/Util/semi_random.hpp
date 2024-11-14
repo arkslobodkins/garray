@@ -84,6 +84,17 @@ constexpr auto semi_random(ImplicitInt n, Strict<T> low, Strict<T> high, Strict<
 }
 
 
+template <Builtin T>
+constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high,
+                           Strict<unsigned> seed) {
+   ASSERT_STRICT_DEBUG(low <= high);
+   SemiGenerator<T> g{seed + n.get().sui(), low, high};
+   auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
+   return generate<decltype(const2D<T>(m, n, Zero<T>)), decltype(G), true>(
+       const2D<T>(m, n, Zero<T>), G);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 constexpr Strict<T> semi_rands_not0(Strict<T> low, Strict<T> high, Strict<unsigned> seed) {
@@ -133,6 +144,25 @@ constexpr auto semi_random_not0(ImplicitInt n, Strict<T> low, Strict<T> high,
       }
    };
    return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
+}
+
+
+template <Real T>
+constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high,
+                                Strict<unsigned> seed) {
+   ASSERT_STRICT_DEBUG(low <= high);
+   ASSERT_STRICT_DEBUG(!(low == Zero<T> && high == Zero<T>));
+
+   SemiGenerator<T> g{seed + n.get().sui(), low, high};
+   auto G = [g]([[maybe_unused]] auto x) {
+      while(true) {
+         if(auto r = g.random(); r != Zero<T>) {
+            return r;
+         }
+      }
+   };
+   return generate<decltype(const2D<T>(m, n, Zero<T>)), decltype(G), true>(
+       const2D<T>(m, n, Zero<T>), G);
 }
 
 
@@ -260,6 +290,32 @@ constexpr auto semi_random(Size n, Strict<unsigned> seed = One<unsigned>) {
 }
 
 
+template <Real T>
+constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high,
+                           Strict<unsigned> seed = One<unsigned>) {
+   return detail::semi_random<T>(m, n, low, high, seed);
+}
+
+
+template <Real T>
+constexpr auto semi_random(Rows m, Cols n, Low<T> low, High<T> high,
+                           Strict<unsigned> seed = One<unsigned>) {
+   return semi_random<T>(m.get(), n.get(), low.get(), high.get(), seed);
+}
+
+
+template <Builtin T>
+constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Strict<unsigned> seed = One<unsigned>) {
+   return detail::semi_random<T>(m, n, Zero<T>, One<T>, seed);
+}
+
+
+template <Builtin T>
+constexpr auto semi_random(Rows m, Cols n, Strict<unsigned> seed = One<unsigned>) {
+   return semi_random<T>(m.get(), n.get(), seed);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 constexpr auto semi_random_not0(ImplicitInt n, Strict<T> low, Strict<T> high,
@@ -284,6 +340,33 @@ constexpr auto semi_random_not0(ImplicitInt n, Strict<unsigned> seed = One<unsig
 template <Real T>
 constexpr auto semi_random_not0(Size n, Strict<unsigned> seed = One<unsigned>) {
    return semi_random_not0<T>(n.get(), seed);
+}
+
+
+template <Real T>
+constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high,
+                                Strict<unsigned> seed = One<unsigned>) {
+   return detail::semi_random_not0<T>(m, n, low, high, seed);
+}
+
+
+template <Real T>
+constexpr auto semi_random_not0(Rows m, Cols n, Low<T> low, High<T> high,
+                                Strict<unsigned> seed = One<unsigned>) {
+   return semi_random_not0<T>(m.get(), n.get(), low.get(), high.get(), seed);
+}
+
+
+template <Real T>
+constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n,
+                                Strict<unsigned> seed = One<unsigned>) {
+   return detail::semi_random_not0<T>(m, n, Zero<T>, One<T>, seed);
+}
+
+
+template <Real T>
+constexpr auto semi_random_not0(Rows m, Cols n, Strict<unsigned> seed = One<unsigned>) {
+   return semi_random_not0<T>(m.get(), n.get(), seed);
 }
 
 
