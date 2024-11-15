@@ -89,6 +89,19 @@ void run_constr_copy_other(ImplicitInt n) {
 }
 
 
+template <Builtin T>
+void run_constr_size_fail() {
+   REQUIRE_THROW(Array1D<T> A(-1));
+}
+
+
+template <Builtin T>
+void run_constr_iterator_fail() {
+   Array1D<T> A(4);
+   REQUIRE_THROW(Array1D<T>(A.end(), A.begin()));
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 void run_assign_value(ImplicitInt n) {
@@ -143,6 +156,27 @@ void run_assign_copy_other(ImplicitInt n) {
    Array1D<T> A2(n);
    A2 = A1.view1D();
    ASSERT(A1 == A2);
+}
+
+
+template <Builtin T>
+void run_assign_list_fail() {
+   Array1D<T> A(4);
+   REQUIRE_THROW((A = {Zero<T>, Zero<T>, Zero<T>}));
+}
+
+
+template <Builtin T>
+void run_assign_copy_fail() {
+   Array1D<T> A1(4), A2(5);
+   REQUIRE_THROW(A2 = A1);
+}
+
+
+template <Builtin T>
+void run_assign_copy_other_fail() {
+   Array1D<T> A1(4), A2(5);
+   REQUIRE_THROW(A2 = A1(place::all));
 }
 
 
@@ -217,6 +251,24 @@ void run_remove_vec(auto X, std::vector<ImplicitInt> indexes) {
 }
 
 
+template <Builtin T>
+void run_resize_fail() {
+   Array1D<T> A;
+   REQUIRE_THROW(A.resize(-1));
+   REQUIRE_NOT_THROW(A.resize(0));
+}
+
+
+template <Builtin T>
+void run_remove_fail() {
+   Array1D<T> A(10);
+   REQUIRE_THROW(A.remove(0, 0));
+   REQUIRE_THROW(A.remove(-1));
+   REQUIRE_THROW(A.remove(0, A.size() + 1_sl));
+   REQUIRE_NOT_THROW(A.remove(0, A.size()));
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void run_insert_value(auto X, Pos pos) {
    auto z = rands<BUILTIN_TYPE_OF(X)>();
@@ -270,6 +322,15 @@ void run_insert_array_back(auto X) {
 }
 
 
+template <Builtin T>
+void run_insert_fail() {
+   Array1D<T> A(10);
+   REQUIRE_THROW(A.insert(-1, A));
+   REQUIRE_THROW(A.insert(A.size() + 1_sl, A));
+   REQUIRE_NOT_THROW(A.insert(A.size(), A));
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void run_resize_and_assign_strong() {
    Array1D<int> A1{2_si, 2_si, 2_si};
@@ -293,6 +354,9 @@ void array_constructor() {
    run_constr_copy<T>(n);
    run_constr_move<T>(n);
    run_constr_copy_other<T>(n);
+
+   run_constr_size_fail<T>();
+   run_constr_iterator_fail<T>();
 }
 
 
@@ -305,6 +369,10 @@ void array_assignment() {
    run_assign_copy<T>(n);
    run_assign_move<T>(n);
    run_assign_copy_other<T>(n);
+
+   run_assign_list_fail<T>();
+   run_assign_copy_fail<T>();
+   run_assign_copy_other_fail<T>();
 }
 
 
@@ -336,6 +404,9 @@ void array_remove() {
 
    run_remove_last(A);
    run_remove_vec(A, {0, 2, 5, 40, 99});
+
+   run_resize_fail<T>();
+   run_remove_fail<T>();
 }
 
 
@@ -355,6 +426,8 @@ void array_insert() {
    run_insert_array(A, Pos{99});
    run_insert_array_front(A);
    run_insert_array_back(A);
+
+   run_insert_fail<T>();
 }
 
 

@@ -40,26 +40,11 @@ consteval void run_constr_list() {
 }
 
 
-template <Builtin T>
-void run_constr_list_fail() {
-   REQUIRE_THROW((FixedArray1D<T, 4>{Zero<T>, Zero<T>, Zero<T>}));
-}
-
-
 template <Builtin T, ImplicitIntStatic n>
 consteval void run_constr_iterator() {
    FixedArray1D<T, n> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2(A1.begin(), A1.end());
    ASSERT(A1 == A2);
-}
-
-
-template <Builtin T>
-void run_constr_iterator_fail() {
-   FixedArray1D<T, 5> A;
-   REQUIRE_THROW((FixedArray1D<T, A.size() + 1_sl>(A.begin(), A.end())));
-   REQUIRE_THROW((FixedArray1D<T, A.size() - 1_sl>(A.begin(), A.end())));
-   REQUIRE_THROW((FixedArray1D<T, 2>(A.begin() + 1, A.begin())));
 }
 
 
@@ -86,6 +71,27 @@ consteval void run_constr_copy_other() {
    FixedArray1D<T, n> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2 = A1.view1D();
    ASSERT(A1 == A2);
+}
+
+
+template <Builtin T>
+void run_constr_list_fail() {
+   REQUIRE_THROW((FixedArray1D<T, 4>{Zero<T>, Zero<T>, Zero<T>}));
+}
+
+
+template <Builtin T>
+void run_constr_iterator_fail() {
+   FixedArray1D<T, 4> A;
+   REQUIRE_THROW((FixedArray1D<T, A.size() + 1_sl>(A.begin(), A.end())));
+   REQUIRE_THROW((FixedArray1D<T, A.size() - 1_sl>(A.begin(), A.end())));
+   REQUIRE_THROW((FixedArray1D<T, 2>(A.begin() + 1, A.begin())));
+}
+
+
+template <Builtin T>
+void run_constr_copy_other_fail() {
+   REQUIRE_THROW((FixedArray1D<T, 4>(Array1D<T>(5))));
 }
 
 
@@ -145,6 +151,21 @@ consteval void run_assign_copy_other() {
 }
 
 
+template <Builtin T>
+void run_assign_list_fail() {
+   FixedArray1D<T, 4> A;
+   REQUIRE_THROW((A = {Zero<T>, Zero<T>, Zero<T>}));
+}
+
+
+template <Builtin T>
+void run_assign_copy_other_fail() {
+   Array1D<T> A1(5);
+   FixedArray1D<T, 4> A2;
+   REQUIRE_THROW(A2 = A1);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 void fixed_array_constructor() {
@@ -159,6 +180,7 @@ void fixed_array_constructor() {
 
    run_constr_list_fail<T>();
    run_constr_iterator_fail<T>();
+   run_constr_copy_other_fail<T>();
 }
 
 
@@ -171,6 +193,9 @@ void fixed_array_assignment() {
    run_assign_copy<T, n>();
    run_assign_move<T, n>();
    run_assign_copy_other<T, n>();
+
+   run_assign_list_fail<T>();
+   run_assign_copy_other_fail<T>();
 }
 
 

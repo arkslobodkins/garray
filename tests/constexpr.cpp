@@ -263,17 +263,17 @@ consteval void expr_ops() {
 
       x + One<T>;
       x - One<T>;
-      x* One<T>;
+      x * One<T>;
       x / One<T>;
 
       One<T> + x;
       One<T> - x;
-      One<T>* x;
+      One<T> * x;
       One<T> / x;
 
       x + x;
       x - x;
-      x* x;
+      x * x;
       x / x;
 
       e_unit<T>(0, 2);
@@ -284,14 +284,14 @@ consteval void expr_ops() {
          x % One<T>;
          x << One<T>;
          x >> One<T>;
-         x& One<T>;
+         x & One<T>;
          x | One<T>;
          x ^ One<T>;
 
          One<T> % x;
          One<T> << x;
          One<T> >> x;
-         One<T>& x;
+         One<T> & x;
          One<T> | x;
          One<T> ^ x;
 
@@ -312,15 +312,15 @@ consteval void expr_ops() {
    } else {
       !x;
 
-      x&& true_sb;
+      x && true_sb;
       x || true_sb;
       x ^ true_sb;
 
-      true_sb&& x;
+      true_sb && x;
       true_sb || x;
       true_sb ^ x;
 
-      x&& x;
+      x && x;
       x || x;
       x ^ x;
    }

@@ -275,7 +275,10 @@ public:
    //  Return unaligned array so that it can be constexpr.
    STRICT_NODISCARD_CONSTEXPR Array1D<builtin_type, Unaligned> eval() const& {
       // Workaround for "inherited constructor cannot be used to copy object".
-      return (*this)(place::all);
+      // Replaced copy-like constructor so that eval() can also be used for
+      // expression templates that generate random values.
+      Array1D<builtin_type, Unaligned> A(this->size());
+      return A = *this;
    }
 
    STRICT_CONSTEXPR static index_t dimension() {
