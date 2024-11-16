@@ -459,8 +459,8 @@ consteval void slice_ops_2D() {
    x(place::lastN{2}, place::lastN{2});
    xc(place::lastN{2}, place::lastN{2});
 
-   x(place::complement{0}, place::complement{0});
-   xc(place::complement{0}, place::complement{0});
+   x(place::complement{{0}}, place::complement{{0}});
+   xc(place::complement{{0}}, place::complement{{0}});
 
    x(place::even, place::even);
    xc(place::even, place::even);

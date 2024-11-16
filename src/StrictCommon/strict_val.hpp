@@ -53,6 +53,9 @@ public:
       return val_;
    }
 
+   template<typename T>
+   STRICT_NODISCARD_CONSTEXPR_INLINE operator T() const = delete;
+
    STRICT_NODISCARD_CONSTEXPR_INLINE Strict operator!() const {
       return Strict{!val_};
    }
