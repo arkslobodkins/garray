@@ -64,6 +64,31 @@
    };
 
 
+#define STRICT_GENERATE_SMALL_UNSIGNED_TYPES(SmallObjectName, cnd, Type)                         \
+   class STRICT_NODISCARD SmallObjectName {                                                      \
+   public:                                                                                       \
+      STRICT_NODISCARD_CONSTEXPR explicit(cnd) SmallObjectName() = default;                      \
+                                                                                                 \
+      template <typename U>                                                                      \
+         requires SameAs<Type, U>                                                                \
+      STRICT_NODISCARD_CONSTEXPR explicit(cnd) SmallObjectName(U x) : x_{static_cast<Type>(x)} { \
+      }                                                                                          \
+                                                                                                 \
+      template <typename U>                                                                      \
+         requires SameAs<Type, U>                                                                \
+      STRICT_NODISCARD_CONSTEXPR explicit(cnd) SmallObjectName(Strict<U> x)                      \
+          : x_{strict_cast<Type>(x)} {                                                           \
+      }                                                                                          \
+                                                                                                 \
+      STRICT_NODISCARD_CONSTEXPR Strict<Type> get() const {                                      \
+         return x_;                                                                              \
+      }                                                                                          \
+                                                                                                 \
+   private:                                                                                      \
+      Strict<Type> x_;                                                                           \
+   };
+
+
 #define STRICT_GENERATE_SMALL_BOOL_TYPES(SmallObjectName, cnd)                        \
    class STRICT_NODISCARD SmallObjectName {                                           \
    public:                                                                            \
@@ -108,6 +133,9 @@ STRICT_GENERATE_SMALL_INT_TYPES(Rows, true, true)
 STRICT_GENERATE_SMALL_INT_TYPES(Cols, true, true)
 STRICT_GENERATE_SMALL_INT_TYPES(ImplicitInt, false, false)
 STRICT_GENERATE_SMALL_INT_TYPES(ImplicitNonNegInt, false, true)
+
+STRICT_GENERATE_SMALL_UNSIGNED_TYPES(Seed, true, unsigned)
+
 STRICT_GENERATE_SMALL_BOOL_TYPES(ImplicitBool, false)
 
 

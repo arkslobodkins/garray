@@ -79,9 +79,58 @@ void empty_expr_ops() {
 }
 
 
+void empty_util_ops() {
+   Array2D<float> A1, A2;
+   REQUIRE_THROW(within_tol_abs(A1, A2));
+   REQUIRE_THROW(within_tol_rel(A1, A2));
+   REQUIRE_THROW(max_abs_error(A1, A2));
+   REQUIRE_THROW(max_rel_error(A1, A2));
+
+   REQUIRE_NOT_THROW(A1.view1D() = random<float>(0));
+   REQUIRE_NOT_THROW(A1 = random<float>(0, 0));
+   REQUIRE_NOT_THROW(A1.view1D() = semi_random<float>(0));
+   REQUIRE_NOT_THROW(A1 = semi_random<float>(0, 0));
+}
+
+
+void empty_slice_ops() {
+   Array1D<float> A;
+   REQUIRE_NOT_THROW(A(place::all));
+   REQUIRE_NOT_THROW(A(place::even));
+   REQUIRE_NOT_THROW(A(place::odd));
+   REQUIRE_NOT_THROW(A(place::firstN{0}));
+   REQUIRE_NOT_THROW(A(place::lastN{0}));
+   REQUIRE_NOT_THROW(A(place::reverse));
+   REQUIRE_NOT_THROW(A(place::skipN{1}));
+   REQUIRE_NOT_THROW(A(place::complement{{}}));
+   REQUIRE_NOT_THROW(A(std::vector<ImplicitInt>{}));
+   REQUIRE_NOT_THROW(A({}));
+
+   REQUIRE_NOT_THROW(A(seqN{1, 0}));
+   REQUIRE_THROW(A(seq{0, 0}));
+
+   Array2D<float> B;
+   REQUIRE_NOT_THROW(B(place::all, place::all));
+   REQUIRE_NOT_THROW(B(place::even, place::even));
+   REQUIRE_NOT_THROW(B(place::odd, place::odd));
+   REQUIRE_NOT_THROW(B(place::firstN{0}, place::firstN{0}));
+   REQUIRE_NOT_THROW(B(place::lastN{0}, place::lastN{0}));
+   REQUIRE_NOT_THROW(B(place::reverse, place::reverse));
+   REQUIRE_NOT_THROW(B(place::skipN{1}, place::skipN{1}));
+   REQUIRE_NOT_THROW(B(place::complement{{}}, place::complement{{}}));
+   REQUIRE_NOT_THROW(B(std::vector<ImplicitInt>{}, std::vector<ImplicitInt>{}));
+   REQUIRE_NOT_THROW(B({}, {}));
+
+   REQUIRE_NOT_THROW(B(seqN{1, 0}, seqN{1, 0}));
+   REQUIRE_THROW(B(seq{0, 0}, seq{0, 0}));
+}
+
+
 int main() {
    TEST_NON_TYPE(empty_array_ops);
    TEST_NON_TYPE(empty_expr_ops);
+   TEST_NON_TYPE(empty_util_ops);
+   TEST_NON_TYPE(empty_slice_ops);
    return EXIT_SUCCESS;
 }
 
