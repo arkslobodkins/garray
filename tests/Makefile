@@ -1,7 +1,7 @@
 compiler = clang
 debug = 0
 
-all: info fixed_array1D array1D array_stable_ops error_tools array_1Dvs2D constexpr
+all: info fixed_array1D array1D array_stable_ops error_tools array_1Dvs2D constexpr empty
 
 
 ifeq ($(compiler), gcc)
@@ -65,6 +65,9 @@ array_1Dvs2D: array_1Dvs2D.cpp
 
 constexpr: constexpr.cpp
 	$(CXX) $(CXXFLAGS) constexpr.cpp -o constexpr.x $(LFLAGS)
+
+empty: empty.cpp
+	$(CXX) $(CXXFLAGS) empty.cpp -o empty.x $(LFLAGS)
 
 clean:
 	rm -rf *.x *.txt

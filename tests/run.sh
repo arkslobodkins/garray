@@ -34,6 +34,9 @@ echo -e "\nRUNNING Array 1D vs 2D TESTS"
 echo -e "\nRUNNING CONSTEXPR TESTS"
 ./constexpr.x
 
+echo -e "\nRUNNING EMPTY TESTS"
+./empty.x
+
 echo -e ""
 make clean
 echo -e ""

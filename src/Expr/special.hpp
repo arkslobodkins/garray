@@ -124,6 +124,7 @@ STRICT_CONSTEXPR auto e_unit(Index unit_index, Size size);
 
 
 // Similarly, generates standard identity on the fly.
+// Empty objects are allowed.
 template <Real T>
 STRICT_CONSTEXPR auto identity(ImplicitInt n);
 

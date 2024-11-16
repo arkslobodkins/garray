@@ -272,28 +272,25 @@ STRICT_CONSTEXPR void for_each(Base&& A, F f);
 // A is allowed to be empty.
 template <typename Base, typename F>
    requires(detail::NonConstBaseType<RemoveRef<Base>> && detail::SortableArgs<Base, F>
-            && !detail::IsConst<RemoveRef<Base>> && !detail::ArrayOneDimRealTypeRvalue<Base>)
+            && !detail::ArrayRealTypeRvalue<Base>)
 STRICT_CONSTEXPR void sort(Base&& A, F f);
 
 
 // A is allowed to be empty.
 template <typename Base>
-   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::IsConst<RemoveRef<Base>>
-            && !detail::ArrayOneDimRealTypeRvalue<Base>)
+   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::ArrayRealTypeRvalue<Base>)
 STRICT_CONSTEXPR void sort_increasing(Base&& A);
 
 
 // A is allowed to be empty.
 template <typename Base>
-   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::IsConst<RemoveRef<Base>>
-            && !detail::ArrayOneDimRealTypeRvalue<Base>)
+   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::ArrayRealTypeRvalue<Base>)
 STRICT_CONSTEXPR void sort_decreasing(Base&& A);
 
 
 // A is allowed to be empty.
 template <typename Base>
-   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::IsConst<RemoveRef<Base>>
-            && !detail::ArrayOneDimRealTypeRvalue<Base>)
+   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::ArrayRealTypeRvalue<Base>)
 void shuffle(Base&& A);
 
 
@@ -316,7 +313,7 @@ STRICT_CONSTEXPR ValueTypeOf<Base> sum(const Base& A) {
    index_t nblocks = A.size() / block_size;
    index_t rem = A.size() % block_size;
 
-   //Unaligned array is used to preserve constexpr.
+   // Unaligned array is used to preserve constexpr.
    Array1D<RealTypeOf<Base>, Unaligned> sb(nblocks);
    for(index_t i = 0_sl; i < nblocks; ++i) {
       for(index_t j = 0_sl; j < block_size; ++j) {
@@ -779,31 +776,28 @@ STRICT_CONSTEXPR void for_each(Base&& A, F f) {
 
 template <typename Base, typename F>
    requires(detail::NonConstBaseType<RemoveRef<Base>> && detail::SortableArgs<Base, F>
-            && !detail::IsConst<RemoveRef<Base>> && !detail::ArrayOneDimRealTypeRvalue<Base>)
+            && !detail::ArrayRealTypeRvalue<Base>)
 STRICT_CONSTEXPR void sort(Base&& A, F f) {
    std::sort(A.begin(), A.end(), f);
 }
 
 
 template <typename Base>
-   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::IsConst<RemoveRef<Base>>
-            && !detail::ArrayOneDimRealTypeRvalue<Base>)
+   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::ArrayRealTypeRvalue<Base>)
 STRICT_CONSTEXPR void sort_increasing(Base&& A) {
    std::sort(A.begin(), A.end(), [](const auto& a, const auto& b) { return a < b; });
 }
 
 
 template <typename Base>
-   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::IsConst<RemoveRef<Base>>
-            && !detail::ArrayOneDimRealTypeRvalue<Base>)
+   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::ArrayRealTypeRvalue<Base>)
 STRICT_CONSTEXPR void sort_decreasing(Base&& A) {
    std::sort(A.begin(), A.end(), [](const auto& a, const auto& b) { return a > b; });
 }
 
 
 template <typename Base>
-   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::IsConst<RemoveRef<Base>>
-            && !detail::ArrayOneDimRealTypeRvalue<Base>)
+   requires(detail::NonConstBaseType<RemoveRef<Base>> && !detail::ArrayRealTypeRvalue<Base>)
 void shuffle(Base&& A) {
    std::mt19937 g{std::random_device{}()};
    std::shuffle(A.begin(), A.end(), g);
