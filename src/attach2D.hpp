@@ -287,8 +287,8 @@ STRICT_CONSTEXPR auto StrictArrayBase2D<Base>::view2D(ImplicitInt nrows, Implici
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <CompatibleBuiltin T>
-auto attach2D(T* data, ImplicitInt m, ImplicitInt n) {
+template <detail::PointerConvertibleLvalue T>
+auto attach2D(T&& data, ImplicitInt m, ImplicitInt n) {
    using namespace detail;
    auto proxy = strict_attach_ptr2D(data, m, n);
    return StrictArrayMutable2D<SliceArrayBase2D<decltype(proxy), seqN, seqN>>{
@@ -296,8 +296,8 @@ auto attach2D(T* data, ImplicitInt m, ImplicitInt n) {
 }
 
 
-template <CompatibleBuiltin T>
-auto attach2D(const T* data, ImplicitInt m, ImplicitInt n) {
+template <detail::PointerConvertibleLvalueConst T>
+auto attach2D(T&& data, ImplicitInt m, ImplicitInt n) {
    using namespace detail;
    auto proxy = const_strict_attach_ptr2D(data, m, n);
    return StrictArrayBase2D<ConstSliceArrayBase2D<decltype(proxy), seqN, seqN>>{

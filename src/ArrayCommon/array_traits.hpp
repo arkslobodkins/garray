@@ -162,8 +162,7 @@ namespace detail {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename T, bool cnd>
-concept RvalueOf = !std::is_lvalue_reference_v<T> && cnd;
+template <typename T, bool cnd> concept RvalueOf = !std::is_lvalue_reference_v<T> && cnd;
 
 
 template <typename T> concept ArrayType = BaseOf<ArrayBase, T>;
@@ -208,6 +207,22 @@ template <typename T> concept ArrayTwoDimRealTypeRvalue = RvalueOf<T, ArrayTwoDi
 template <typename T> concept ArrayTwoDimBooleanTypeRvalue = RvalueOf<T, ArrayTwoDimBooleanType<RemoveRef<T>>>;
 template <typename T> concept ArrayTwoDimIntegerTypeRvalue = RvalueOf<T, ArrayTwoDimIntegerType<RemoveRef<T>>>;
 template <typename T> concept ArrayTwoDimFloatingTypeRvalue = RvalueOf<T, ArrayTwoDimFloatingType<RemoveRef<T>>>;
+
+
+template <typename T> concept PointerConvertibleLvalue
+    = std::is_lvalue_reference_v<T> && requires(RemoveRef<T> p) {
+         { p } -> std::convertible_to<std::add_pointer_t<decltype(p[0])>>;
+         requires CompatibleBuiltin<RemoveCVRef<decltype(p[0])>>;
+         requires !IsConst<RemoveRef<decltype(p[0])>>;
+      };
+
+
+template <typename T> concept PointerConvertibleLvalueConst
+    = std::is_lvalue_reference_v<T> && requires(RemoveRef<T> p) {
+         { p } -> std::convertible_to<std::add_pointer_t<decltype(p[0])>>;
+         requires CompatibleBuiltin<RemoveCVRef<decltype(p[0])>>;
+         requires IsConst<RemoveRef<decltype(p[0])>>;
+      };
 
 
 }  // namespace detail

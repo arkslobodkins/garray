@@ -82,16 +82,16 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <CompatibleBuiltin T>
-auto attach1D(T* data, ImplicitInt n) {
+template <detail::PointerConvertibleLvalue T>
+auto attach1D(T&& data, ImplicitInt n) {
    using namespace detail;
    auto proxy = strict_attach_ptr1D(data, n);
    return StrictArrayMutable1D<SliceArrayBase1D<decltype(proxy), seqN>>{proxy, seqN{0, n}};
 }
 
 
-template <CompatibleBuiltin T>
-auto attach1D(const T* data, ImplicitInt n) {
+template <detail::PointerConvertibleLvalueConst T>
+auto attach1D(T&& data, ImplicitInt n) {
    using namespace detail;
    auto proxy = const_strict_attach_ptr1D(data, n);
    return StrictArrayBase1D<ConstSliceArrayBase1D<decltype(proxy), seqN>>{proxy, seqN{0, n}};
