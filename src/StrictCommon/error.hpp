@@ -43,14 +43,14 @@ inline std::string trace_err(const char* file, const char* func, int line) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef STRICT_DEBUG_OFF
-#define NORMAL_ASSERT_STRICT_DEBUG_MSG(condition, msg)                               \
-   do {                                                                              \
-      if(!(condition)) {                                                             \
-         spp::detail::print_stacktrace();                                            \
-         std::cerr << msg << trace_err(__FILE__, __func__, __LINE__) << "Assertion " \
-                   << (#condition) << " failed." << std::endl;                       \
-         std::abort();                                                               \
-      }                                                                              \
+#define NORMAL_ASSERT_STRICT_DEBUG_MSG(condition, msg)                                    \
+   do {                                                                                   \
+      if(!(condition)) {                                                                  \
+         spp::detail::print_stacktrace();                                                 \
+         std::cerr << msg << spp::trace_err(__FILE__, __func__, __LINE__) << "Assertion " \
+                   << (#condition) << " failed." << std::endl;                            \
+         std::abort();                                                                    \
+      }                                                                                   \
    } while(false)
 #define NORMAL_ASSERT_STRICT_DEBUG(condition) NORMAL_ASSERT_STRICT_DEBUG_MSG(condition, "")
 
@@ -63,25 +63,25 @@ inline std::string trace_err(const char* file, const char* func, int line) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef STRICT_ERROR_EXCEPTIONS
-#define ASSERT_STRICT_ALWAYS_MSG(condition, msg)                                     \
-   do {                                                                              \
-      if(!(condition)) {                                                             \
-         spp::detail::print_stacktrace();                                            \
-         std::cerr << msg << trace_err(__FILE__, __func__, __LINE__) << "Assertion " \
-                   << (#condition) << " failed." << std::endl;                       \
-         std::abort();                                                               \
-      }                                                                              \
+#define ASSERT_STRICT_ALWAYS_MSG(condition, msg)                                          \
+   do {                                                                                   \
+      if(!(condition)) {                                                                  \
+         spp::detail::print_stacktrace();                                                 \
+         std::cerr << msg << spp::trace_err(__FILE__, __func__, __LINE__) << "Assertion " \
+                   << (#condition) << " failed." << std::endl;                            \
+         std::abort();                                                                    \
+      }                                                                                   \
    } while(false)
 #define ASSERT_STRICT_ALWAYS(condition) ASSERT_STRICT_ALWAYS_MSG(condition, "")
 
 
 #else
-#define ASSERT_STRICT_ALWAYS_MSG(condition, msg)                                                 \
-   do {                                                                                          \
-      if(!(condition)) {                                                                         \
-         throw spp::StrictException{msg + trace_err(__FILE__, __func__, __LINE__) + (#condition) \
-                                    + " failed, exception thrown."};                             \
-      }                                                                                          \
+#define ASSERT_STRICT_ALWAYS_MSG(condition, msg)                                       \
+   do {                                                                                \
+      if(!(condition)) {                                                               \
+         throw spp::StrictException{msg + spp::trace_err(__FILE__, __func__, __LINE__) \
+                                    + (#condition) + " failed, exception thrown."};    \
+      }                                                                                \
    } while(false)
 #define ASSERT_STRICT_ALWAYS(condition) ASSERT_STRICT_ALWAYS_MSG(condition, "")
 #endif
@@ -100,8 +100,10 @@ inline std::string trace_err(const char* file, const char* func, int line) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-#define ASSERT_STRICT_RANGE_DEBUG(condition) ASSERT_STRICT_DEBUG_MSG(condition, "OUT OF RANGE!\n")
-#define ASSERT_STRICT_RANGE_ALWAYS(condition) ASSERT_STRICT_ALWAYS_MSG(condition, "OUT OF RANGE!\n")
+#define ASSERT_STRICT_RANGE_DEBUG(condition) \
+   ASSERT_STRICT_DEBUG_MSG(condition, "OUT OF RANGE!\n")
+#define ASSERT_STRICT_RANGE_ALWAYS(condition) \
+   ASSERT_STRICT_ALWAYS_MSG(condition, "OUT OF RANGE!\n")
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
