@@ -277,7 +277,7 @@ public:
       // Workaround for "inherited constructor cannot be used to copy object".
       // Replaced copy-like constructor so that eval() can also be used for
       // expression templates that generate random values.
-      Array1D<builtin_type, Unaligned> A(this->size());
+      Array1D<builtin_type, Unaligned> A(Base::size());
       return A = *this;
    }
 
