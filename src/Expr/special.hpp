@@ -49,6 +49,23 @@ STRICT_CONSTEXPR auto merge(Strict_t x, const Base& A);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+template <TwoDimBaseType Base, TwoDimBaseType... BaseArgs>
+STRICT_CONSTEXPR auto merge_horizontal(const Base& A, const BaseArgs&... AArgs);
+
+
+template <TwoDimBaseType Base1, TwoDimBaseType Base2>
+STRICT_CONSTEXPR auto merge_horizontal(const Base1& A1, const Base2& A2);
+
+
+template <TwoDimBaseType Base, TwoDimBaseType... BaseArgs>
+STRICT_CONSTEXPR auto merge_vertical(const Base& A, const BaseArgs&... AArgs);
+
+
+template <TwoDimBaseType Base1, TwoDimBaseType Base2>
+STRICT_CONSTEXPR auto merge_vertical(const Base1& A1, const Base2& A2);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 template <OneDimBaseType Base>
 STRICT_CONSTEXPR auto exclude(const Base& A, ImplicitInt pos, ImplicitInt count = 1);
 
@@ -194,6 +211,19 @@ STRICT_CONSTEXPR_INLINE auto irange2D(ImplicitInt m, ImplicitInt n) {
 }
 
 
+STRICT_CONSTEXPR_INLINE auto horizontal_op(auto A1E, auto A2E) {
+   return [A1E, A2E](auto i) {
+      auto row_pos = i / (A1E.cols() + A2E.cols());
+      auto col_pos = i % (A1E.cols() + A2E.cols());
+      auto i1 = row_pos;
+      auto i2 = row_pos;
+      auto j1 = col_pos;
+      auto j2 = col_pos - A1E.cols();
+      return (col_pos < A1E.cols()) ? A1E.un(i1 * A1E.cols() + j1) : A2E.un(i2 * A2E.cols() + j2);
+   };
+}
+
+
 }  // namespace detail
 
 
@@ -243,6 +273,45 @@ STRICT_CONSTEXPR auto merge(Strict_t x, const Base& A) {
    auto AE = generate(A, [](auto z) { return z; });
    auto op = [AE, x](auto i) { return i == 0_sl ? x : AE.un(i - 1_sl); };
    return generate(irange(AE.size() + 1_sl), op);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <TwoDimBaseType Base, TwoDimBaseType... BaseArgs>
+STRICT_CONSTEXPR auto merge_horizontal(const Base& A, const BaseArgs&... AArgs) {
+   auto AE = generate(A, [](auto x) { return x; });
+   auto ArgsE = merge_horizontal(AArgs...);
+   return generate(detail::irange2D(AE.rows(), AE.cols() + ArgsE.cols()),
+                   detail::horizontal_op(AE, ArgsE));
+}
+
+
+template <TwoDimBaseType Base1, TwoDimBaseType Base2>
+STRICT_CONSTEXPR auto merge_horizontal(const Base1& A1, const Base2& A2) {
+   ASSERT_STRICT_DEBUG(A1.rows() == A2.rows());
+   auto A1E = generate(A1, [](auto x) { return x; });
+   auto A2E = generate(A2, [](auto x) { return x; });
+   return generate(detail::irange2D(A1.rows(), A1.cols() + A2.cols()),
+                   detail::horizontal_op(A1E, A2E));
+}
+
+
+template <TwoDimBaseType Base, TwoDimBaseType... BaseArgs>
+STRICT_CONSTEXPR auto merge_vertical(const Base& A, const BaseArgs&... AArgs) {
+   auto AE = generate(A, [](auto x) { return x; });
+   auto ArgsE = merge_vertical(AArgs...);
+   auto op = [AE, ArgsE](auto i) { return i < AE.size() ? AE.un(i) : ArgsE.un(i - AE.size()); };
+   return generate(detail::irange2D(AE.rows() + ArgsE.rows(), AE.cols()), op);
+}
+
+
+template <TwoDimBaseType Base1, TwoDimBaseType Base2>
+STRICT_CONSTEXPR auto merge_vertical(const Base1& A1, const Base2& A2) {
+   ASSERT_STRICT_DEBUG(A1.cols() == A2.cols());
+   auto A1E = generate(A1, [](auto x) { return x; });
+   auto A2E = generate(A2, [](auto x) { return x; });
+   auto op = [A1E, A2E](auto i) { return i < A1E.size() ? A1E.un(i) : A2E.un(i - A1E.size()); };
+   return generate(detail::irange2D(A1.rows() + A2.rows(), A1.cols()), op);
 }
 
 

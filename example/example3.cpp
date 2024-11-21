@@ -1,8 +1,7 @@
 #include <cstdlib>
 #include <iostream>
-#include <string>
-
 #include <strict.hpp>
+#include <string>
 
 
 using namespace spp;
