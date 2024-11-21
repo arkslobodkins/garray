@@ -301,8 +301,8 @@ class STRICT_NODISCARD StrictArrayMutable1D : public StrictArrayBase1D<Base> {
    using CommonBase1D = StrictArrayBase1D<Base>;
 
 public:
-   using typename CommonBase1D::size_type;
    using typename CommonBase1D::builtin_type;
+   using typename CommonBase1D::size_type;
    using typename CommonBase1D::value_type;
 
    using StrictArrayBase1D<Base>::StrictArrayBase1D;

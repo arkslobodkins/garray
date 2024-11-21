@@ -239,8 +239,8 @@ public:
 
    STRICT_CONSTEXPR auto view1D() & {
       if constexpr(NonConstBaseType<Base>) {
-         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase2D, seqN>>{*this,
-                                                                          seqN{0, Base::size(), 1}};
+         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase2D, seqN>>{
+             *this, seqN{0, Base::size(), 1}};
       } else {
          return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
              *this, seqN{0, Base::size(), 1}};
@@ -277,8 +277,8 @@ public:
    }
 
    STRICT_CONSTEXPR auto view1D() const& {
-      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{*this,
-                                                                         seqN{0, Base::size(), 1}};
+      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
+          *this, seqN{0, Base::size(), 1}};
    }
 
    // Implemented in attach2D.hpp.
@@ -662,8 +662,8 @@ class STRICT_NODISCARD StrictArrayMutable2D : public StrictArrayBase2D<Base> {
    using CommonBase2D = StrictArrayBase2D<Base>;
 
 public:
-   using typename CommonBase2D::size_type;
    using typename CommonBase2D::builtin_type;
+   using typename CommonBase2D::size_type;
    using typename CommonBase2D::value_type;
 
    using StrictArrayBase2D<Base>::StrictArrayBase2D;
