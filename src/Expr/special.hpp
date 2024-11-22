@@ -167,14 +167,12 @@ STRICT_CONSTEXPR auto const2D(Rows rows, Cols cols, Value<T> c);
 namespace detail {
 
 
-template <typename T>
-struct IsArrayOneDimTypeRvalue {
-   static constexpr bool value = ArrayOneDimTypeRvalue<T>;
-};
-
-
 template <typename... Args> concept OneOfArrayOneDimTypeRvalue
-    = std::disjunction_v<IsArrayOneDimTypeRvalue<Args>...>;
+    = (... || ArrayOneDimTypeRvalue<Args>);
+
+
+template <typename... Args> concept OneOfArrayTwoDimTypeRvalue
+    = (... || ArrayTwoDimTypeRvalue<Args>);
 
 
 }  // namespace detail
@@ -184,6 +182,16 @@ template <typename... Args> concept OneOfArrayOneDimTypeRvalue
 template <typename... Args>
    requires detail::OneOfArrayOneDimTypeRvalue<Args...>
 STRICT_CONSTEXPR auto merge(Args&&... args) = delete;
+
+
+template <typename... Args>
+   requires detail::OneOfArrayTwoDimTypeRvalue<Args...>
+STRICT_CONSTEXPR auto merge_horizontal(Args&&... args) = delete;
+
+
+template <typename... Args>
+   requires detail::OneOfArrayTwoDimTypeRvalue<Args...>
+STRICT_CONSTEXPR auto merge_vertical(Args&&... args) = delete;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +219,7 @@ STRICT_CONSTEXPR_INLINE auto irange2D(ImplicitInt m, ImplicitInt n) {
 }
 
 
-STRICT_CONSTEXPR_INLINE auto horizontal_op(auto A1E, auto A2E) {
+STRICT_CONSTEXPR_INLINE auto horizontal_op(auto const& A1E, auto const& A2E) {
    return [A1E, A2E](auto i) {
       auto row_pos = i / (A1E.cols() + A2E.cols());
       auto col_pos = i % (A1E.cols() + A2E.cols());
