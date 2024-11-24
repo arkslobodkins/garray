@@ -532,7 +532,7 @@ STRICT_CONSTEXPR_2026 ValueTypeOf<Base1> polynomial(const Base1& coeffs, ValueTy
 template <OneDimRealBaseType Base1, OneDimRealBaseType Base2, OneDimSignedIntegerBaseType Base3>
 STRICT_CONSTEXPR_2026 ValueTypeOf<Base1> gpolynomial(const Base1& coeffs, const Base2& X,
                                                      const Base3& powers) {
-   ASSERT_STRICT_DEBUG(!X.empty());
+   ASSERT_STRICT_DEBUG(!coeffs.empty());
    ASSERT_STRICT_DEBUG(same_size(coeffs, X, powers));
    ASSERT_STRICT_DEBUG(all_non_neg(powers));
 
