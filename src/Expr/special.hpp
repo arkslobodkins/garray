@@ -146,6 +146,10 @@ template <Real T>
 STRICT_CONSTEXPR auto identity(ImplicitInt n);
 
 
+template <TwoDimBaseType Base>
+STRICT_CONSTEXPR auto transpose(const Base& A);
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 STRICT_CONSTEXPR auto const1D(ImplicitInt size, Strict<T> c);
@@ -208,6 +212,11 @@ STRICT_CONSTEXPR auto exclude(Base&& A, Pos pos, Count count = Count{1}) = delet
 template <typename Base>
    requires detail::ArrayOneDimTypeRvalue<Base>
 STRICT_CONSTEXPR auto exclude(Base&& A, detail::Last lst) = delete;
+
+
+template <typename Base>
+   requires detail::ArrayTwoDimTypeRvalue<Base>
+STRICT_CONSTEXPR auto transpose(Base&& A) = delete;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -439,6 +448,16 @@ STRICT_CONSTEXPR auto identity(ImplicitInt n) {
    ASSERT_STRICT_DEBUG(n.get() > -1_sl);
    return generate(detail::irange2D(n, n),
                    [n](auto i) { return i / n.get() == i % n.get() ? One<T> : Zero<T>; });
+}
+
+
+template <TwoDimBaseType Base>
+STRICT_CONSTEXPR auto transpose(const Base& A) {
+   return generate(detail::irange2D(A.cols(), A.rows()), [&A](auto i) {
+      auto row_pos = i % A.rows();
+      auto col_pos = i / A.rows();
+      return A.un(row_pos * A.cols() + col_pos);
+   });
 }
 
 
