@@ -76,7 +76,6 @@ STRICT_CONSTEXPR_INLINE void copy(const Base1& STRICT_RESTRICT A1, Base2& STRICT
 
 template <TwoDimBaseType Base1, TwoDimBaseType Base2>
 STRICT_CONSTEXPR_INLINE void copy(const Base1& STRICT_RESTRICT A1, Base2& STRICT_RESTRICT A2) {
-   std::cout << "nono" << std::endl;
    for(index_t i = 0_sl; i < A1.rows(); ++i) {
       for(index_t j = 0_sl; j < A1.cols(); ++j) {
          A2.un(i, j) = A1.un(i, j);

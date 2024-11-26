@@ -287,9 +287,9 @@ public:
    }
 
 private:
-   Op op_;
    index_t rows_;
    index_t cols_;
+   Op op_;
 };
 
 
