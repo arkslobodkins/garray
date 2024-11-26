@@ -62,7 +62,7 @@ namespace detail {
 
 
 struct ConstSliceBase {};
-template <typename T> concept ConstSliceBaseType = BaseOf<ConstSliceBase, T>;
+template <typename T> concept ConstSliceBaseType = BaseType<T> && BaseOf<ConstSliceBase, T>;
 
 
 // Objects of type Array or slices of Array with non-constant semantics. Expression templates are
@@ -165,7 +165,7 @@ namespace detail {
 template <typename T, bool cnd> concept RvalueOf = !std::is_lvalue_reference_v<T> && cnd;
 
 
-template <typename T> concept ArrayType = BaseOf<ArrayBase, T>;
+template <typename T> concept ArrayType = BaseType<T> && BaseOf<ArrayBase, T>;
 template <typename T> concept ArrayRealType = ArrayType<T> && Real<BuiltinTypeOf<T>>;
 template <typename T> concept ArrayBooleanType = ArrayType<T> && Boolean<BuiltinTypeOf<T>>;
 template <typename T> concept ArrayIntegerType = ArrayType<T> && Integer<BuiltinTypeOf<T>>;
