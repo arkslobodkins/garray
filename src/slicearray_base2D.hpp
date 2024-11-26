@@ -101,16 +101,16 @@ STRICT_CONSTEXPR SliceArrayBase2D<Base, Sl1, Sl2>& SliceArrayBase2D<Base, Sl1, S
 template <TwoDimNonConstBaseType Base, typename Sl1, typename Sl2>
 STRICT_NODISCARD_CONSTEXPR_INLINE auto SliceArrayBase2D<Base, Sl1, Sl2>::un(ImplicitInt i)
     -> value_type& {
-   auto map = linear_map(slw1_, slw2_, i);
-   return A_.un(map.first, map.second);
+   auto [r, c] = index_map_one_to_two_dim(*this, i);
+   return this->un(r, c);
 }
 
 
 template <TwoDimNonConstBaseType Base, typename Sl1, typename Sl2>
 STRICT_NODISCARD_CONSTEXPR_INLINE auto SliceArrayBase2D<Base, Sl1, Sl2>::un(ImplicitInt i) const
     -> const value_type& {
-   auto map = linear_map(slw1_, slw2_, i);
-   return A_.un(map.first, map.second);
+   auto [r, c] = index_map_one_to_two_dim(*this, i);
+   return this->un(r, c);
 }
 
 
@@ -189,8 +189,8 @@ STRICT_NODISCARD_CONSTEXPR ConstSliceArrayBase2D<Base, Sl1, Sl2>::ConstSliceArra
 template <TwoDimBaseType Base, typename Sl1, typename Sl2>
 STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) ConstSliceArrayBase2D<Base, Sl1, Sl2>::un(
     ImplicitInt i) const {
-   auto map = linear_map(slw1_, slw2_, i);
-   return A_.un(map.first, map.second);
+   auto [r, c] = index_map_one_to_two_dim(*this, i);
+   return this->un(r, c);
 }
 
 

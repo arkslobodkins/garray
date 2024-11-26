@@ -265,9 +265,8 @@ public:
    STRICT_CONSTEXPR ~IndexExpr2D() = default;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
-      auto row_pos = i.get() / cols_;
-      auto col_pos = i.get() % cols_;
-      return this->un(row_pos, col_pos);
+      auto [r, c] = index_map_one_to_two_dim(*this, i);
+      return this->un(r, c);
    }
 
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i, ImplicitInt j) const {

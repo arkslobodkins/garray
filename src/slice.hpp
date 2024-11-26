@@ -616,36 +616,6 @@ private:
 };
 
 
-template <typename SliceWrapper1, typename SliceWrapper2>
-STRICT_CONSTEXPR_INLINE use::StrictPair<long> linear_map(const SliceWrapper1& sw1,
-                                                         const SliceWrapper2& sw2, ImplicitInt i) {
-   const auto& s1 = sw1.get();
-   const auto& s2 = sw2.get();
-
-   using T1 = RemoveCVRef<decltype(s1)>;
-   using T2 = RemoveCVRef<decltype(s2)>;
-   using IntVec = std::vector<ImplicitInt>;
-
-   if constexpr(SameAs<T1, seqN> && SameAs<T2, seqN>) {
-      return {s1.start() + (i.get() / s2.size()) * s1.stride(),
-              s2.start() + i.get() % s2.size() * s2.stride()};
-
-   } else if constexpr(SameAs<T1, seqN> && SameAs<T2, IntVec>) {
-      return {s1.start() + (i.get() / strict_cast<long>(s2.size())) * s1.stride(),
-              s2[to_size_t(i.get()) % s2.size()].get()};
-
-   } else if constexpr(SameAs<T1, IntVec> && SameAs<T2, seqN>) {
-      return {s1[to_size_t(i.get() / s2.size())].get(),
-              s2.start() + i.get() % s2.size() * s2.stride()};
-
-   } else if constexpr(SameAs<T1, IntVec> && SameAs<T2, IntVec>) {
-      return {s1[to_size_t(i.get()) / s2.size()].get(), s2[to_size_t(i.get()) % s2.size()].get()};
-   } else {
-      static_assert(false, "INTERNAL ERROR, slice wrapper has invalid slice type.");
-   }
-}
-
-
 }  // namespace detail
 
 

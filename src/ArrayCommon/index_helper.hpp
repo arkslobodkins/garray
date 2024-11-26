@@ -93,5 +93,13 @@ STRICT_CONSTEXPR_INLINE std::pair<index_t, index_t> index_row_col_helper(
 }
 
 
+STRICT_CONSTEXPR_INLINE std::pair<index_t, index_t> index_map_one_to_two_dim(
+    TwoDimBaseType auto const& A, auto i) {
+   auto r = i.get() / A.cols();
+   auto c = i.get() % A.cols();
+   return {r, c};
+}
+
+
 }  // namespace spp::detail
 
