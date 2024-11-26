@@ -245,6 +245,54 @@ private:
 };
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Builtin T, typename Op>
+class STRICT_NODISCARD IndexExpr2D : private CopyBase2D {
+public:
+   using value_type = Strict<T>;
+   using builtin_type = value_type::value_type;
+
+   STRICT_NODISCARD_CONSTEXPR explicit IndexExpr2D(index_t rows, index_t cols, Op op)
+       : rows_{rows},
+         cols_{cols},
+         op_{op} {
+      ASSERT_STRICT_DEBUG(rows_ > -1_sl);
+      ASSERT_STRICT_DEBUG(cols_ > -1_sl);
+   }
+
+   STRICT_NODISCARD_CONSTEXPR IndexExpr2D(const IndexExpr2D&) = default;
+   STRICT_CONSTEXPR IndexExpr2D& operator=(const IndexExpr2D&) = delete;
+   STRICT_CONSTEXPR ~IndexExpr2D() = default;
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
+      auto row_pos = i.get() / cols_;
+      auto col_pos = i.get() % cols_;
+      return this->un(row_pos, col_pos);
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i, ImplicitInt j) const {
+      return op_(i.get(), j.get());
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE index_t size() const {
+      return rows_ * cols_;
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE index_t rows() const {
+      return rows_;
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE index_t cols() const {
+      return cols_;
+   }
+
+private:
+   Op op_;
+   index_t rows_;
+   index_t cols_;
+};
+
+
 }  // namespace detail
 
 

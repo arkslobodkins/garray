@@ -446,18 +446,17 @@ STRICT_CONSTEXPR auto e_unit(Index unit_index, Size size) {
 template <Real T>
 STRICT_CONSTEXPR auto identity(ImplicitInt n) {
    ASSERT_STRICT_DEBUG(n.get() > -1_sl);
-   return generate(detail::irange2D(n, n),
-                   [n](auto i) { return i / n.get() == i % n.get() ? One<T> : Zero<T>; });
+   auto op = [](index_t i, index_t j) { return i == j ? One<T> : Zero<T>; };
+   using E = detail::IndexExpr2D<T, decltype(op)>;
+   return detail::StrictArrayBase2D<E>{n.get(), n.get(), op};
 }
 
 
 template <TwoDimBaseType Base>
 STRICT_CONSTEXPR auto transpose(const Base& A) {
-   return generate(detail::irange2D(A.cols(), A.rows()), [&A](auto i) {
-      auto row_pos = i % A.rows();
-      auto col_pos = i / A.rows();
-      return A.un(row_pos * A.cols() + col_pos);
-   });
+   auto op = [&A](index_t i, index_t j) { return A.un(j, i); };
+   using E = detail::IndexExpr2D<BuiltinTypeOf<Base>, decltype(op)>;
+   return detail::StrictArrayBase2D<E>{A.cols(), A.rows(), op};
 }
 
 
