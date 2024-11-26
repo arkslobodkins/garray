@@ -66,6 +66,25 @@ STRICT_CONSTEXPR_INLINE void copy(const Base1& STRICT_RESTRICT A1, Base2& STRICT
 }
 
 
+template <ArrayTwoDimType Base1, ArrayTwoDimType Base2>
+STRICT_CONSTEXPR_INLINE void copy(const Base1& STRICT_RESTRICT A1, Base2& STRICT_RESTRICT A2) {
+   for(index_t i = 0_sl; i < A1.size(); ++i) {
+      A2.un(i) = A1.un(i);
+   }
+}
+
+
+template <TwoDimBaseType Base1, TwoDimBaseType Base2>
+STRICT_CONSTEXPR_INLINE void copy(const Base1& STRICT_RESTRICT A1, Base2& STRICT_RESTRICT A2) {
+   std::cout << "nono" << std::endl;
+   for(index_t i = 0_sl; i < A1.rows(); ++i) {
+      for(index_t j = 0_sl; j < A1.cols(); ++j) {
+         A2.un(i, j) = A1.un(i, j);
+      }
+   }
+}
+
+
 template <BaseType Base1, BaseType Base2>
 STRICT_CONSTEXPR_INLINE void copyn(const Base1& STRICT_RESTRICT A1, Base2& STRICT_RESTRICT A2,
                                    index_t n) {
@@ -134,7 +153,5 @@ STRICT_CONSTEXPR_INLINE void fill(ValueTypeOf<Base> val, Base& A) {
       A.un(i) = val;
    }
 }
-
-
 }}  // namespace spp::detail
 

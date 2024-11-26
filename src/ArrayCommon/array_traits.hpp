@@ -39,7 +39,7 @@ template <typename T> concept SignedIntegerBaseType
 template <typename T> concept FloatingBaseType = BaseType<T> && Floating<typename T::builtin_type>;
 
 
-template <typename T> concept OneDimBaseType = BaseOf<detail::OneDimBase, T>;
+template <typename T> concept OneDimBaseType = BaseType<T> && BaseOf<detail::OneDimBase, T>;
 template <typename T> concept OneDimRealBaseType = OneDimBaseType<T> && RealBaseType<T>;
 template <typename T> concept OneDimBooleanBaseType = OneDimBaseType<T> && BooleanBaseType<T>;
 template <typename T> concept OneDimIntegerBaseType = OneDimBaseType<T> && IntegerBaseType<T>;
@@ -48,7 +48,7 @@ template <typename T> concept OneDimSignedIntegerBaseType
 template <typename T> concept OneDimFloatingBaseType = OneDimBaseType<T> && FloatingBaseType<T>;
 
 
-template <typename T> concept TwoDimBaseType = BaseOf<detail::TwoDimBase, T>;
+template <typename T> concept TwoDimBaseType = BaseType<T> && BaseOf<detail::TwoDimBase, T>;
 template <typename T> concept TwoDimRealBaseType = TwoDimBaseType<T> && RealBaseType<T>;
 template <typename T> concept TwoDimBooleanBaseType = TwoDimBaseType<T> && BooleanBaseType<T>;
 template <typename T> concept TwoDimIntegerBaseType = TwoDimBaseType<T> && IntegerBaseType<T>;
@@ -180,7 +180,7 @@ template <typename T> concept ArrayFloatingTypeRvalue = RvalueOf<T, ArrayFloatin
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename T> concept ArrayOneDimType = BaseOf<OneDimArrayBase, T>;
+template <typename T> concept ArrayOneDimType = OneDimBaseType<T> && BaseOf<OneDimArrayBase, T>;
 template <typename T> concept ArrayOneDimRealType = ArrayOneDimType<T> && Real<BuiltinTypeOf<T>>;
 template <typename T> concept ArrayOneDimBooleanType = ArrayOneDimType<T> && Boolean<BuiltinTypeOf<T>>;
 template <typename T> concept ArrayOneDimIntegerType = ArrayOneDimType<T> && Integer<BuiltinTypeOf<T>>;
@@ -195,7 +195,7 @@ template <typename T> concept ArrayOneDimFloatingTypeRvalue = RvalueOf<T, ArrayO
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename T> concept ArrayTwoDimType = BaseOf<TwoDimArrayBase, T>;
+template <typename T> concept ArrayTwoDimType = TwoDimBaseType<T> && BaseOf<TwoDimArrayBase, T>;
 template <typename T> concept ArrayTwoDimRealType = ArrayTwoDimType<T> && Real<BuiltinTypeOf<T>>;
 template <typename T> concept ArrayTwoDimBooleanType = ArrayTwoDimType<T> && Boolean<BuiltinTypeOf<T>>;
 template <typename T> concept ArrayTwoDimIntegerType = ArrayTwoDimType<T> && Integer<BuiltinTypeOf<T>>;
