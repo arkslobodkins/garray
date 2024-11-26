@@ -25,8 +25,8 @@ int main() {
    Array1D<double> x = random(Size{5}, Low{-1.}, High{1.});
    FixedArray1D<double, 5> y = random(5, -1._sd, 1._sd);
 
-   // Rotate elements to the right and set first element to 100.
-   x = merge(100._sd, exclude(y, last));
+   // Rotate elements to the right.
+   x = merge(y[last], exclude(y, last));
 
    auto z1 = Add(x, y, x + y);
    auto z2 = MergeAbs(x, y, x + y);
