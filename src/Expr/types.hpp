@@ -195,57 +195,6 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <Real T>
-class STRICT_NODISCARD SequenceExpr2D : private CopyBase2D {
-public:
-   using value_type = Strict<T>;
-   using builtin_type = T;
-
-   // incr can be 0 or negative.
-   STRICT_NODISCARD_CONSTEXPR explicit SequenceExpr2D(value_type start, index_t rows, index_t cols,
-                                                      value_type incr)
-       : start_{start},
-         rows_{rows},
-         cols_{cols},
-         incr_{incr} {
-      ASSERT_STRICT_DEBUG(rows_ > -1_sl);
-      ASSERT_STRICT_DEBUG(cols_ > -1_sl);
-      ASSERT_STRICT_DEBUG(semi_valid_row_col_sizes(rows_, cols_));
-   }
-
-   STRICT_NODISCARD_CONSTEXPR SequenceExpr2D(const SequenceExpr2D&) = default;
-   STRICT_CONSTEXPR SequenceExpr2D& operator=(const SequenceExpr2D&) = delete;
-   STRICT_CONSTEXPR ~SequenceExpr2D() = default;
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
-      return start_ + incr_ * strict_cast<builtin_type>(i.get());
-   }
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i, ImplicitInt j) const {
-      return this->un(i.get() * cols_ + j.get());
-   }
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE index_t size() const {
-      return rows_ * cols_;
-   }
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE index_t rows() const {
-      return rows_;
-   }
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE index_t cols() const {
-      return cols_;
-   }
-
-private:
-   value_type start_;
-   index_t rows_;
-   index_t cols_;
-   value_type incr_;
-};
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T, typename Op>
 class STRICT_NODISCARD IndexExpr2D : private CopyBase2D {
 public:

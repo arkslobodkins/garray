@@ -224,7 +224,9 @@ namespace detail {
 
 
 STRICT_CONSTEXPR_INLINE auto irange2D(ImplicitInt m, ImplicitInt n) {
-   return StrictArrayBase2D<SequenceExpr2D<long int>>{0_sl, m.get(), n.get(), 1_sl};
+   auto op = [n](index_t i, index_t j) { return i * n.get() + j; };
+   using E = detail::IndexExpr2D<long int, decltype(op)>;
+   return StrictArrayBase2D<E>{m.get(), n.get(), op};
 }
 
 
