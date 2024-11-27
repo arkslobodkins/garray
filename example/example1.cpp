@@ -15,7 +15,7 @@ constexpr OneDimBaseType auto Add(Args&&... args) {
 
 
 template <typename... Args>
-constexpr OneDimBaseType auto MergeAbs(Args&&... args) {
+constexpr OneDimBaseType auto AbsMerge(Args&&... args) {
    return abs(merge(std::forward<Args>(args)...));
 }
 
@@ -29,13 +29,13 @@ int main() {
    x = merge(y[last], exclude(y, last));
 
    auto z1 = Add(x, y, x + y);
-   auto z2 = MergeAbs(x, y, x + y);
+   auto z2 = AbsMerge(x, y, x + y);
 
    // Add(x, y, Array1D<double>(x + y)); // Won't compile, dangling temporary!!!
-   // MergeAbs(x, y, Array1D<double>(x + y)); // Won't compile, dangling temporary!!!
+   // AbsMerge(x, y, Array1D<double>(x + y)); // Won't compile, dangling temporary!!!
 
    auto s1 = sum(Add(x, y, Array1D<double>(x + y).lval()));       // Ok, can be used as lvalue.
-   auto s2 = sum(MergeAbs(x, y, Array1D<double>(x + y).lval()));  // Ok, can be used as lvalue.
+   auto s2 = sum(AbsMerge(x, y, Array1D<double>(x + y).lval()));  // Ok, can be used as lvalue.
 
    // Suppress unused variable warnings.
    []<typename... Args>([[maybe_unused]] Args&&...) {}(z1, z2, s1, s2);
