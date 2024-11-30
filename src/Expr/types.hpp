@@ -241,6 +241,47 @@ private:
 };
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <TwoDimBaseType Base, typename Op, bool rowwise>
+class STRICT_NODISCARD ReduceExpr : private CopyBase1D {
+   using row_type = decltype(std::declval<Base>().lval().row(0));
+   using col_type = decltype(std::declval<Base>().lval().col(0));
+
+public:
+   using value_type = decltype(std::declval<Op>()(
+       std::declval<std::conditional_t<rowwise, row_type, col_type>>()));
+   using builtin_type = value_type::value_type;
+
+   STRICT_NODISCARD_CONSTEXPR explicit ReduceExpr(const Base& A, Op op) : A_{A}, op_{op} {
+   }
+
+   STRICT_NODISCARD_CONSTEXPR ReduceExpr(const ReduceExpr& E) = default;
+   STRICT_CONSTEXPR ReduceExpr& operator=(const ReduceExpr&) = delete;
+   STRICT_CONSTEXPR ~ReduceExpr() = default;
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
+      if constexpr(rowwise) {
+         return op_(A_.row(i));
+      } else {
+         return op_(A_.col(i));
+      }
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE index_t size() const {
+      if constexpr(rowwise) {
+         return A_.rows();
+      } else {
+         return A_.cols();
+      }
+   }
+
+private:
+   // Slice arrays are stored by copy, arrays by reference.
+   typename CopyOrReferenceExpr<AddConst<Base>>::type A_;
+   Op op_;
+};
+
+
 }  // namespace detail
 
 

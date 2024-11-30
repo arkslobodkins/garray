@@ -168,6 +168,14 @@ STRICT_CONSTEXPR auto const2D(Rows rows, Cols cols, Value<T> c);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+template <TwoDimBaseType Base, typename Op>
+STRICT_CONSTEXPR auto rowwise(const Base& A, Op op);
+
+
+template <TwoDimBaseType Base, typename Op>
+STRICT_CONSTEXPR auto colwise(const Base& A, Op op);
+
+
 namespace detail {
 
 
@@ -217,6 +225,17 @@ STRICT_CONSTEXPR auto exclude(Base&& A, detail::Last lst) = delete;
 template <typename Base>
    requires detail::ArrayTwoDimTypeRvalue<Base>
 STRICT_CONSTEXPR auto transpose(Base&& A) = delete;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename Base, typename Op>
+   requires detail::ArrayTwoDimTypeRvalue<Base>
+STRICT_CONSTEXPR auto rowwise(Base&& A, Op op) = delete;
+
+
+template <typename Base, typename Op>
+   requires detail::ArrayTwoDimTypeRvalue<Base>
+STRICT_CONSTEXPR auto colwise(Base&& A, Op op) = delete;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -488,6 +507,20 @@ STRICT_CONSTEXPR auto const2D(ImplicitInt rows, ImplicitInt cols, Strict<T> c) {
 template <Builtin T>
 STRICT_CONSTEXPR auto const2D(Rows rows, Cols cols, Value<T> c) {
    return const2D<T>(rows.get(), cols.get(), c.get());
+}
+
+
+template <TwoDimBaseType Base, typename Op>
+STRICT_CONSTEXPR auto rowwise(const Base& A, Op op) {
+   using E = detail::ReduceExpr<Base, Op, true>;
+   return detail::StrictArrayBase1D<E>{A, op};
+}
+
+
+template <TwoDimBaseType Base, typename Op>
+STRICT_CONSTEXPR auto colwise(const Base& A, Op op) {
+   using E = detail::ReduceExpr<Base, Op, false>;
+   return detail::StrictArrayBase1D<E>{A, op};
 }
 
 
