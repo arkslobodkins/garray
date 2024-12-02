@@ -16,5 +16,6 @@ namespace spp::use {
 template <Builtin T>
 using StrictPair = std::pair<Strict<T>, Strict<T>>;
 
+
 }
 

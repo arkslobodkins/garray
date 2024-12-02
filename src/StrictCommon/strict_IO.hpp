@@ -195,24 +195,21 @@ std::ostream& operator<<(std::ostream& os, Strict<T> x) {
 
 template <StandardFloating T>
 std::ostream& operator<<(std::ostream& os, Strict<T> x) {
+   auto set_precision = []<typename U> {
+      if constexpr(SameAs<U, float>) {
+         return std::setprecision(format.precision_[0]);
+      } else if constexpr(SameAs<U, double>) {
+         return std::setprecision(format.precision_[1]);
+      } else {
+         return std::setprecision(format.precision_[2]);
+      }
+   };
+
    os << std::showpos;
    if(format.scientific_) {
-      if constexpr(SameAs<T, float>) {
-         os << std::scientific << std::showpoint << std::setprecision(format.precision_[0]) << T{x};
-
-      } else if constexpr(SameAs<T, double>) {
-         os << std::scientific << std::showpoint << std::setprecision(format.precision_[1]) << T{x};
-      } else {
-         os << std::scientific << std::showpoint << std::setprecision(format.precision_[2]) << T{x};
-      }
+      os << std::scientific << std::showpoint << set_precision.template operator()<T>() << T{x};
    } else {
-      if constexpr(SameAs<T, float>) {
-         os << std::fixed << std::showpoint << std::setprecision(format.precision_[0]) << T{x};
-      } else if constexpr(SameAs<T, double>) {
-         os << std::fixed << std::showpoint << std::setprecision(format.precision_[1]) << T{x};
-      } else {
-         os << std::fixed << std::showpoint << std::setprecision(format.precision_[2]) << T{x};
-      }
+      os << std::fixed << std::showpoint << set_precision.template operator()<T>() << T{x};
    }
    return os;
 }
