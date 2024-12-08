@@ -104,15 +104,24 @@ public:
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type& un(ImplicitInt i);
    STRICT_NODISCARD_CONSTEXPR_INLINE const value_type& un(ImplicitInt i) const;
 
-   STRICT_NODISCARD_CONSTEXPR value_type* data();
-   STRICT_NODISCARD_CONSTEXPR const value_type* data() const;
+   STRICT_NODISCARD_CONSTEXPR value_type* data() &;
+   STRICT_NODISCARD_CONSTEXPR const value_type* data() const&;
+   STRICT_NODISCARD_CONSTEXPR value_type* data() && = delete;
+   STRICT_NODISCARD_CONSTEXPR const value_type* data() const&& = delete;
 
    // Converting to built-in types requires reinterpret_cast,
    // which cannot be done at compile time(not constexpr).
-   STRICT_NODISCARD builtin_type* blas_data()
+   STRICT_NODISCARD builtin_type* blas_data() &
       requires CompatibleBuiltin<T>;
-   STRICT_NODISCARD const builtin_type* blas_data() const
+   STRICT_NODISCARD const builtin_type* blas_data() const&
       requires CompatibleBuiltin<T>;
+
+   STRICT_NODISCARD builtin_type* blas_data() &&
+      requires CompatibleBuiltin<T>
+   = delete;
+   STRICT_NODISCARD const builtin_type* blas_data() const&&
+      requires CompatibleBuiltin<T>
+   = delete;
 
 private:
    value_type* data_;
@@ -486,19 +495,19 @@ STRICT_NODISCARD_CONSTEXPR_INLINE const Strict<T>& ArrayBase1D<T, AF>::un(Implic
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_NODISCARD_CONSTEXPR auto ArrayBase1D<T, AF>::data() -> value_type* {
+STRICT_NODISCARD_CONSTEXPR auto ArrayBase1D<T, AF>::data() & -> value_type* {
    return this->size() != 0_sl ? data_ : nullptr;
 }
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_NODISCARD_CONSTEXPR auto ArrayBase1D<T, AF>::data() const -> const value_type* {
+STRICT_NODISCARD_CONSTEXPR auto ArrayBase1D<T, AF>::data() const& -> const value_type* {
    return this->size() != 0_sl ? data_ : nullptr;
 }
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_NODISCARD auto ArrayBase1D<T, AF>::blas_data() -> builtin_type*
+STRICT_NODISCARD auto ArrayBase1D<T, AF>::blas_data() & -> builtin_type*
    requires CompatibleBuiltin<T>
 {
    return reinterpret_cast<T*>(this->size() != 0_sl ? data_ : nullptr);
@@ -506,7 +515,7 @@ STRICT_NODISCARD auto ArrayBase1D<T, AF>::blas_data() -> builtin_type*
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_NODISCARD auto ArrayBase1D<T, AF>::blas_data() const -> const builtin_type*
+STRICT_NODISCARD auto ArrayBase1D<T, AF>::blas_data() const& -> const builtin_type*
    requires CompatibleBuiltin<T>
 {
    return reinterpret_cast<const T*>(this->size() != 0_sl ? data_ : nullptr);
