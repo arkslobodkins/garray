@@ -55,15 +55,24 @@ public:
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type& un(ImplicitInt i, ImplicitInt j);
    STRICT_NODISCARD_CONSTEXPR_INLINE const value_type& un(ImplicitInt i, ImplicitInt j) const;
 
-   STRICT_NODISCARD_CONSTEXPR value_type* data();
-   STRICT_NODISCARD_CONSTEXPR const value_type* data() const;
+   STRICT_NODISCARD_CONSTEXPR value_type* data() &;
+   STRICT_NODISCARD_CONSTEXPR const value_type* data() const&;
+   STRICT_NODISCARD_CONSTEXPR value_type* data() && = delete;
+   STRICT_NODISCARD_CONSTEXPR const value_type* data() const&& = delete;
 
    // Converting to built-in types requires reinterpret_cast,
    // which cannot be done at compile time(not constexpr).
-   STRICT_NODISCARD builtin_type* blas_data()
+   STRICT_NODISCARD builtin_type* blas_data() &
       requires CompatibleBuiltin<T>;
-   STRICT_NODISCARD const builtin_type* blas_data() const
+   STRICT_NODISCARD const builtin_type* blas_data() const&
       requires CompatibleBuiltin<T>;
+
+   STRICT_NODISCARD builtin_type* blas_data() &&
+      requires CompatibleBuiltin<T>
+   = delete;
+   STRICT_NODISCARD const builtin_type* blas_data() const&&
+      requires CompatibleBuiltin<T>
+   = delete;
 
 private:
    // Align to 512 byte boundary for AVX-512.
@@ -176,19 +185,19 @@ STRICT_NODISCARD_CONSTEXPR_INLINE auto FixedArrayBase2D<T, M, N>::un(ImplicitInt
 
 
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase2D<T, M, N>::data() -> value_type* {
+STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase2D<T, M, N>::data() & -> value_type* {
    return data1D_.data();
 }
 
 
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase2D<T, M, N>::data() const -> const value_type* {
+STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase2D<T, M, N>::data() const& -> const value_type* {
    return data1D_.data();
 }
 
 
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD auto FixedArrayBase2D<T, M, N>::blas_data() -> builtin_type*
+STRICT_NODISCARD auto FixedArrayBase2D<T, M, N>::blas_data() & -> builtin_type*
    requires CompatibleBuiltin<T>
 {
    return data1D_.blas_data();
@@ -196,7 +205,7 @@ STRICT_NODISCARD auto FixedArrayBase2D<T, M, N>::blas_data() -> builtin_type*
 
 
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD auto FixedArrayBase2D<T, M, N>::blas_data() const -> const builtin_type*
+STRICT_NODISCARD auto FixedArrayBase2D<T, M, N>::blas_data() const& -> const builtin_type*
    requires CompatibleBuiltin<T>
 {
    return data1D_.blas_data();
