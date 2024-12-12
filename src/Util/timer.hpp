@@ -7,17 +7,20 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include "../StrictCommon/strict_common.hpp"
 
 
 // Removed std::format since Intel and clang compilers do not support it(at this time).
-#define STRICT_TIME(a)                                                          \
-   do {                                                                         \
-      spp::util::timer t;                                                       \
-      a;                                                                        \
-      std::cout << (#a) << " took: " << std::setprecision(4) << std::scientific \
-                << t.wall_time().val() << " seconds\n";                         \
+#define STRICT_TIME(a)                                                       \
+   do {                                                                      \
+      spp::util::timer t;                                                    \
+      a;                                                                     \
+      std::ostringstream stream;                                             \
+      stream << (#a) << " took: " << std::setprecision(4) << std::scientific \
+             << t.wall_time().val() << " seconds\n";                         \
+      std::cout << stream.str();                                             \
    } while(0)
 
 
