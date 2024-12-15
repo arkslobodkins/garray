@@ -159,6 +159,19 @@ private:
 
    StrictBool scientific_{true};
    int precision_[4]{float_precision, double_precision, long_double_precision, quad_precision};
+
+   // Originally a templated lambda inside << operator, but changed to private member
+   // function since CUDA(even CUDA 12.6) does not seem to support templated lambdas.
+   template <StandardFloating T>
+   auto set_float_precision() const {
+      if constexpr(SameAs<T, float>) {
+         return std::setprecision(precision_[0]);
+      } else if constexpr(SameAs<T, double>) {
+         return std::setprecision(precision_[1]);
+      } else {
+         return std::setprecision(precision_[2]);
+      }
+   }
 };
 
 
@@ -195,21 +208,11 @@ std::ostream& operator<<(std::ostream& os, Strict<T> x) {
 
 template <StandardFloating T>
 std::ostream& operator<<(std::ostream& os, Strict<T> x) {
-   auto set_precision = []<typename U> {
-      if constexpr(SameAs<U, float>) {
-         return std::setprecision(format.precision_[0]);
-      } else if constexpr(SameAs<U, double>) {
-         return std::setprecision(format.precision_[1]);
-      } else {
-         return std::setprecision(format.precision_[2]);
-      }
-   };
-
    os << std::showpos;
    if(format.scientific_) {
-      os << std::scientific << std::showpoint << set_precision.template operator()<T>() << T{x};
+      os << std::scientific << std::showpoint << format.set_float_precision<T>() << T{x};
    } else {
-      os << std::fixed << std::showpoint << set_precision.template operator()<T>() << T{x};
+      os << std::fixed << std::showpoint << format.set_float_precision<T>() << T{x};
    }
    return os;
 }
