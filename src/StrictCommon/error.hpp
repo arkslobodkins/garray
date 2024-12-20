@@ -4,6 +4,7 @@
 #pragma once
 
 
+#include <cassert>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
@@ -43,14 +44,12 @@ inline std::string trace_err(const char* file, const char* func, int line) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef STRICT_DEBUG_OFF
-#define NORMAL_ASSERT_STRICT_DEBUG_MSG(condition, msg)                                    \
-   do {                                                                                   \
-      if(!(condition)) {                                                                  \
-         spp::detail::print_stacktrace();                                                 \
-         std::cerr << msg << spp::trace_err(__FILE__, __func__, __LINE__) << "Assertion " \
-                   << (#condition) << " failed." << std::endl;                            \
-         std::abort();                                                                    \
-      }                                                                                   \
+#define NORMAL_ASSERT_STRICT_DEBUG_MSG(condition, msg) \
+   do {                                                \
+      if(!(condition)) {                               \
+         spp::detail::print_stacktrace();              \
+         assert((condition) && msg);                   \
+      }                                                \
    } while(false)
 #define NORMAL_ASSERT_STRICT_DEBUG(condition) NORMAL_ASSERT_STRICT_DEBUG_MSG(condition, "")
 
@@ -63,14 +62,12 @@ inline std::string trace_err(const char* file, const char* func, int line) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef STRICT_ERROR_EXCEPTIONS
-#define ASSERT_STRICT_ALWAYS_MSG(condition, msg)                                          \
-   do {                                                                                   \
-      if(!(condition)) {                                                                  \
-         spp::detail::print_stacktrace();                                                 \
-         std::cerr << msg << spp::trace_err(__FILE__, __func__, __LINE__) << "Assertion " \
-                   << (#condition) << " failed." << std::endl;                            \
-         std::abort();                                                                    \
-      }                                                                                   \
+#define ASSERT_STRICT_ALWAYS_MSG(condition, msg) \
+   do {                                          \
+      if(!(condition)) {                         \
+         spp::detail::print_stacktrace();        \
+         assert((condition) && msg);             \
+      }                                          \
    } while(false)
 #define ASSERT_STRICT_ALWAYS(condition) ASSERT_STRICT_ALWAYS_MSG(condition, "")
 
@@ -101,20 +98,21 @@ inline std::string trace_err(const char* file, const char* func, int line) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #define ASSERT_STRICT_RANGE_DEBUG(condition) \
-   ASSERT_STRICT_DEBUG_MSG(condition, "OUT OF RANGE!\n")
+   ASSERT_STRICT_DEBUG_MSG(condition, "OUT OF RANGE!")
+
 #define ASSERT_STRICT_RANGE_ALWAYS(condition) \
-   ASSERT_STRICT_ALWAYS_MSG(condition, "OUT OF RANGE!\n")
+   ASSERT_STRICT_ALWAYS_MSG(condition, "OUT OF RANGE!")
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #define ASSERT_STRICT_DIVISION_DEBUG(condition) \
-   ASSERT_STRICT_DEBUG_MSG(condition, "INTEGER DIVISION BY 0!\n")
+   ASSERT_STRICT_DEBUG_MSG(condition, "INTEGER DIVISION BY 0!")
 
 #define ASSERT_STRICT_REMAINDER_DEBUG(condition) \
-   ASSERT_STRICT_DEBUG_MSG(condition, "MODULO DIVISION BY 0!\n")
+   ASSERT_STRICT_DEBUG_MSG(condition, "MODULO DIVISION BY 0!")
 
 #define ASSERT_STRICT_SHIFT_FIRST_DEBUG(condition) \
-   ASSERT_STRICT_DEBUG_MSG(condition, "FIRST SHIFT OPERAND HAS A NEGATIVE VALUE!\n")
+   ASSERT_STRICT_DEBUG_MSG(condition, "FIRST SHIFT OPERAND HAS A NEGATIVE VALUE!")
 
 #define ASSERT_STRICT_SHIFT_SECOND_DEBUG(condition) \
-   ASSERT_STRICT_DEBUG_MSG(condition, "SECOND SHIFT OPERAND HAS A NEGATIVE VALUE!\n")
+   ASSERT_STRICT_DEBUG_MSG(condition, "SECOND SHIFT OPERAND HAS A NEGATIVE VALUE!")

@@ -104,7 +104,7 @@ inline void print_stacktrace() {
 #error STACKTRACE IS NOT AVAILABLE. Compile without STRICT_STACKTRACE or compile with C++23 staacktrace support.
 
 namespace spp::detail {
-inline void print_stacktrace() {
+constexpr inline void print_stacktrace() {
 }
 }  // namespace spp::detail
 
@@ -114,7 +114,7 @@ inline void print_stacktrace() {
 #else
 
 namespace spp::detail {
-inline void print_stacktrace() {
+constexpr inline void print_stacktrace() {
 }
 }  // namespace spp::detail
 
