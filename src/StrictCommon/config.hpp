@@ -88,6 +88,8 @@
 
 #include <stacktrace>
 
+// print_stacktrace is constexpr so that assertions work properly
+// on CUDA device with --expt-relaxed-constexpr flag.
 namespace spp::detail {
 inline void print_stacktrace() {
    auto s = std::stacktrace::current();
