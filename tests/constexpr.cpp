@@ -10,18 +10,18 @@ using namespace spp;
 // otherwise constant evaluation will hit maximum step limit.
 template <typename T>
 consteval void array1D() {
-   Array1D<T, Unaligned>{};
-   Array1D<T, Unaligned>(2);
-   Array1D<T, Unaligned>(Size{2});
-   Array1D<T, Unaligned>(2, Zero<T>);
-   Array1D<T, Unaligned>(Size{2}, Value{Zero<T>});
-   Array1D<T, Unaligned>{Zero<T>};
+   Array1D<T>{};
+   Array1D<T>(2);
+   Array1D<T>(Size{2});
+   Array1D<T>(2, Zero<T>);
+   Array1D<T>(Size{2}, Value{Zero<T>});
+   Array1D<T>{Zero<T>};
 
-   Array1D<T, Unaligned> A(2);
-   Array1D<T, Unaligned> B = A;
-   Array1D<T, Unaligned> C = const1D<T>(2, Zero<T>);
-   Array1D<T, Unaligned> D(C.begin(), C.end());
-   Array1D<T, Unaligned> E = std::move(A);
+   Array1D<T> A(2);
+   Array1D<T> B = A;
+   Array1D<T> C = const1D<T>(2, Zero<T>);
+   Array1D<T> D(C.begin(), C.end());
+   Array1D<T> E = std::move(A);
 
    E = Zero<T>;
    E = {Zero<T>, Zero<T>};
@@ -93,17 +93,17 @@ consteval void fixed_array1D() {
 
 template <typename T>
 consteval void array2D() {
-   Array2D<T, Unaligned>{};
-   Array2D<T, Unaligned>(2, 2);
-   Array2D<T, Unaligned>(Rows{2}, Cols{2});
-   Array2D<T, Unaligned>(2, 2, Zero<T>);
-   Array2D<T, Unaligned>(Rows{2}, Cols{2}, Value{Zero<T>});
-   Array2D<T, Unaligned>{{Zero<T>, Zero<T>}, {Zero<T>, Zero<T>}};
+   Array2D<T>{};
+   Array2D<T>(2, 2);
+   Array2D<T>(Rows{2}, Cols{2});
+   Array2D<T>(2, 2, Zero<T>);
+   Array2D<T>(Rows{2}, Cols{2}, Value{Zero<T>});
+   Array2D<T>{{Zero<T>, Zero<T>}, {Zero<T>, Zero<T>}};
 
-   Array2D<T, Unaligned> A(2, 2);
-   Array2D<T, Unaligned> B = A;
-   Array2D<T, Unaligned> C = const2D<T>(2, 2, Zero<T>);
-   Array2D<T, Unaligned> D = std::move(A);
+   Array2D<T> A(2, 2);
+   Array2D<T> B = A;
+   Array2D<T> C = const2D<T>(2, 2, Zero<T>);
+   Array2D<T> D = std::move(A);
 
    D = Zero<T>;
    D = {{Zero<T>, Zero<T>}, {Zero<T>, Zero<T>}};
@@ -142,26 +142,26 @@ consteval void array2D() {
    D.remove_cols({0, 2, 4});
 
    D.resize(2, D.cols());
-   Array2D<T, Unaligned> E1(1, D.cols());
+   Array2D<T> E1(1, D.cols());
    D.insert_rows(0, E1);
    D.insert_rows(Pos{0}, E1);
    D.insert_rows_front(E1);
    D.insert_rows_back(E1);
 
-   Array2D<T, Unaligned> E2(D.rows(), 1);
+   Array2D<T> E2(D.rows(), 1);
    D.insert_cols(0, E2);
    D.insert_cols(Pos{0}, E2);
    D.insert_cols_front(E2);
    D.insert_cols_back(E2);
 
    D.resize(2, D.cols());
-   Array1D<T, Unaligned> x1(D.cols());
+   Array1D<T> x1(D.cols());
    D.insert_row(0, x1);
    D.insert_row(Pos{0}, x1);
    D.insert_row_front(x1);
    D.insert_row_back(x1);
 
-   Array1D<T, Unaligned> x2(D.rows());
+   Array1D<T> x2(D.rows());
    D.insert_col(0, x2);
    D.insert_col(Pos{0}, x2);
    D.insert_col_front(x2);
@@ -202,7 +202,7 @@ consteval void fixed_array2D() {
 
 template <typename T>
 consteval void array_ops() {
-   Array2D<T, Unaligned> x(3, 2);
+   Array2D<T> x(3, 2);
 
    sum(x);
    prod(x);
@@ -253,7 +253,7 @@ consteval void array_ops() {
 
 template <typename T>
 consteval void expr_ops() {
-   Array2D<T, Unaligned> x(3, 2, One<T>);
+   Array2D<T> x(3, 2, One<T>);
 
    if constexpr(!Boolean<T>) {
       +x;
@@ -337,7 +337,7 @@ consteval void expr_ops() {
 
 template <typename T>
 consteval void derived1D() {
-   Array1D<T, Unaligned> x(10);
+   Array1D<T> x(10);
    x[0];
    x.at(0);
    x.empty();
@@ -363,7 +363,7 @@ consteval void derived1D() {
 
 template <typename T>
 consteval void derived2D() {
-   Array2D<T, Unaligned> x(5, 2);
+   Array2D<T> x(5, 2);
    x(0, 0);
    x.at(0, 0);
    x.empty();
@@ -391,8 +391,8 @@ consteval void derived2D() {
 
 template <typename T>
 consteval void slice_ops_1D() {
-   Array1D<T, Unaligned> x(5);
-   const Array1D<T, Unaligned> xc(5);
+   Array1D<T> x(5);
+   const Array1D<T> xc(5);
 
    x.view1D();
    xc.view1D();
@@ -433,8 +433,8 @@ consteval void slice_ops_1D() {
 
 template <typename T>
 consteval void slice_ops_2D() {
-   Array2D<T, Unaligned> x(5, 5);
-   const Array2D<T, Unaligned> xc(5, 5);
+   Array2D<T> x(5, 5);
+   const Array2D<T> xc(5, 5);
 
    x.view1D();
    xc.view1D();

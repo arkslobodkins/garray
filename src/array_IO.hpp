@@ -22,20 +22,20 @@
 namespace spp {
 
 
-template <Builtin T>
-std::istream& operator>>(std::istream& is, Array1D<T>& A);
+template <Builtin T, AlignmentFlag AF>
+std::istream& operator>>(std::istream& is, Array1D<T, AF>& A);
 
 
-template <Builtin T>
-std::istream& operator>>(std::istream& is, Array2D<T>& A);
+template <Builtin T, AlignmentFlag AF>
+std::istream& operator>>(std::istream& is, Array2D<T, AF>& A);
 
 
-template <Builtin T>
-void read_from_file(const std::string& file_path, Array1D<T>& A);
+template <Builtin T, AlignmentFlag AF>
+void read_from_file(const std::string& file_path, Array1D<T, AF>& A);
 
 
-template <Builtin T>
-void read_from_file(const std::string& file_path, Array2D<T>& A);
+template <Builtin T, AlignmentFlag AF>
+void read_from_file(const std::string& file_path, Array2D<T, AF>& A);
 
 
 std::ostream& operator<<(std::ostream& os, BaseType auto const& A);
@@ -103,12 +103,12 @@ static inline detail::ArrayFormat array_format;
 namespace detail {
 
 
-template <Builtin T>
-std::istream& istream_base_read(std::istream& is, Array1D<T>& A) {
+template <Builtin T, AlignmentFlag AF>
+std::istream& istream_base_read(std::istream& is, Array1D<T, AF>& A) {
    T x{};
    index_t count{};
 
-   Array1D<T> tmp(8);
+   Array1D<T, AF> tmp(8);
    while(is >> x) {
       tmp.un(count++) = Strict{x};
       if(tmp.size() == count) {
@@ -125,8 +125,8 @@ std::istream& istream_base_read(std::istream& is, Array1D<T>& A) {
 }
 
 
-template <typename T>
-void get_first_row(const std::string& line, Array2D<T>& A) {
+template <Builtin T, AlignmentFlag AF>
+void get_first_row(const std::string& line, Array2D<T, AF>& A) {
    A.resize(1, 4);
 
    T x{};
@@ -149,8 +149,8 @@ void get_first_row(const std::string& line, Array2D<T>& A) {
 }
 
 
-template <typename T>
-void get_row(const std::string& line, index_t row, Array2D<T>& A) {
+template <Builtin T, AlignmentFlag AF>
+void get_row(const std::string& line, index_t row, Array2D<T, AF>& A) {
    T x{};
    std::istringstream iss{line};
    index_t ncols{};
@@ -164,10 +164,10 @@ void get_row(const std::string& line, index_t row, Array2D<T>& A) {
 }
 
 
-template <Builtin T>
-std::istream& istream_base_read(std::istream& is, Array2D<T>& A) {
+template <Builtin T, AlignmentFlag AF>
+std::istream& istream_base_read(std::istream& is, Array2D<T, AF>& A) {
    std::string line{};
-   Array2D<T> tmp;
+   Array2D<T, AF> tmp;
    // Important to test tmp.empty() first, otherwise get off-by-1 error.
    while(tmp.empty() && std::getline(is, line)) {
       get_first_row<T>(line, tmp);
@@ -339,20 +339,20 @@ void print_helper(const Base1& A1, const BArgs&... AArgs) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <Builtin T>
-std::istream& operator>>(std::istream& is, Array1D<T>& A) {
+template <Builtin T, AlignmentFlag AF>
+std::istream& operator>>(std::istream& is, Array1D<T, AF>& A) {
    return detail::istream_base_read(is, A);
 }
 
 
-template <Builtin T>
-std::istream& operator>>(std::istream& is, Array2D<T>& A) {
+template <Builtin T, AlignmentFlag AF>
+std::istream& operator>>(std::istream& is, Array2D<T, AF>& A) {
    return detail::istream_base_read(is, A);
 }
 
 
-template <Builtin T>
-void read_from_file(const std::string& file_path, Array1D<T>& A) {
+template <Builtin T, AlignmentFlag AF>
+void read_from_file(const std::string& file_path, Array1D<T, AF>& A) {
    std::ifstream ifs{file_path};
    ASSERT_STRICT_ALWAYS_MSG(ifs, "Invalid file path.\n");
    detail::istream_base_read(ifs, A);
@@ -360,8 +360,8 @@ void read_from_file(const std::string& file_path, Array1D<T>& A) {
 }
 
 
-template <Builtin T>
-void read_from_file(const std::string& file_path, Array2D<T>& A) {
+template <Builtin T, AlignmentFlag AF>
+void read_from_file(const std::string& file_path, Array2D<T, AF>& A) {
    std::ifstream ifs{file_path};
    ASSERT_STRICT_ALWAYS_MSG(ifs, "Invalid file path.\n");
    detail::istream_base_read(ifs, A);

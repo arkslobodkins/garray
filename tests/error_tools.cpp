@@ -135,8 +135,8 @@ void rel_error() {
 
 template <Floating T>
 consteval void constexpr_error() {
-   Array1D<T, Unaligned> x(Size{10}, Value{One<T>});
-   Array1D<T, Unaligned> y(Size{10}, Value{One<T>});
+   Array1D<T> x(Size{10}, Value{One<T>});
+   Array1D<T> y(Size{10}, Value{One<T>});
 
    ASSERT(within_tol_abs(x, y));
    ASSERT(within_tol_rel(x, y));

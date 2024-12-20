@@ -14,7 +14,7 @@ static auto eig_array_init(long int n) {
 
 
 static auto strict_array_init(long int n) {
-   return Array1D<double>(random(n, -1._sd, 1._sd));
+   return Array1D<double, Aligned>(random(n, -1._sd, 1._sd));
 }
 
 

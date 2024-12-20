@@ -36,7 +36,7 @@ class StrictArray2D;
 }  // namespace detail
 
 
-template <Builtin T, AlignmentFlag AF = Aligned>
+template <Builtin T, AlignmentFlag AF = Unaligned>
 using Array2D = detail::StrictArray2D<detail::ArrayBase2D<T, AF>>;
 
 

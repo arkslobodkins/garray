@@ -144,7 +144,7 @@ consteval void run_assign_move() {
 
 template <Builtin T, ImplicitIntStatic n>
 consteval void run_assign_copy_other() {
-   Array1D<T, Unaligned> A1 = semi_random<T>(n);
+   Array1D<T> A1 = semi_random<T>(n);
    FixedArray1D<T, n> A2;
    A2 = A1;
    ASSERT(A1 == A2);

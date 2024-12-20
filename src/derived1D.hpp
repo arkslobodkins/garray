@@ -34,7 +34,7 @@ class StrictArray1D;
 }  // namespace detail
 
 
-template <Builtin T, AlignmentFlag AF = Aligned>
+template <Builtin T, AlignmentFlag AF = Unaligned>
 using Array1D = detail::StrictArray1D<detail::ArrayBase1D<T, AF>>;
 
 
