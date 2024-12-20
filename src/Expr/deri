@@ -1,0 +1,86 @@
+binary.hpp|94 col 46-53| // a deleted overload in some cases, such as Array1D<double>(3) + 1._sd.
+/home/slobod/Documents/Work/strictpp/src/array_IO.hpp|26 col 44-51| std::istream& operator>>(std::istream& is, Array1D<T, AF>& A);
+/home/slobod/Documents/Work/strictpp/src/array_IO.hpp|34 col 51-58| void read_from_file(const std::string& file_path, Array1D<T, AF>& A);
+/home/slobod/Documents/Work/strictpp/src/array_IO.hpp|107 col 51-58| std::istream& istream_base_read(std::istream& is, Array1D<T, AF>& A) {
+/home/slobod/Documents/Work/strictpp/src/array_IO.hpp|111 col 4-11| Array1D<T, AF> tmp(8);
+/home/slobod/Documents/Work/strictpp/src/array_IO.hpp|343 col 44-51| std::istream& operator>>(std::istream& is, Array1D<T, AF>& A) {
+/home/slobod/Documents/Work/strictpp/src/array_IO.hpp|355 col 51-58| void read_from_file(const std::string& file_path, Array1D<T, AF>& A) {
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|26 col 13-20| class StrictArray1D;
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|75 col 51-58| STRICT_CONSTEXPR auto& resize_and_assign(StrictArray1D<ArrayBase1D>&& A);
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|302 col 29-36| return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|315 col 29-36| return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|323 col 29-36| return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|328 col 68-75| STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize_and_assign(StrictArray1D<ArrayBase1D>&& A) {
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|331 col 29-36| return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|346 col 29-36| return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|399 col 29-36| return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|413 col 29-36| return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
+/home/slobod/Documents/Work/strictpp/src/array_base1D.hpp|456 col 29-36| return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
+/home/slobod/Documents/Work/strictpp/src/array_ops.hpp|317 col 4-11| Array1D<RealTypeOf<Base>, Unaligned> sb(nblocks);
+/home/slobod/Documents/Work/strictpp/src/array_stable_ops.hpp|115 col 4-11| Array1D<RealTypeOf<Base>> sb(nblocks);
+/home/slobod/Documents/Work/strictpp/src/array_stable_ops.hpp|140 col 4-11| Array1D<real_type> res(A.size() - 1_sl);
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|31 col 13-20| class StrictArray1D;
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|38 col 7-14| using Array1D = detail::StrictArray1D<detail::ArrayBase1D<T, AF>>;
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|42 col 12-19| using FixedArray1D = detail::StrictArray1D<detail::FixedArrayBase1D<T, sz>>;
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|276 col 31-38| STRICT_NODISCARD_CONSTEXPR Array1D<builtin_type, Unaligned> eval() const& {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|280 col 7-14| Array1D<builtin_type, Unaligned> A(Base::size());
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|472 col 30-37| class STRICT_NODISCARD StrictArray1D final : public StrictArrayMutable1D<Base> {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|485 col 37-44| STRICT_NODISCARD_CONSTEXPR StrictArray1D() = default;
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|486 col 37-44| STRICT_NODISCARD_CONSTEXPR StrictArray1D(const StrictArray1D&) = default;
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|487 col 37-44| STRICT_NODISCARD_CONSTEXPR StrictArray1D(StrictArray1D&&) = default;
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|491 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator=(const StrictArray1D& A) & {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|492 col 32-39| return static_cast<StrictArray1D&>(Base::operator=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|495 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator=(StrictArray1D&& A) & {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|496 col 32-39| return static_cast<StrictArray1D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|499 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator=(value_type x) & {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|500 col 32-39| return static_cast<StrictArray1D&>(Base::operator=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|503 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator=(use::List1D<builtin_type> list) & {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|504 col 32-39| return static_cast<StrictArray1D&>(Base::operator=(list));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|507 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator=(OneDimBaseType auto const& A) & {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|508 col 32-39| return static_cast<StrictArray1D&>(Base::operator=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|512 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator+=(value_type x) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|513 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator+=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|516 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator-=(value_type x) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|517 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator-=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|520 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator*=(value_type x) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|521 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator*=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|524 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator/=(value_type x) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|525 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator/=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|528 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator%=(value_type x)
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|531 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator%=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|534 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator<<=(value_type x)
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|537 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator<<=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|540 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator>>=(value_type x)
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|543 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator>>=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|546 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator&=(value_type x)
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|549 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator&=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|552 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator|=(value_type x)
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|555 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator|=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|558 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator^=(value_type x)
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|561 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator^=(x));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|565 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator+=(OneDimRealBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|566 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator+=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|569 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator-=(OneDimRealBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|570 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator-=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|573 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator*=(OneDimRealBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|574 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator*=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|577 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator/=(OneDimRealBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|578 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator/=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|581 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator%=(OneDimIntegerBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|582 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator%=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|585 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator<<=(OneDimIntegerBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|586 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator<<=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|589 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator>>=(OneDimIntegerBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|590 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator>>=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|593 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator&=(OneDimIntegerBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|594 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator&=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|597 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator|=(OneDimIntegerBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|598 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator|=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|601 col 27-34| STRICT_CONSTEXPR StrictArray1D& operator^=(OneDimIntegerBaseType auto const& A) {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|602 col 32-39| return static_cast<StrictArray1D&>(MutableBase1D::operator^=(A));
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|622 col 27-34| STRICT_CONSTEXPR StrictArray1D& lval() & = delete;
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|624 col 33-40| STRICT_CONSTEXPR const StrictArray1D& lval() const& = delete;
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|626 col 37-44| STRICT_NODISCARD_CONSTEXPR StrictArray1D& lval() && {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|627 col 32-39| return static_cast<StrictArray1D&>(CommonBase1D::lval_impl());
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|630 col 43-50| STRICT_NODISCARD_CONSTEXPR const StrictArray1D& lval() const&& {
+/home/slobod/Documents/Work/strictpp/src/derived1D.hpp|631 col 32-39| return static_cast<StrictArray1D&>(CommonBase1D::lval_impl());
