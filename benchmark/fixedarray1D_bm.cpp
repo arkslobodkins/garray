@@ -16,7 +16,7 @@ static auto eig_array_init() {
 
 template <int N>
 static auto strict_array_init() {
-   return FixedArray1D<double, N>(random(N, -1._sd, 1._sd));
+   return FixedArray1D<double, N, Aligned>(random(N, -1._sd, 1._sd));
 }
 
 

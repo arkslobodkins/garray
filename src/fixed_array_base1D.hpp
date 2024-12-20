@@ -13,7 +13,7 @@ namespace spp::detail {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <Builtin T, ImplicitIntStatic N>
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
 class STRICT_NODISCARD FixedArrayBase1D : private ReferenceBase1D, private OneDimArrayBase {
 public:
    using value_type = Strict<T>;
@@ -68,75 +68,76 @@ public:
    = delete;
 
 private:
-   // Align to 512 byte boundary for AVX-512.
-   alignas(512) value_type data_[to_size_t(N.get())];
+   alignas(detail::alignment_of<T, AF>()) value_type data_[to_size_t(N.get())];
 };
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N>::FixedArrayBase1D() {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N, AF>::FixedArrayBase1D() {
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N>::FixedArrayBase1D(value_type x) {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N, AF>::FixedArrayBase1D(value_type x) {
    fill(x, *this);
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N>::FixedArrayBase1D(Value<T> x)
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N, AF>::FixedArrayBase1D(Value<T> x)
     : FixedArrayBase1D(x.get()) {
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N>::FixedArrayBase1D(
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N, AF>::FixedArrayBase1D(
     use::List1D<builtin_type> list) {
    ASSERT_STRICT_DEBUG(N.get() == to_index_t(list.size()));
    copy(list, *this);
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
 template <LinearIteratorType L>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N>::FixedArrayBase1D(L b, L e) {
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N, AF>::FixedArrayBase1D(L b, L e) {
    ASSERT_STRICT_DEBUG(index_t{e - b} == N.get());
    ASSERT_STRICT_DEBUG(e >= b);
    copy(b, e, *this);
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N>::FixedArrayBase1D(const FixedArrayBase1D& A) {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N, AF>::FixedArrayBase1D(const FixedArrayBase1D& A) {
    copy(A, *this);
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N>::FixedArrayBase1D(FixedArrayBase1D&& A) noexcept
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N, AF>::FixedArrayBase1D(
+    FixedArrayBase1D&& A) noexcept
     : FixedArrayBase1D(A) {
    A = Zero<T>;
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N>::FixedArrayBase1D(OneDimBaseType auto const& A) {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase1D<T, N, AF>::FixedArrayBase1D(
+    OneDimBaseType auto const& A) {
    ASSERT_STRICT_DEBUG(same_size(*this, A));
    copy(A, *this);
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(value_type x) {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR FixedArrayBase1D<T, N, AF>& FixedArrayBase1D<T, N, AF>::operator=(value_type x) {
    fill(x, *this);
    return *this;
 }
 
 
 // Handles empty initializer list case as well.
-template <Builtin T, ImplicitIntStatic N>
-STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR FixedArrayBase1D<T, N, AF>& FixedArrayBase1D<T, N, AF>::operator=(
     use::List1D<builtin_type> list) {
    ASSERT_STRICT_DEBUG(N.get() == to_index_t(list.size()));
    copy(list, *this);
@@ -144,8 +145,8 @@ STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR FixedArrayBase1D<T, N, AF>& FixedArrayBase1D<T, N, AF>::operator=(
     const FixedArrayBase1D& A) {
    if(this != &A) {
       copy(A, *this);
@@ -154,8 +155,8 @@ STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR FixedArrayBase1D<T, N, AF>& FixedArrayBase1D<T, N, AF>::operator=(
     FixedArrayBase1D&& A) noexcept {
    if(this != &A) {
       *this = A;
@@ -165,8 +166,8 @@ STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR FixedArrayBase1D<T, N, AF>& FixedArrayBase1D<T, N, AF>::operator=(
     OneDimBaseType auto const& A) {
    ASSERT_STRICT_DEBUG(same_size(*this, A));
    copy(A, *this);
@@ -174,46 +175,47 @@ STRICT_CONSTEXPR FixedArrayBase1D<T, N>& FixedArrayBase1D<T, N>::operator=(
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_CONSTEXPR_INLINE index_t FixedArrayBase1D<T, N>::size() {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR_INLINE index_t FixedArrayBase1D<T, N, AF>::size() {
    return N.get();
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T>& FixedArrayBase1D<T, N>::un(ImplicitInt i) {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T>& FixedArrayBase1D<T, N, AF>::un(ImplicitInt i) {
    return data_[i.get().val()];
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR_INLINE const Strict<T>& FixedArrayBase1D<T, N>::un(ImplicitInt i) const {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR_INLINE const Strict<T>& FixedArrayBase1D<T, N, AF>::un(
+    ImplicitInt i) const {
    return data_[i.get().val()];
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase1D<T, N>::data() & -> value_type* {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase1D<T, N, AF>::data() & -> value_type* {
    return this->size() != 0_sl ? data_ : nullptr;
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase1D<T, N>::data() const& -> const value_type* {
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase1D<T, N, AF>::data() const& -> const value_type* {
    return this->size() != 0_sl ? data_ : nullptr;
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD auto FixedArrayBase1D<T, N>::blas_data() & -> builtin_type*
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD auto FixedArrayBase1D<T, N, AF>::blas_data() & -> builtin_type*
    requires CompatibleBuiltin<T>
 {
    return reinterpret_cast<T*>(this->size() != 0_sl ? data_ : nullptr);
 }
 
 
-template <Builtin T, ImplicitIntStatic N>
-STRICT_NODISCARD auto FixedArrayBase1D<T, N>::blas_data() const& -> const builtin_type*
+template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD auto FixedArrayBase1D<T, N, AF>::blas_data() const& -> const builtin_type*
    requires CompatibleBuiltin<T>
 {
    return reinterpret_cast<const T*>(this->size() != 0_sl ? data_ : nullptr);

@@ -40,8 +40,8 @@ template <Builtin T, AlignmentFlag AF = Unaligned>
 using Array2D = detail::StrictArray2D<detail::ArrayBase2D<T, AF>>;
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-using FixedArray2D = detail::StrictArray2D<detail::FixedArrayBase2D<T, M, N>>;
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF = Unaligned>
+using FixedArray2D = detail::StrictArray2D<detail::FixedArrayBase2D<T, M, N, AF>>;
 
 
 namespace detail {

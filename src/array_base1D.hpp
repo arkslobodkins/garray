@@ -13,13 +13,7 @@
 #include "iterator.hpp"
 
 
-namespace spp {
-
-
-enum AlignmentFlag { Aligned, Unaligned };
-
-
-namespace detail {
+namespace spp { namespace detail {
 
 
 template <typename Base>
@@ -135,7 +129,6 @@ STRICT_NODISCARD_CONSTEXPR ArrayBase1D<T, AF>::ArrayBase1D() : data_{nullptr},
 }
 
 
-// Align to 512 byte boundary for AVX-512.
 template <Builtin T, AlignmentFlag AF>
 STRICT_NODISCARD ArrayBase1D<T, AF>::ArrayBase1D(ImplicitInt n)
    requires(AF == Aligned)
@@ -143,7 +136,7 @@ STRICT_NODISCARD ArrayBase1D<T, AF>::ArrayBase1D(ImplicitInt n)
       n_{n.get()} {
    ASSERT_STRICT_DEBUG(n_ > -1_sl);
    if(n_ != 0_sl) {
-      data_ = new(std::align_val_t{512}) value_type[to_size_t(n_)];
+      data_ = new(std::align_val_t{detail::alignment_of<T, AF>()}) value_type[to_size_t(n_)];
    }
 }
 
@@ -264,7 +257,7 @@ template <Builtin T, AlignmentFlag AF>
 ArrayBase1D<T, AF>::~ArrayBase1D()
    requires(AF == Aligned)
 {
-   operator delete[](data_, std::align_val_t{512});
+   operator delete[](data_, std::align_val_t{detail::alignment_of<T, AF>()});
 }
 
 
@@ -522,5 +515,4 @@ STRICT_NODISCARD auto ArrayBase1D<T, AF>::blas_data() const& -> const builtin_ty
 }
 
 
-}  // namespace detail
-}  // namespace spp
+}}  // namespace spp::detail

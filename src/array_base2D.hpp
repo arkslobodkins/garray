@@ -140,7 +140,7 @@ public:
    = delete;
 
 private:
-   FixedArrayBase1D<long int, 2> dims_;
+   FixedArrayBase1D<long int, 2, Unaligned> dims_;
    ArrayBase1D<T, AF> data1D_;
 };
 

@@ -13,7 +13,7 @@ namespace spp::detail {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
 class STRICT_NODISCARD FixedArrayBase2D : private ReferenceBase2D, private TwoDimArrayBase {
 public:
    using value_type = Strict<T>;
@@ -75,25 +75,24 @@ public:
    = delete;
 
 private:
-   // Align to 512 byte boundary for AVX-512.
-   FixedArrayBase1D<T, M.get() * N.get()> data1D_;
+   FixedArrayBase1D<T, M.get() * N.get(), AF> data1D_;
 };
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N>::FixedArrayBase2D(value_type x) {
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N, AF>::FixedArrayBase2D(value_type x) {
    data1D_ = x;
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N>::FixedArrayBase2D(Value<T> x)
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N, AF>::FixedArrayBase2D(Value<T> x)
     : FixedArrayBase2D(x.get()) {
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N>::FixedArrayBase2D(
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N, AF>::FixedArrayBase2D(
     use::List2D<builtin_type> list) {
    ASSERT_STRICT_DEBUG(valid_list2D(list));
    auto [nrows, ncols] = list2D_row_col_sizes(list);
@@ -103,24 +102,25 @@ STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N>::FixedArrayBase2D(
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N>::FixedArrayBase2D(
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR FixedArrayBase2D<T, M, N, AF>::FixedArrayBase2D(
     TwoDimBaseType auto const& A) {
    ASSERT_STRICT_DEBUG(same_size(*this, A));
    copy(A, *this);
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_CONSTEXPR FixedArrayBase2D<T, M, N>& FixedArrayBase2D<T, M, N>::operator=(value_type x) {
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR FixedArrayBase2D<T, M, N, AF>& FixedArrayBase2D<T, M, N, AF>::operator=(
+    value_type x) {
    data1D_ = x;
    return *this;
 }
 
 
 // Handles empty initializer list case as well.
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_CONSTEXPR FixedArrayBase2D<T, M, N>& FixedArrayBase2D<T, M, N>::operator=(
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR FixedArrayBase2D<T, M, N, AF>& FixedArrayBase2D<T, M, N, AF>::operator=(
     use::List2D<T> list) {
    // Constructor of temp checks that list is valid and that it is of size M x N, same_size not
    // needed.
@@ -129,8 +129,8 @@ STRICT_CONSTEXPR FixedArrayBase2D<T, M, N>& FixedArrayBase2D<T, M, N>::operator=
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_CONSTEXPR FixedArrayBase2D<T, M, N>& FixedArrayBase2D<T, M, N>::operator=(
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR FixedArrayBase2D<T, M, N, AF>& FixedArrayBase2D<T, M, N, AF>::operator=(
     TwoDimBaseType auto const& A) {
    ASSERT_STRICT_DEBUG(same_size(*this, A));
    copy(A, *this);
@@ -138,74 +138,75 @@ STRICT_CONSTEXPR FixedArrayBase2D<T, M, N>& FixedArrayBase2D<T, M, N>::operator=
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_CONSTEXPR_INLINE index_t FixedArrayBase2D<T, M, N>::rows() {
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR_INLINE index_t FixedArrayBase2D<T, M, N, AF>::rows() {
    return M.get();
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_CONSTEXPR_INLINE index_t FixedArrayBase2D<T, M, N>::cols() {
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR_INLINE index_t FixedArrayBase2D<T, M, N, AF>::cols() {
    return N.get();
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_CONSTEXPR_INLINE index_t FixedArrayBase2D<T, M, N>::size() {
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_CONSTEXPR_INLINE index_t FixedArrayBase2D<T, M, N, AF>::size() {
    return M.get() * N.get();
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T>& FixedArrayBase2D<T, M, N>::un(ImplicitInt i) {
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T>& FixedArrayBase2D<T, M, N, AF>::un(ImplicitInt i) {
    return data1D_.un(i);
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR_INLINE const Strict<T>& FixedArrayBase2D<T, M, N>::un(
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR_INLINE const Strict<T>& FixedArrayBase2D<T, M, N, AF>::un(
     ImplicitInt i) const {
    return data1D_.un(i);
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR_INLINE auto FixedArrayBase2D<T, M, N>::un(ImplicitInt i, ImplicitInt j)
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR_INLINE auto FixedArrayBase2D<T, M, N, AF>::un(ImplicitInt i,
+                                                                         ImplicitInt j)
     -> value_type& {
    return data1D_.un(i.get() * N.get() + j.get());
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR_INLINE auto FixedArrayBase2D<T, M, N>::un(ImplicitInt i,
-                                                                     ImplicitInt j) const
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR_INLINE auto FixedArrayBase2D<T, M, N, AF>::un(ImplicitInt i,
+                                                                         ImplicitInt j) const
     -> const value_type& {
    return data1D_.un(i.get() * N.get() + j.get());
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase2D<T, M, N>::data() & -> value_type* {
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase2D<T, M, N, AF>::data() & -> value_type* {
    return data1D_.data();
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase2D<T, M, N>::data() const& -> const value_type* {
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD_CONSTEXPR auto FixedArrayBase2D<T, M, N, AF>::data() const& -> const value_type* {
    return data1D_.data();
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD auto FixedArrayBase2D<T, M, N>::blas_data() & -> builtin_type*
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD auto FixedArrayBase2D<T, M, N, AF>::blas_data() & -> builtin_type*
    requires CompatibleBuiltin<T>
 {
    return data1D_.blas_data();
 }
 
 
-template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N>
-STRICT_NODISCARD auto FixedArrayBase2D<T, M, N>::blas_data() const& -> const builtin_type*
+template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF>
+STRICT_NODISCARD auto FixedArrayBase2D<T, M, N, AF>::blas_data() const& -> const builtin_type*
    requires CompatibleBuiltin<T>
 {
    return data1D_.blas_data();

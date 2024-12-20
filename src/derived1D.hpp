@@ -38,8 +38,8 @@ template <Builtin T, AlignmentFlag AF = Unaligned>
 using Array1D = detail::StrictArray1D<detail::ArrayBase1D<T, AF>>;
 
 
-template <Builtin T, ImplicitIntStatic sz>
-using FixedArray1D = detail::StrictArray1D<detail::FixedArrayBase1D<T, sz>>;
+template <Builtin T, ImplicitIntStatic sz, AlignmentFlag AF = Unaligned>
+using FixedArray1D = detail::StrictArray1D<detail::FixedArrayBase1D<T, sz, AF>>;
 
 
 namespace detail {
