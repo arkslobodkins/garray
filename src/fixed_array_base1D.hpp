@@ -182,14 +182,15 @@ STRICT_CONSTEXPR_INLINE index_t FixedArrayBase1D<T, N, AF>::size() {
 
 
 template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
-STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T>& FixedArrayBase1D<T, N, AF>::un(ImplicitInt i) {
+STRICT_NODISCARD_CONSTEXPR_INLINE auto FixedArrayBase1D<T, N, AF>::un(ImplicitInt i)
+    -> value_type& {
    return data_[i.get().val()];
 }
 
 
 template <Builtin T, ImplicitIntStatic N, AlignmentFlag AF>
-STRICT_NODISCARD_CONSTEXPR_INLINE const Strict<T>& FixedArrayBase1D<T, N, AF>::un(
-    ImplicitInt i) const {
+STRICT_NODISCARD_CONSTEXPR_INLINE auto FixedArrayBase1D<T, N, AF>::un(ImplicitInt i) const
+    -> const value_type& {
    return data_[i.get().val()];
 }
 

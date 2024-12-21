@@ -159,7 +159,7 @@ STRICT_NODISCARD_CONSTEXPR ArrayBase1D<T, AF>::ArrayBase1D(Size n) : ArrayBase1D
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_NODISCARD_CONSTEXPR ArrayBase1D<T, AF>::ArrayBase1D(ImplicitInt n, Strict<T> x)
+STRICT_NODISCARD_CONSTEXPR ArrayBase1D<T, AF>::ArrayBase1D(ImplicitInt n, value_type x)
     : ArrayBase1D(n) {
    fill(x, *this);
 }
@@ -210,7 +210,7 @@ STRICT_NODISCARD_CONSTEXPR ArrayBase1D<T, AF>::ArrayBase1D(OneDimBaseType auto c
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_CONSTEXPR ArrayBase1D<T, AF>& ArrayBase1D<T, AF>::operator=(Strict<T> x) {
+STRICT_CONSTEXPR ArrayBase1D<T, AF>& ArrayBase1D<T, AF>::operator=(value_type x) {
    fill(x, *this);
    return *this;
 }
@@ -476,13 +476,14 @@ STRICT_CONSTEXPR_INLINE index_t ArrayBase1D<T, AF>::size() const {
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T>& ArrayBase1D<T, AF>::un(ImplicitInt i) {
+STRICT_NODISCARD_CONSTEXPR_INLINE auto ArrayBase1D<T, AF>::un(ImplicitInt i) -> value_type& {
    return data_[i.get().val()];
 }
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_NODISCARD_CONSTEXPR_INLINE const Strict<T>& ArrayBase1D<T, AF>::un(ImplicitInt i) const {
+STRICT_NODISCARD_CONSTEXPR_INLINE auto ArrayBase1D<T, AF>::un(ImplicitInt i) const
+    -> const value_type& {
    return data_[i.get().val()];
 }
 
