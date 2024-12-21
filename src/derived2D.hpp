@@ -22,17 +22,10 @@
 namespace spp {
 
 
-namespace detail {
-
-
-template <TwoDimNonConstBaseType Base>
+template <detail::TwoDimNonConstBaseType Base>
 class StrictArrayMutable2D;
 
 
-}  // namespace detail
-
-
-// Moved from namespace::detail for ADL.
 template <typename Base>
 class StrictArray2D;
 
@@ -43,9 +36,6 @@ using Array2D = StrictArray2D<detail::ArrayBase2D<T, AF>>;
 
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF = Unaligned>
 using FixedArray2D = StrictArray2D<detail::FixedArrayBase2D<T, M, N, AF>>;
-
-
-namespace detail {
 
 
 template <TwoDimBaseType Base>
@@ -142,27 +132,27 @@ public:
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    STRICT_CONSTEXPR auto begin() & {
-      if constexpr(NonConstBaseType<Base>) {
-         return Iterator{*this, 0_sl};
+      if constexpr(detail::NonConstBaseType<Base>) {
+         return detail::Iterator{*this, 0_sl};
       } else {
-         return ConstIterator{*this, 0_sl};
+         return detail::ConstIterator{*this, 0_sl};
       }
    }
 
    STRICT_CONSTEXPR auto begin() const& {
-      return ConstIterator{*this, 0_sl};
+      return detail::ConstIterator{*this, 0_sl};
    }
 
    STRICT_CONSTEXPR auto end() & {
-      if constexpr(NonConstBaseType<Base>) {
-         return Iterator{*this, Base::size()};
+      if constexpr(detail::NonConstBaseType<Base>) {
+         return detail::Iterator{*this, Base::size()};
       } else {
-         return ConstIterator{*this, Base::size()};
+         return detail::ConstIterator{*this, Base::size()};
       }
    }
 
    STRICT_CONSTEXPR auto end() const& {
-      return ConstIterator{*this, Base::size()};
+      return detail::ConstIterator{*this, Base::size()};
    }
 
    STRICT_CONSTEXPR auto cbegin() const& {
@@ -226,8 +216,8 @@ public:
       auto jh = index_col_helper(*this, j);
       ASSERT_STRICT_DEBUG(valid_col(*this, jh));
       auto first = jh;
-      auto last = first + (Base::rows() - 1_sl) * Base::cols();
-      return this->view1D()(seq{first, last, Base::cols()});
+      auto lst = first + (Base::rows() - 1_sl) * Base::cols();
+      return this->view1D()(seq{first, lst, Base::cols()});
    }
 
    STRICT_CONSTEXPR auto diag() & {
@@ -239,11 +229,11 @@ public:
    }
 
    STRICT_CONSTEXPR auto view1D() & {
-      if constexpr(NonConstBaseType<Base>) {
-         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase2D, seqN>>{
+      if constexpr(detail::NonConstBaseType<Base>) {
+         return StrictArrayMutable1D<detail::SliceArrayBase1D<StrictArrayBase2D, seqN>>{
              *this, seqN{0, Base::size(), 1}};
       } else {
-         return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
+         return StrictArrayBase1D<detail::ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
              *this, seqN{0, Base::size(), 1}};
       }
    }
@@ -265,8 +255,8 @@ public:
       auto jh = index_col_helper(*this, j);
       ASSERT_STRICT_DEBUG(valid_col(*this, jh));
       auto first = jh;
-      auto last = first + (Base::rows() - 1_sl) * Base::cols();
-      return this->view1D()(seq{first, last, Base::cols()});
+      auto lst = first + (Base::rows() - 1_sl) * Base::cols();
+      return this->view1D()(seq{first, lst, Base::cols()});
    }
 
    STRICT_CONSTEXPR auto diag() const& {
@@ -278,7 +268,7 @@ public:
    }
 
    STRICT_CONSTEXPR auto view1D() const& {
-      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
+      return StrictArrayBase1D<detail::ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
           *this, seqN{0, Base::size(), 1}};
    }
 
@@ -290,92 +280,92 @@ public:
    // constant slice array in situations when non-constant slice array is needed.
    template <IndexType Index>
    STRICT_CONSTEXPR auto row(Index i) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->row(i);
    }
 
    template <IndexType Index>
    STRICT_CONSTEXPR auto col(Index j) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->col(j);
    }
 
    STRICT_CONSTEXPR auto diag() &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->diag();
    }
 
    STRICT_CONSTEXPR auto diag(ImplicitInt i) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->diag(i);
    }
 
    STRICT_CONSTEXPR auto view1D() &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->view1D();
    }
 
    // Implemented in attach2D.hpp.
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>);
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>);
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <IndexType Index>
    STRICT_CONSTEXPR auto row(Index i) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <IndexType Index>
    STRICT_CONSTEXPR auto col(Index j) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto diag() const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto diag(ImplicitInt i) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto view1D() const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    // For slices, initializer_list overloads are needed so that initializer_list
    // can be deduced implicitly.
    // SliceType is used to resolve ambiguity with operator() for indexing.
-   template <SliceType Slice1, SliceType Slice2>
+   template <detail::SliceType Slice1, detail::SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) & {
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(row_slice), std::move(col_slice));
-      if constexpr(NonConstBaseType<Base>) {
+      if constexpr(detail::NonConstBaseType<Base>) {
          return StrictArrayMutable2D<
-             SliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+             detail::SliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
              *this, std::move(s1h), std::move(s2h)};
       } else {
          return StrictArrayBase2D<
-             ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+             detail::ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
              *this, std::move(s1h), std::move(s2h)};
       }
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, Slice col_slice) & {
       auto sh = slice_row_helper(*this, row_list);
       return operator()(std::move(sh), std::move(col_slice));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice row_slice, use::IndexList col_list) & {
       auto sh = slice_col_helper(*this, col_list);
       return operator()(std::move(row_slice), std::move(sh));
@@ -387,7 +377,7 @@ public:
       return operator()(std::move(s1h), std::move(s2h));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto rows(Slice slice) & {
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(slice), place::all);
       return operator()(std::move(s1h), std::move(s2h));
@@ -398,7 +388,7 @@ public:
       return this->rows(std::move(sh));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto cols(Slice slice) & {
       auto [s1h, s2h] = slice_row_col_helper(*this, place::all, std::move(slice));
       return operator()(std::move(s1h), std::move(s2h));
@@ -425,21 +415,21 @@ public:
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   template <SliceType Slice1, SliceType Slice2>
+   template <detail::SliceType Slice1, detail::SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) const& {
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(row_slice), std::move(col_slice));
       return StrictArrayBase2D<
-          ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+          detail::ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
           *this, std::move(s1h), std::move(s2h)};
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, Slice col_slice) const& {
       auto sh = slice_row_helper(*this, row_list);
       return operator()(std::move(sh), std::move(col_slice));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice row_slice, use::IndexList col_list) const& {
       auto sh = slice_col_helper(*this, col_list);
       return operator()(std::move(row_slice), std::move(sh));
@@ -451,7 +441,7 @@ public:
       return operator()(std::move(s1h), std::move(s2h));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto rows(Slice slice) const& {
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(slice), place::all);
       return operator()(std::move(s1h), std::move(s2h));
@@ -462,7 +452,7 @@ public:
       return this->rows(std::move(sh));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto cols(Slice slice) const& {
       auto [s1h, s2h] = slice_row_col_helper(*this, place::all, std::move(slice));
       return operator()(std::move(s1h), std::move(s2h));
@@ -489,55 +479,55 @@ public:
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   template <SliceType Slice1, SliceType Slice2>
+   template <detail::SliceType Slice1, detail::SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return operator()(std::move(row_slice), std::move(col_slice));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice row_slice, use::IndexList col_list) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return operator()(std::move(row_slice), std::move(col_list));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, Slice col_slice) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return operator()(std::move(row_list), std::move(col_slice));
    }
 
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, use::IndexList col_list) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return operator()(std::move(row_list), std::move(col_list));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto rows(Slice slice) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->rows(std::move(slice));
    }
 
    STRICT_CONSTEXPR auto rows(use::IndexList list) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->rows(std::move(list));
    }
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto cols(Slice slice) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->cols(std::move(slice));
    }
 
    STRICT_CONSTEXPR auto cols(use::IndexList list) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->cols(std::move(list));
    }
@@ -545,7 +535,7 @@ public:
    template <IndexType Index1, IndexType Index2, IndexType Index3, IndexType Index4>
    STRICT_CONSTEXPR auto block(Index1 first_row, Index2 first_col, Index3 last_row,
                                Index4 last_col) &&
-      requires(!ArrayTwoDimType<StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
    {
       return this->block(first_row, first_col, last_row, last_col);
    }
@@ -553,59 +543,59 @@ public:
    template <IndexType Index1, IndexType Index2>
    STRICT_CONSTEXPR auto blockN(Index1 first_row, Index2 first_col, ImplicitInt nrows,
                                 ImplicitInt ncols) &&
-      requires(!ArrayTwoDimType< StrictArrayBase2D>)
+      requires(!detail::ArrayTwoDimType< StrictArrayBase2D>)
    {
       return this->blockN(first_row, first_col, nrows, ncols);
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   template <SliceType Slice1, SliceType Slice2>
+   template <detail::SliceType Slice1, detail::SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice row_slice, use::IndexList col_list) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, Slice col_slice) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, use::IndexList col_list) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto rows(Slice slice) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto rows(use::IndexList) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto cols(Slice slice) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    STRICT_CONSTEXPR auto cols(use::IndexList) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <IndexType Index1, IndexType Index2, IndexType Index3, IndexType Index4>
    STRICT_CONSTEXPR auto block(Index1 first_row, Index2 first_col, Index3 last_row,
                                Index4 last_col) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    template <IndexType Index1, IndexType Index2>
    STRICT_CONSTEXPR auto blockN(Index1 first_row, Index2 first_col, ImplicitInt nrows,
                                 ImplicitInt ncols) const&&
-      requires ArrayTwoDimType<StrictArrayBase2D>
+      requires detail::ArrayTwoDimType<StrictArrayBase2D>
    = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -658,7 +648,7 @@ private:
 };
 
 
-template <TwoDimNonConstBaseType Base>
+template <detail::TwoDimNonConstBaseType Base>
 class STRICT_NODISCARD StrictArrayMutable2D : public StrictArrayBase2D<Base> {
    using CommonBase2D = StrictArrayBase2D<Base>;
 
@@ -830,13 +820,10 @@ public:
 };
 
 
-}
-
-
 template <typename Base>
-class STRICT_NODISCARD StrictArray2D final : public detail::StrictArrayMutable2D<Base> {
-   using CommonBase2D = detail::StrictArrayBase2D<Base>;
-   using MutableBase2D = detail::StrictArrayMutable2D<Base>;
+class STRICT_NODISCARD StrictArray2D final : public StrictArrayMutable2D<Base> {
+   using CommonBase2D = StrictArrayBase2D<Base>;
+   using MutableBase2D = StrictArrayMutable2D<Base>;
 
 public:
    // static_assert is used instead of concept to avoid complications
@@ -846,7 +833,7 @@ public:
    using typename MutableBase2D::builtin_type;
    using typename MutableBase2D::value_type;
 
-   using detail::StrictArrayMutable2D<Base>::StrictArrayMutable2D;
+   using StrictArrayMutable2D<Base>::StrictArrayMutable2D;
    STRICT_NODISCARD_CONSTEXPR StrictArray2D() = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray2D(const StrictArray2D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray2D(StrictArray2D&&) = default;

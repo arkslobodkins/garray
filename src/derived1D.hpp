@@ -20,17 +20,10 @@
 namespace spp {
 
 
-namespace detail {
-
-
-template <OneDimNonConstBaseType Base>
+template <detail::OneDimNonConstBaseType Base>
 class StrictArrayMutable1D;
 
 
-}  // namespace detail
-
-
-// Moved from namespace::detail for ADL.
 template <typename Base>
 class StrictArray1D;
 
@@ -41,9 +34,6 @@ using Array1D = StrictArray1D<detail::ArrayBase1D<T, AF>>;
 
 template <Builtin T, ImplicitIntStatic sz, AlignmentFlag AF = Unaligned>
 using FixedArray1D = StrictArray1D<detail::FixedArrayBase1D<T, sz, AF>>;
-
-
-namespace detail {
 
 
 template <OneDimBaseType Base>
@@ -104,27 +94,27 @@ public:
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    STRICT_CONSTEXPR auto begin() & {
-      if constexpr(NonConstBaseType<Base>) {
-         return Iterator{*this, 0_sl};
+      if constexpr(detail::NonConstBaseType<Base>) {
+         return detail::Iterator{*this, 0_sl};
       } else {
-         return ConstIterator{*this, 0_sl};
+         return detail::ConstIterator{*this, 0_sl};
       }
    }
 
    STRICT_CONSTEXPR auto begin() const& {
-      return ConstIterator{*this, 0_sl};
+      return detail::ConstIterator{*this, 0_sl};
    }
 
    STRICT_CONSTEXPR auto end() & {
-      if constexpr(NonConstBaseType<Base>) {
-         return Iterator{*this, Base::size()};
+      if constexpr(detail::NonConstBaseType<Base>) {
+         return detail::Iterator{*this, Base::size()};
       } else {
-         return ConstIterator{*this, Base::size()};
+         return detail::ConstIterator{*this, Base::size()};
       }
    }
 
    STRICT_CONSTEXPR auto end() const& {
-      return ConstIterator{*this, Base::size()};
+      return detail::ConstIterator{*this, Base::size()};
    }
 
    STRICT_CONSTEXPR auto cbegin() const& {
@@ -177,14 +167,14 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    // For slices, initializer_list overloads are needed so that initializer_list
    // can be deduced implicitly.
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice slice) & {
       auto sh = slice_helper(*this, std::move(slice));
-      if constexpr(NonConstBaseType<Base>) {
-         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+      if constexpr(detail::NonConstBaseType<Base>) {
+         return StrictArrayMutable1D<detail::SliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
              *this, std::move(sh)};
       } else {
-         return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+         return StrictArrayBase1D<detail::ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
              *this, std::move(sh)};
       }
    }
@@ -202,10 +192,10 @@ public:
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) &;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice slice) const& {
       auto sh = slice_helper(*this, std::move(slice));
-      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+      return StrictArrayBase1D<detail::ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
           *this, std::move(sh)};
    }
 
@@ -224,9 +214,9 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    // Must define for rvalues otherwise const& overload is selected, which returns
    // constant slice array in situations when non-constant slice array is needed.
-   template <SliceType Slice>
+   template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice slice) &&
-      requires(!ArrayOneDimType<StrictArrayBase1D>)
+      requires(!detail::ArrayOneDimType<StrictArrayBase1D>)
    {
       return operator()(std::move(slice));
    }
@@ -236,28 +226,28 @@ public:
    }
 
    STRICT_CONSTEXPR auto view1D() &&
-      requires(!ArrayOneDimType<StrictArrayBase1D>)
+      requires(!detail::ArrayOneDimType<StrictArrayBase1D>)
    {
       return this->view1D();
    }
 
    // Implemented in attach2D.hpp.
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) &&
-      requires(!ArrayOneDimType<StrictArrayBase1D>);
+      requires(!detail::ArrayOneDimType<StrictArrayBase1D>);
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    // Disallow slicing of temporaries that own data to reduce the risk of dangling references.
    template <typename T>
    STRICT_CONSTEXPR auto operator()(T slice) const&&
-      requires ArrayOneDimType<StrictArrayBase1D>
+      requires detail::ArrayOneDimType<StrictArrayBase1D>
    = delete;
 
    STRICT_CONSTEXPR auto view1D() const&&
-      requires ArrayOneDimType<StrictArrayBase1D>
+      requires detail::ArrayOneDimType<StrictArrayBase1D>
    = delete;
 
    STRICT_CONSTEXPR auto view2D(ImplicitInt nrows, ImplicitInt ncols) const&&
-      requires ArrayOneDimType<StrictArrayBase1D>
+      requires detail::ArrayOneDimType<StrictArrayBase1D>
    = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,7 +287,7 @@ protected:
 };
 
 
-template <OneDimNonConstBaseType Base>
+template <detail::OneDimNonConstBaseType Base>
 class STRICT_NODISCARD StrictArrayMutable1D : public StrictArrayBase1D<Base> {
    using CommonBase1D = StrictArrayBase1D<Base>;
 
@@ -469,13 +459,10 @@ public:
 };
 
 
-}
-
-
 template <typename Base>
-class STRICT_NODISCARD StrictArray1D final : public detail::StrictArrayMutable1D<Base> {
-   using CommonBase1D = detail::StrictArrayBase1D<Base>;
-   using MutableBase1D = detail::StrictArrayMutable1D<Base>;
+class STRICT_NODISCARD StrictArray1D final : public StrictArrayMutable1D<Base> {
+   using CommonBase1D = StrictArrayBase1D<Base>;
+   using MutableBase1D = StrictArrayMutable1D<Base>;
 
 public:
    // static_assert is used instead of concept to avoid complications
@@ -485,7 +472,7 @@ public:
    using typename MutableBase1D::builtin_type;
    using typename MutableBase1D::value_type;
 
-   using detail::StrictArrayMutable1D<Base>::StrictArrayMutable1D;
+   using StrictArrayMutable1D<Base>::StrictArrayMutable1D;
    STRICT_NODISCARD_CONSTEXPR StrictArray1D() = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray1D(const StrictArray1D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray1D(StrictArray1D&&) = default;

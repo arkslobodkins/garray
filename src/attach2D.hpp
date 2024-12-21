@@ -229,11 +229,14 @@ STRICT_NODISCARD_CONSTEXPR auto const_convert2D(const Base& A, ImplicitInt m, Im
 }
 
 
+}  // namespace detail
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <OneDimBaseType Base>
 STRICT_CONSTEXPR auto StrictArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) & {
    ASSERT_STRICT_ALWAYS(nrows.get() * ncols.get() == Base::size());
-   if constexpr(NonConstBaseType<StrictArrayBase1D>) {
+   if constexpr(detail::NonConstBaseType<StrictArrayBase1D>) {
       return convert2D(*this, nrows, ncols);
    } else {
       return const_convert2D(*this, nrows, ncols);
@@ -250,7 +253,7 @@ STRICT_CONSTEXPR auto StrictArrayBase1D<Base>::view2D(ImplicitInt nrows, Implici
 
 template <OneDimBaseType Base>
 STRICT_CONSTEXPR auto StrictArrayBase1D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) &&
-   requires(!ArrayOneDimType<StrictArrayBase1D>)
+   requires(!detail::ArrayOneDimType<StrictArrayBase1D>)
 {
    return this->view2D(nrows, ncols);
 }
@@ -260,7 +263,7 @@ STRICT_CONSTEXPR auto StrictArrayBase1D<Base>::view2D(ImplicitInt nrows, Implici
 template <TwoDimBaseType Base>
 STRICT_CONSTEXPR auto StrictArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) & {
    ASSERT_STRICT_ALWAYS(nrows.get() * ncols.get() == Base::size());
-   if constexpr(NonConstBaseType<StrictArrayBase2D>) {
+   if constexpr(detail::NonConstBaseType<StrictArrayBase2D>) {
       return convert2D(*this, nrows, ncols);
    } else {
       return const_convert2D(*this, nrows, ncols);
@@ -277,13 +280,10 @@ STRICT_CONSTEXPR auto StrictArrayBase2D<Base>::view2D(ImplicitInt nrows, Implici
 
 template <TwoDimBaseType Base>
 STRICT_CONSTEXPR auto StrictArrayBase2D<Base>::view2D(ImplicitInt nrows, ImplicitInt ncols) &&
-   requires(!ArrayTwoDimType<StrictArrayBase2D>)
+   requires(!detail::ArrayTwoDimType<StrictArrayBase2D>)
 {
    return this->view2D(nrows, ncols);
 }
-
-
-}  // namespace detail
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

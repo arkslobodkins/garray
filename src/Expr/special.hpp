@@ -381,7 +381,7 @@ STRICT_CONSTEXPR auto exclude(const Base& A, [[maybe_unused]] Last lst) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 STRICT_CONSTEXPR auto sequence(ImplicitInt size, Strict<T> start, Strict<T> incr) {
-   return detail::StrictArrayBase1D<detail::SequenceExpr1D<T>>{start, size.get(), incr};
+   return StrictArrayBase1D<detail::SequenceExpr1D<T>>{start, size.get(), incr};
 }
 
 
@@ -396,7 +396,7 @@ template <Floating T>
 STRICT_CONSTEXPR auto linspace(ImplicitInt size, Strict<T> start, Strict<T> end) {
    ASSERT_STRICT_DEBUG(size.get() > 0_sl);
    auto sz = size.get();
-   return detail::StrictArrayBase1D<detail::SequenceExpr1D<T>>{
+   return StrictArrayBase1D<detail::SequenceExpr1D<T>>{
        start, sz, (end - start) / strict_cast<T>(sz - 1_sl)};
 }
 
@@ -408,7 +408,7 @@ STRICT_CONSTEXPR auto linspace(Size size, Start<T> start, End<T> end) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 STRICT_CONSTEXPR_INLINE auto irange(ImplicitInt n) {
-   return detail::StrictArrayBase1D<detail::SequenceExpr1D<long int>>{0_sl, n.get(), 1_sl};
+   return StrictArrayBase1D<detail::SequenceExpr1D<long int>>{0_sl, n.get(), 1_sl};
 }
 
 
@@ -469,7 +469,7 @@ STRICT_CONSTEXPR auto identity(ImplicitInt n) {
    ASSERT_STRICT_DEBUG(n.get() > -1_sl);
    auto op = [](index_t i, index_t j) { return i == j ? One<T> : Zero<T>; };
    using E = detail::IndexExpr2D<T, decltype(op)>;
-   return detail::StrictArrayBase2D<E>{n.get(), n.get(), op};
+   return StrictArrayBase2D<E>{n.get(), n.get(), op};
 }
 
 
@@ -477,7 +477,7 @@ template <TwoDimBaseType Base>
 STRICT_CONSTEXPR auto transpose(const Base& A) {
    auto op = [&A](index_t i, index_t j) { return A.un(j, i); };
    using E = detail::IndexExpr2D<BuiltinTypeOf<Base>, decltype(op)>;
-   return detail::StrictArrayBase2D<E>{A.cols(), A.rows(), op};
+   return StrictArrayBase2D<E>{A.cols(), A.rows(), op};
 }
 
 
@@ -513,14 +513,14 @@ STRICT_CONSTEXPR auto const2D(Rows rows, Cols cols, Value<T> c) {
 template <TwoDimBaseType Base, typename Op>
 STRICT_CONSTEXPR auto row_reduce(const Base& A, Op op) {
    using E = detail::ReduceExpr<Base, Op, true>;
-   return detail::StrictArrayBase1D<E>{A, op};
+   return StrictArrayBase1D<E>{A, op};
 }
 
 
 template <TwoDimBaseType Base, typename Op>
 STRICT_CONSTEXPR auto col_reduce(const Base& A, Op op) {
    using E = detail::ReduceExpr<Base, Op, false>;
-   return detail::StrictArrayBase1D<E>{A, op};
+   return StrictArrayBase1D<E>{A, op};
 }
 
 

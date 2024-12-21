@@ -434,9 +434,9 @@ STRICT_CONSTEXPR auto generate(const Base1& A1, const Base2& A2, F f) {
    using E = detail::BinaryExpr<Base1, Base2, F, copy_delete>;
 
    if constexpr(OneDimBaseType<Base1>) {
-      return detail::StrictArrayBase1D<E>(A1, A2, f);
+      return StrictArrayBase1D<E>(A1, A2, f);
    } else {
-      return detail::StrictArrayBase2D<E>(A1, A2, f);
+      return StrictArrayBase2D<E>(A1, A2, f);
    }
 }
 

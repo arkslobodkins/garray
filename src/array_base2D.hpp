@@ -728,4 +728,6 @@ STRICT_NODISCARD auto ArrayBase2D<T, AF>::blas_data() const& -> const builtin_ty
 
 
 }  // namespace detail
+
+
 }  // namespace spp
