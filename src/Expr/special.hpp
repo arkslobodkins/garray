@@ -75,7 +75,7 @@ STRICT_CONSTEXPR auto exclude(const Base& A, Pos pos, Count count = Count{1});
 
 
 template <OneDimBaseType Base>
-STRICT_CONSTEXPR auto exclude(const Base& A, [[maybe_unused]] detail::Last lst);
+STRICT_CONSTEXPR auto exclude(const Base& A, [[maybe_unused]] Last lst);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,7 +219,7 @@ STRICT_CONSTEXPR auto exclude(Base&& A, Pos pos, Count count = Count{1}) = delet
 
 template <typename Base>
    requires detail::ArrayOneDimTypeRvalue<Base>
-STRICT_CONSTEXPR auto exclude(Base&& A, detail::Last lst) = delete;
+STRICT_CONSTEXPR auto exclude(Base&& A, Last lst) = delete;
 
 
 template <typename Base>
@@ -373,7 +373,7 @@ STRICT_CONSTEXPR auto exclude(const Base& A, Pos pos, Count count) {
 
 
 template <OneDimBaseType Base>
-STRICT_CONSTEXPR auto exclude(const Base& A, [[maybe_unused]] detail::Last lst) {
+STRICT_CONSTEXPR auto exclude(const Base& A, [[maybe_unused]] Last lst) {
    return exclude(A, A.size_m1());
 }
 

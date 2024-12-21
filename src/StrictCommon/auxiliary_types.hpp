@@ -176,6 +176,10 @@ class STRICT_NODISCARD Odd{};
 
 class STRICT_NODISCARD Reverse{};
 
+}  // namespace detail
+
+
+// Moved from namespace::detail for ADL.
 class STRICT_NODISCARD Last {
 public:
    STRICT_NODISCARD_CONSTEXPR explicit Last(ImplicitInt i) : i_{i.get()} {
@@ -189,15 +193,13 @@ private:
    index_t i_;
 };
 
-}  // namespace detail
-
 
 namespace place {
 constexpr inline detail::All all;
 constexpr inline detail::Even even;
 constexpr inline detail::Odd odd;
 constexpr inline detail::Reverse reverse;
-constexpr inline detail::Last last{0};
+constexpr inline Last last{0};
 }  // namespace place
 
 
@@ -205,18 +207,18 @@ using place::last;
 
 
 // Note that plus operator is allowed from both sides bot not minus.
-STRICT_NODISCARD_CONSTEXPR_INLINE detail::Last operator+(detail::Last lst, ImplicitInt i) {
-   return detail::Last{ImplicitInt{lst.get() - i.get()}};
+STRICT_NODISCARD_CONSTEXPR_INLINE Last operator+(Last lst, ImplicitInt i) {
+   return Last{ImplicitInt{lst.get() - i.get()}};
 }
 
 
-STRICT_NODISCARD_CONSTEXPR_INLINE detail::Last operator+(ImplicitInt i, detail::Last lst) {
-   return detail::Last{ImplicitInt{lst.get() - i.get()}};
+STRICT_NODISCARD_CONSTEXPR_INLINE Last operator+(ImplicitInt i, Last lst) {
+   return Last{ImplicitInt{lst.get() - i.get()}};
 }
 
 
-STRICT_NODISCARD_CONSTEXPR_INLINE detail::Last operator-(detail::Last lst, ImplicitInt i) {
-   return detail::Last{ImplicitInt{lst.get() + i.get()}};
+STRICT_NODISCARD_CONSTEXPR_INLINE Last operator-(Last lst, ImplicitInt i) {
+   return Last{ImplicitInt{lst.get() + i.get()}};
 }
 
 

@@ -13,11 +13,14 @@
 #include "iterator.hpp"
 
 
-namespace spp { namespace detail {
+namespace spp {
 
 
 template <typename Base>
 class StrictArray1D;
+
+
+namespace detail {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -516,4 +519,5 @@ STRICT_NODISCARD auto ArrayBase1D<T, AF>::blas_data() const& -> const builtin_ty
 }
 
 
-}}  // namespace spp::detail
+}  // namespace detail
+}  // namespace spp

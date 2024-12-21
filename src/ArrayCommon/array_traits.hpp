@@ -155,7 +155,7 @@ using RealTypeOf = std::remove_reference_t<T>::builtin_type;
 
 template <typename T> concept IndexType = SignedInteger<T> || SameAs<T, StrictInt>
                                        || SameAs<T, StrictLong> || SameAs<T, ImplicitInt>
-                                       || SameAs<T, detail::Last>;
+                                       || SameAs<T, Last>;
 
 
 namespace detail {
@@ -176,37 +176,52 @@ template <typename T> concept ArrayTypeRvalue = RvalueOf<T, ArrayType<RemoveRef<
 template <typename T> concept ArrayRealTypeRvalue = RvalueOf<T, ArrayRealType<RemoveRef<T>>>;
 template <typename T> concept ArrayBooleanTypeRvalue = RvalueOf<T, ArrayBooleanType<RemoveRef<T>>>;
 template <typename T> concept ArrayIntegerTypeRvalue = RvalueOf<T, ArrayIntegerType<RemoveRef<T>>>;
-template <typename T> concept ArrayFloatingTypeRvalue = RvalueOf<T, ArrayFloatingType<RemoveRef<T>>>;
+template <typename T> concept ArrayFloatingTypeRvalue
+    = RvalueOf<T, ArrayFloatingType<RemoveRef<T>>>;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> concept ArrayOneDimType = OneDimBaseType<T> && BaseOf<OneDimArrayBase, T>;
 template <typename T> concept ArrayOneDimRealType = ArrayOneDimType<T> && Real<BuiltinTypeOf<T>>;
-template <typename T> concept ArrayOneDimBooleanType = ArrayOneDimType<T> && Boolean<BuiltinTypeOf<T>>;
-template <typename T> concept ArrayOneDimIntegerType = ArrayOneDimType<T> && Integer<BuiltinTypeOf<T>>;
-template <typename T> concept ArrayOneDimFloatingType = ArrayOneDimType<T> && Floating<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayOneDimBooleanType
+    = ArrayOneDimType<T> && Boolean<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayOneDimIntegerType
+    = ArrayOneDimType<T> && Integer<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayOneDimFloatingType
+    = ArrayOneDimType<T> && Floating<BuiltinTypeOf<T>>;
 
 
 template <typename T> concept ArrayOneDimTypeRvalue = RvalueOf<T, ArrayOneDimType<RemoveRef<T>>>;
-template <typename T> concept ArrayOneDimRealTypeRvalue = RvalueOf<T, ArrayOneDimRealType<RemoveRef<T>>>;
-template <typename T> concept ArrayOneDimBooleanTypeRvalue = RvalueOf<T, ArrayOneDimBooleanType<RemoveRef<T>>>;
-template <typename T> concept ArrayOneDimIntegerTypeRvalue = RvalueOf<T, ArrayOneDimIntegerType<RemoveRef<T>>>;
-template <typename T> concept ArrayOneDimFloatingTypeRvalue = RvalueOf<T, ArrayOneDimFloatingType<RemoveRef<T>>>;
+template <typename T> concept ArrayOneDimRealTypeRvalue
+    = RvalueOf<T, ArrayOneDimRealType<RemoveRef<T>>>;
+template <typename T> concept ArrayOneDimBooleanTypeRvalue
+    = RvalueOf<T, ArrayOneDimBooleanType<RemoveRef<T>>>;
+template <typename T> concept ArrayOneDimIntegerTypeRvalue
+    = RvalueOf<T, ArrayOneDimIntegerType<RemoveRef<T>>>;
+template <typename T> concept ArrayOneDimFloatingTypeRvalue
+    = RvalueOf<T, ArrayOneDimFloatingType<RemoveRef<T>>>;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> concept ArrayTwoDimType = TwoDimBaseType<T> && BaseOf<TwoDimArrayBase, T>;
 template <typename T> concept ArrayTwoDimRealType = ArrayTwoDimType<T> && Real<BuiltinTypeOf<T>>;
-template <typename T> concept ArrayTwoDimBooleanType = ArrayTwoDimType<T> && Boolean<BuiltinTypeOf<T>>;
-template <typename T> concept ArrayTwoDimIntegerType = ArrayTwoDimType<T> && Integer<BuiltinTypeOf<T>>;
-template <typename T> concept ArrayTwoDimFloatingType = ArrayTwoDimType<T> && Floating<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayTwoDimBooleanType
+    = ArrayTwoDimType<T> && Boolean<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayTwoDimIntegerType
+    = ArrayTwoDimType<T> && Integer<BuiltinTypeOf<T>>;
+template <typename T> concept ArrayTwoDimFloatingType
+    = ArrayTwoDimType<T> && Floating<BuiltinTypeOf<T>>;
 
 
 template <typename T> concept ArrayTwoDimTypeRvalue = RvalueOf<T, ArrayTwoDimType<RemoveRef<T>>>;
-template <typename T> concept ArrayTwoDimRealTypeRvalue = RvalueOf<T, ArrayTwoDimRealType<RemoveRef<T>>>;
-template <typename T> concept ArrayTwoDimBooleanTypeRvalue = RvalueOf<T, ArrayTwoDimBooleanType<RemoveRef<T>>>;
-template <typename T> concept ArrayTwoDimIntegerTypeRvalue = RvalueOf<T, ArrayTwoDimIntegerType<RemoveRef<T>>>;
-template <typename T> concept ArrayTwoDimFloatingTypeRvalue = RvalueOf<T, ArrayTwoDimFloatingType<RemoveRef<T>>>;
+template <typename T> concept ArrayTwoDimRealTypeRvalue
+    = RvalueOf<T, ArrayTwoDimRealType<RemoveRef<T>>>;
+template <typename T> concept ArrayTwoDimBooleanTypeRvalue
+    = RvalueOf<T, ArrayTwoDimBooleanType<RemoveRef<T>>>;
+template <typename T> concept ArrayTwoDimIntegerTypeRvalue
+    = RvalueOf<T, ArrayTwoDimIntegerType<RemoveRef<T>>>;
+template <typename T> concept ArrayTwoDimFloatingTypeRvalue
+    = RvalueOf<T, ArrayTwoDimFloatingType<RemoveRef<T>>>;
 
 
 template <typename T> concept PointerConvertibleLvalue

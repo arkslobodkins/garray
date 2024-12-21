@@ -13,11 +13,14 @@
 #include "fixed_array_base1D.hpp"
 
 
-namespace spp { namespace detail {
+namespace spp {
 
 
 template <typename Base>
 class StrictArray2D;
+
+
+namespace detail {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -724,4 +727,5 @@ STRICT_NODISCARD auto ArrayBase2D<T, AF>::blas_data() const& -> const builtin_ty
 }
 
 
-}}  // namespace spp::detail
+}  // namespace detail
+}  // namespace spp

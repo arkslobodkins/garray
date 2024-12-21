@@ -29,19 +29,20 @@ template <TwoDimNonConstBaseType Base>
 class StrictArrayMutable2D;
 
 
+}  // namespace detail
+
+
+// Moved from namespace::detail for ADL.
 template <typename Base>
 class StrictArray2D;
 
 
-}  // namespace detail
-
-
 template <Builtin T, AlignmentFlag AF = Unaligned>
-using Array2D = detail::StrictArray2D<detail::ArrayBase2D<T, AF>>;
+using Array2D = StrictArray2D<detail::ArrayBase2D<T, AF>>;
 
 
 template <Builtin T, ImplicitIntStatic M, ImplicitIntStatic N, AlignmentFlag AF = Unaligned>
-using FixedArray2D = detail::StrictArray2D<detail::FixedArrayBase2D<T, M, N, AF>>;
+using FixedArray2D = StrictArray2D<detail::FixedArrayBase2D<T, M, N, AF>>;
 
 
 namespace detail {
@@ -829,20 +830,23 @@ public:
 };
 
 
+}
+
+
 template <typename Base>
-class STRICT_NODISCARD StrictArray2D final : public StrictArrayMutable2D<Base> {
-   using CommonBase2D = StrictArrayBase2D<Base>;
-   using MutableBase2D = StrictArrayMutable2D<Base>;
+class STRICT_NODISCARD StrictArray2D final : public detail::StrictArrayMutable2D<Base> {
+   using CommonBase2D = detail::StrictArrayBase2D<Base>;
+   using MutableBase2D = detail::StrictArrayMutable2D<Base>;
 
 public:
    // static_assert is used instead of concept to avoid complications
    // with forward declarations in files that implement base classes.
-   static_assert(ArrayTwoDimType<Base>);
+   static_assert(detail::ArrayTwoDimType<Base>);
    using size_type = MutableBase2D::size_type;
    using typename MutableBase2D::builtin_type;
    using typename MutableBase2D::value_type;
 
-   using StrictArrayMutable2D<Base>::StrictArrayMutable2D;
+   using detail::StrictArrayMutable2D<Base>::StrictArrayMutable2D;
    STRICT_NODISCARD_CONSTEXPR StrictArray2D() = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray2D(const StrictArray2D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray2D(StrictArray2D&&) = default;
@@ -994,6 +998,5 @@ public:
 };
 
 
-}  // namespace detail
 }  // namespace spp
 

@@ -27,19 +27,20 @@ template <OneDimNonConstBaseType Base>
 class StrictArrayMutable1D;
 
 
+}  // namespace detail
+
+
+// Moved from namespace::detail for ADL.
 template <typename Base>
 class StrictArray1D;
 
 
-}  // namespace detail
-
-
 template <Builtin T, AlignmentFlag AF = Unaligned>
-using Array1D = detail::StrictArray1D<detail::ArrayBase1D<T, AF>>;
+using Array1D = StrictArray1D<detail::ArrayBase1D<T, AF>>;
 
 
 template <Builtin T, ImplicitIntStatic sz, AlignmentFlag AF = Unaligned>
-using FixedArray1D = detail::StrictArray1D<detail::FixedArrayBase1D<T, sz, AF>>;
+using FixedArray1D = StrictArray1D<detail::FixedArrayBase1D<T, sz, AF>>;
 
 
 namespace detail {
@@ -468,20 +469,23 @@ public:
 };
 
 
+}
+
+
 template <typename Base>
-class STRICT_NODISCARD StrictArray1D final : public StrictArrayMutable1D<Base> {
-   using CommonBase1D = StrictArrayBase1D<Base>;
-   using MutableBase1D = StrictArrayMutable1D<Base>;
+class STRICT_NODISCARD StrictArray1D final : public detail::StrictArrayMutable1D<Base> {
+   using CommonBase1D = detail::StrictArrayBase1D<Base>;
+   using MutableBase1D = detail::StrictArrayMutable1D<Base>;
 
 public:
    // static_assert is used instead of concept to avoid complications
    // with forward declarations in files that implement base classes.
-   static_assert(ArrayOneDimType<Base>);
+   static_assert(detail::ArrayOneDimType<Base>);
    using size_type = MutableBase1D::size_type;
    using typename MutableBase1D::builtin_type;
    using typename MutableBase1D::value_type;
 
-   using StrictArrayMutable1D<Base>::StrictArrayMutable1D;
+   using detail::StrictArrayMutable1D<Base>::StrictArrayMutable1D;
    STRICT_NODISCARD_CONSTEXPR StrictArray1D() = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray1D(const StrictArray1D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray1D(StrictArray1D&&) = default;
@@ -631,9 +635,6 @@ public:
       return static_cast<StrictArray1D&>(CommonBase1D::lval_impl());
    }
 };
-
-
-}  // namespace detail
 
 
 }  // namespace spp

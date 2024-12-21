@@ -152,5 +152,7 @@ STRICT_CONSTEXPR_INLINE void fill(ValueTypeOf<Base> val, Base& A) {
       A.un(i) = val;
    }
 }
+
+
 }}  // namespace spp::detail
 
