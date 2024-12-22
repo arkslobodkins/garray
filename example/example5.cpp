@@ -22,7 +22,7 @@ consteval auto ode_init() {
 
 Array1D<float128> ode_solve(StrictLong nsteps, Strict128 h, Strict128 t_init, Strict128 y_init) {
    ASSERT_STRICT_DEBUG(nsteps > 0_sl);
-   ASSERT_STRICT_DEBUG(h > 0_sq);
+   ASSERT_STRICT_DEBUG(h > 0._sq);
 
    Array1D<float128> y(nsteps + 1_sl);
    y[0] = y_init;
