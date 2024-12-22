@@ -13,7 +13,7 @@ int main() {
 
    Strict128 max_err{}, max_err_stable{};
    Strict128 sum_err{}, sum_err_stable{};
-   auto its{10'000_si};
+   constexpr auto its{10'000_si};
    Array1D<float64> C(100);
 
    for([[maybe_unused]]auto i : irange(its)) {
