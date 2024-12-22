@@ -64,8 +64,8 @@ namespace detail {
 
 struct ArrayFormat {
 public:
-   ArrayFormat& detailed(bool d) {
-      detailed_ = d;
+   ArrayFormat& detailed(ImplicitBool d) {
+      detailed_ = d.get();
       return *this;
    }
 
@@ -97,7 +97,7 @@ private:
 };
 
 }  // namespace detail
-static inline detail::ArrayFormat array_format;
+inline detail::ArrayFormat array_format;
 
 
 namespace detail {
