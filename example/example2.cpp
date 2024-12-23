@@ -21,7 +21,7 @@ int main() {
    auto slice_5 = A({0, 2, 4}) = A({6, 6, 6});
 
    auto slice_6 = in_closed_range(A, Low{-0.5}, High{0.5});
-   // A.remove(slice_6.indexes());
+   A.remove(slice_6.get_slice());
 
    auto dst1 = A.empty() ? norm2(A(place::even)) : 0._sd;
    // generate evaluates on the fly, no memory allocation is performed.

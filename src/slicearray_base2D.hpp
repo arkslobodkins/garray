@@ -34,6 +34,9 @@ public:
    STRICT_NODISCARD_CONSTEXPR_INLINE const value_type& un(ImplicitInt i) const;
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type& un(ImplicitInt i, ImplicitInt j);
    STRICT_NODISCARD_CONSTEXPR_INLINE const value_type& un(ImplicitInt i, ImplicitInt j) const;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() const&;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() &&;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() const&&;
 
    STRICT_CONSTEXPR_INLINE index_t rows() const;
    STRICT_CONSTEXPR_INLINE index_t cols() const;
@@ -131,6 +134,24 @@ STRICT_NODISCARD_CONSTEXPR_INLINE auto SliceArrayBase2D<Base, Sl1, Sl2>::un(Impl
 
 
 template <TwoDimNonConstBaseType Base, typename Sl1, typename Sl2>
+STRICT_NODISCARD_CONSTEXPR auto SliceArrayBase2D<Base, Sl1, Sl2>::get_slice() const& {
+   return std::pair<decltype(slw1_.get()), decltype(slw2_.get())>{slw1_.get(), slw2_.get()};
+}
+
+
+template <TwoDimNonConstBaseType Base, typename Sl1, typename Sl2>
+STRICT_NODISCARD_CONSTEXPR auto SliceArrayBase2D<Base, Sl1, Sl2>::get_slice() && {
+   return std::pair{std::move(slw1_).get(), std::move(slw2_).get()};
+}
+
+
+template <TwoDimNonConstBaseType Base, typename Sl1, typename Sl2>
+STRICT_NODISCARD_CONSTEXPR auto SliceArrayBase2D<Base, Sl1, Sl2>::get_slice() const&& {
+   return std::pair{slw1_.get(), slw2_.get()};
+}
+
+
+template <TwoDimNonConstBaseType Base, typename Sl1, typename Sl2>
 STRICT_CONSTEXPR_INLINE index_t SliceArrayBase2D<Base, Sl1, Sl2>::rows() const {
    return slw1_.size();
 }
@@ -162,6 +183,10 @@ public:
 
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(ImplicitInt i) const;
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(ImplicitInt i, ImplicitInt j) const;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() const&;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() &&;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() const&&;
+
    STRICT_CONSTEXPR_INLINE index_t rows() const;
    STRICT_CONSTEXPR_INLINE index_t cols() const;
    STRICT_CONSTEXPR_INLINE index_t size() const;
@@ -198,6 +223,24 @@ template <TwoDimBaseType Base, typename Sl1, typename Sl2>
 STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) ConstSliceArrayBase2D<Base, Sl1, Sl2>::un(
     ImplicitInt i, ImplicitInt j) const {
    return A_.un(slw1_.map(i), slw2_.map(j));
+}
+
+
+template <TwoDimBaseType Base, typename Sl1, typename Sl2>
+STRICT_NODISCARD_CONSTEXPR auto ConstSliceArrayBase2D<Base, Sl1, Sl2>::get_slice() const& {
+   return std::pair<decltype(slw1_.get()), decltype(slw2_.get())>{slw1_.get(), slw2_.get()};
+}
+
+
+template <TwoDimBaseType Base, typename Sl1, typename Sl2>
+STRICT_NODISCARD_CONSTEXPR auto ConstSliceArrayBase2D<Base, Sl1, Sl2>::get_slice() && {
+   return std::pair{std::move(slw1_).get(), std::move(slw2_).get()};
+}
+
+
+template <TwoDimBaseType Base, typename Sl1, typename Sl2>
+STRICT_NODISCARD_CONSTEXPR auto ConstSliceArrayBase2D<Base, Sl1, Sl2>::get_slice() const&& {
+   return std::pair{slw1_.get(), slw2_.get()};
 }
 
 

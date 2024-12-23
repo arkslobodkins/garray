@@ -39,6 +39,9 @@ public:
 
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type& un(ImplicitInt i);
    STRICT_NODISCARD_CONSTEXPR_INLINE const value_type& un(ImplicitInt i) const;
+   STRICT_NODISCARD_CONSTEXPR const auto& get_slice() const&;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() &&;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() const&&;
 
    STRICT_CONSTEXPR_INLINE index_t size() const;
 
@@ -105,6 +108,24 @@ STRICT_NODISCARD_CONSTEXPR_INLINE auto SliceArrayBase1D<Base, Sl>::un(ImplicitIn
 
 
 template <NonConstBaseType Base, typename Sl>
+STRICT_NODISCARD_CONSTEXPR const auto& SliceArrayBase1D<Base, Sl>::get_slice() const& {
+   return slw_.get();
+}
+
+
+template <NonConstBaseType Base, typename Sl>
+STRICT_NODISCARD_CONSTEXPR auto SliceArrayBase1D<Base, Sl>::get_slice() && {
+   return std::move(slw_).get();
+}
+
+
+template <NonConstBaseType Base, typename Sl>
+STRICT_NODISCARD_CONSTEXPR auto SliceArrayBase1D<Base, Sl>::get_slice() const&& {
+   return slw_.get();
+}
+
+
+template <NonConstBaseType Base, typename Sl>
 STRICT_CONSTEXPR_INLINE index_t SliceArrayBase1D<Base, Sl>::size() const {
    return slw_.size();
 }
@@ -125,6 +146,10 @@ public:
    STRICT_CONSTEXPR ~ConstSliceArrayBase1D() = default;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(ImplicitInt i) const;
+   STRICT_NODISCARD_CONSTEXPR const auto& get_slice() const&;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() &&;
+   STRICT_NODISCARD_CONSTEXPR auto get_slice() const&&;
+
    STRICT_CONSTEXPR_INLINE index_t size() const;
 
 private:
@@ -146,6 +171,24 @@ template <BaseType Base, typename Sl>
 STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) ConstSliceArrayBase1D<Base, Sl>::un(
     ImplicitInt i) const {
    return A_.un(slw_.map(i));
+}
+
+
+template <BaseType Base, typename Sl>
+STRICT_NODISCARD_CONSTEXPR const auto& ConstSliceArrayBase1D<Base, Sl>::get_slice() const& {
+   return slw_.get();
+}
+
+
+template <BaseType Base, typename Sl>
+STRICT_NODISCARD_CONSTEXPR auto ConstSliceArrayBase1D<Base, Sl>::get_slice() && {
+   return std::move(slw_).get();
+}
+
+
+template <BaseType Base, typename Sl>
+STRICT_NODISCARD_CONSTEXPR auto ConstSliceArrayBase1D<Base, Sl>::get_slice() const&& {
+   return slw_.get();
 }
 
 

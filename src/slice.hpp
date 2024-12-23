@@ -571,8 +571,12 @@ public:
       return sl_.start() + i.get() * sl_.stride();
    }
 
-   STRICT_CONSTEXPR_INLINE const auto& get() const {
+   STRICT_CONSTEXPR_INLINE const auto& get() const& {
       return sl_;
+   }
+
+   STRICT_CONSTEXPR_INLINE auto get() && {
+      return std::move(sl_);
    }
 
 private:
@@ -607,8 +611,12 @@ public:
       return indexes_[to_size_t(i.get())];
    }
 
-   STRICT_CONSTEXPR_INLINE const auto& get() const {
+   STRICT_CONSTEXPR_INLINE const auto& get() const& {
       return indexes_;
+   }
+
+   STRICT_CONSTEXPR_INLINE auto get() && {
+      return std::move(indexes_);
    }
 
 private:
