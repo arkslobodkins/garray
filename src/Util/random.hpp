@@ -110,7 +110,7 @@ auto random(ImplicitInt n, Strict<T> low, Strict<T> high) {
    ASSERT_STRICT_DEBUG(low <= high);
    Generator<T> g{low, high};
    auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
-   return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
+   return detail::generate_random(const1D<T>(n, Zero<T>), G, low, high);
 }
 
 
@@ -119,8 +119,7 @@ auto random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high) {
    ASSERT_STRICT_DEBUG(low <= high);
    Generator<T> g{low, high};
    auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
-   return generate<decltype(const2D<T>(m, n, Zero<T>)), decltype(G), true>(
-       const2D<T>(m, n, Zero<T>), G);
+   return detail::generate_random(const2D<T>(m, n, Zero<T>), G, low, high);
 }
 
 
@@ -170,7 +169,7 @@ auto random_not0(ImplicitInt n, Strict<T> low, Strict<T> high) {
          }
       }
    };
-   return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
+   return detail::generate_random(const1D<T>(n, Zero<T>), G, low, high);
 }
 
 
@@ -187,8 +186,7 @@ auto random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high) {
          }
       }
    };
-   return generate<decltype(const2D<T>(m, n, Zero<T>)), decltype(G), true>(
-       const2D<T>(m, n, Zero<T>), G);
+   return detail::generate_random(const2D<T>(m, n, Zero<T>), G, low, high);
 }
 
 

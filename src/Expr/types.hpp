@@ -289,6 +289,37 @@ private:
 };
 
 
+template <BaseType Base, typename Op>
+   requires expr::UnaryOperation<Base, Op>
+class STRICT_NODISCARD RandUnaryExpr : public UnaryExpr<Base, Op, true> {
+public:
+   using typename UnaryExpr<Base, Op, true>::value_type;
+   using typename UnaryExpr<Base, Op, true>::builtin_type;
+
+   STRICT_NODISCARD_CONSTEXPR explicit RandUnaryExpr(const Base& A, Op op, value_type low,
+                                                     value_type high)
+       : UnaryExpr<Base, Op, true>{A, op},
+         low_{low},
+         high_{high} {
+   }
+
+   STRICT_NODISCARD_CONSTEXPR RandUnaryExpr(const RandUnaryExpr& E) = default;
+   STRICT_CONSTEXPR RandUnaryExpr& operator=(const RandUnaryExpr&) = delete;
+   STRICT_CONSTEXPR ~RandUnaryExpr() = default;
+
+   STRICT_CONSTEXPR value_type low_rand() const {
+      return low_;
+   }
+
+   STRICT_CONSTEXPR value_type high_rand() const {
+      return high_;
+   }
+
+private:
+   value_type low_, high_;
+};
+
+
 }  // namespace detail
 
 

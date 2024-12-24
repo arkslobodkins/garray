@@ -80,7 +80,7 @@ constexpr auto semi_random(ImplicitInt n, Strict<T> low, Strict<T> high, Strict<
    ASSERT_STRICT_DEBUG(low <= high);
    SemiGenerator<T> g{seed + n.get().sui(), low, high};
    auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
-   return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
+   return detail::generate_random(const1D<T>(n, Zero<T>), G, low, high);
 }
 
 
@@ -90,8 +90,7 @@ constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T
    ASSERT_STRICT_DEBUG(low <= high);
    SemiGenerator<T> g{seed + n.get().sui(), low, high};
    auto G = [g]([[maybe_unused]] auto x) { return g.random(); };
-   return generate<decltype(const2D<T>(m, n, Zero<T>)), decltype(G), true>(
-       const2D<T>(m, n, Zero<T>), G);
+   return detail::generate_random(const2D<T>(m, n, Zero<T>), G, low, high);
 }
 
 
@@ -143,7 +142,7 @@ constexpr auto semi_random_not0(ImplicitInt n, Strict<T> low, Strict<T> high,
          }
       }
    };
-   return generate<decltype(const1D<T>(n, Zero<T>)), decltype(G), true>(const1D<T>(n, Zero<T>), G);
+   return detail::generate_random(const1D<T>(n, Zero<T>), G, low, high);
 }
 
 
@@ -161,8 +160,7 @@ constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Str
          }
       }
    };
-   return generate<decltype(const2D<T>(m, n, Zero<T>)), decltype(G), true>(
-       const2D<T>(m, n, Zero<T>), G);
+   return detail::generate_random(const2D<T>(m, n, Zero<T>), G, low, high);
 }
 
 

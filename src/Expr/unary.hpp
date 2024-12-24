@@ -195,6 +195,26 @@ template <Builtin T, typename Base>
 STRICT_CONSTEXPR auto array_cast(Base&& A) = delete;
 
 
+namespace detail {
+
+
+template <BaseType Base, typename F>
+   requires expr::UnaryOperation<Base, F>
+STRICT_CONSTEXPR auto generate_random(const Base& A, F f, ValueTypeOf<Base> low,
+                                      ValueTypeOf<Base> high) {
+   using E = detail::RandUnaryExpr<Base, F>;
+
+   if constexpr(OneDimBaseType<Base>) {
+      return StrictArrayBase1D<E>{A, f, low, high};
+   } else {
+      return StrictArrayBase2D<E>{A, f, low, high};
+   }
+}
+
+
+}  // namespace detail
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <BaseType Base, typename F, bool copy_delete>
    requires expr::UnaryOperation<Base, F>

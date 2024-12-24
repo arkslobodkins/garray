@@ -274,6 +274,7 @@ auto max_if_needed(TwoDimBaseType auto const& A) {
       } else {
          // Handle random expression templates differently since max(abs()) operation
          // is not allowed due to deleted copy constructor.
+         max_abs = maxs(abss(A.low_rand()), abss(A.high_rand()));
       }
    }
    return max_abs;
