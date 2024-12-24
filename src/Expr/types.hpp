@@ -55,12 +55,15 @@ public:
    STRICT_NODISCARD_CONSTEXPR explicit UnaryExpr(const Base& A, Op op) : A_{A}, op_{op} {
    }
 
-   STRICT_NODISCARD_CONSTEXPR UnaryExpr(const UnaryExpr& E) : A_{E.A_}, op_{E.op_} {
-      if constexpr(copy_delete) {
-         static_assert(static_false<decltype(*this)>,
-                       "Copying this expression template is not allowed for additional safety");
-      }
+   STRICT_NODISCARD_CONSTEXPR UnaryExpr(const UnaryExpr& E)
+      requires(!copy_delete)
+       : A_{E.A_},
+         op_{E.op_} {
    }
+
+   STRICT_NODISCARD_CONSTEXPR UnaryExpr(const UnaryExpr& E)
+      requires copy_delete
+   = delete;
 
    STRICT_CONSTEXPR UnaryExpr& operator=(const UnaryExpr&) = delete;
    STRICT_CONSTEXPR ~UnaryExpr() = default;
@@ -115,12 +118,16 @@ public:
       static_assert(same_dimension<Base1, Base2>());
    }
 
-   STRICT_NODISCARD_CONSTEXPR BinaryExpr(const BinaryExpr& E) : A1_{E.A1_}, A2_{E.A2_}, op_{E.op_} {
-      if constexpr(copy_delete) {
-         static_assert(static_false<decltype(*this)>,
-                       "Copying this expression template is not allowed for additional safety");
-      }
+   STRICT_NODISCARD_CONSTEXPR BinaryExpr(const BinaryExpr& E)
+      requires(!copy_delete)
+       : A1_{E.A1_},
+         A2_{E.A2_},
+         op_{E.op_} {
    }
+
+   STRICT_NODISCARD_CONSTEXPR BinaryExpr(const BinaryExpr& E)
+      requires(copy_delete)
+   = delete;
 
    STRICT_CONSTEXPR BinaryExpr& operator=(const BinaryExpr&) = delete;
    STRICT_CONSTEXPR ~BinaryExpr() = default;

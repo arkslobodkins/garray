@@ -267,8 +267,13 @@ auto max_if_needed(TwoDimBaseType auto const& A) {
    using builtin_type = BuiltinTypeOf<decltype(A)>;
    auto max_abs = Zero<builtin_type>;
    if constexpr(Integer<builtin_type> || Floating<builtin_type>) {
-      if(!A.empty()) {
-         max_abs = max(abs(A.view1D()));
+      if constexpr(std::is_copy_constructible_v<RemoveRef<decltype(A)>>) {
+         if(!A.empty()) {
+            max_abs = max(abs(A.view1D()));
+         }
+      } else {
+         // Handle random expression templates differently since max(abs()) operation
+         // is not allowed due to deleted copy constructor.
       }
    }
    return max_abs;
