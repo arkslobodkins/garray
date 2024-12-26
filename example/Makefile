@@ -1,6 +1,6 @@
 debug = 0
 
-all: example0 example1 example2 example3 example4 example5
+all: example0 example1 example2 example3 example4 example5 example6
 
 CXX = g++
 
@@ -21,6 +21,7 @@ exe2 = example2.x
 exe3 = example3.x
 exe4 = example4.x
 exe5 = example5.x
+exe6 = example6.x
 endif
 
 ifeq ($(debug), 1)
@@ -32,6 +33,7 @@ exe2 = example2_debug.x
 exe3 = example3_debug.x
 exe4 = example4_debug.x
 exe5 = example5_debug.x
+exe6 = example6_debug.x
 endif
 
 example0: example0.cpp
@@ -51,6 +53,9 @@ example4: example4.cpp
 
 example5: example5.cpp
 	$(CXX) $(CXXFLAGS2) example5.cpp -o $(exe5) $(LFLAGS2) $(IPATH)
+
+example6: example6.cpp
+	$(CXX) $(CXXFLAGS2) example6.cpp -o $(exe6) $(LFLAGS2) $(IPATH)
 
 clean:
 	rm -rf *.x *.txt

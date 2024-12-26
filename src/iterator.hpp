@@ -754,7 +754,7 @@ public:
    }
 
    // Iterator member functions are not ref-qualified since constructor ensures that A is an lvalue.
-   // Calling them with rvalue(RowIt) objects is allowed and even encouraged.
+   // Calling them with rvalue RowIt objects is allowed and even encouraged.
    STRICT_NODISCARD_CONSTEXPR auto begin() const {
       using namespace detail;
       return ConstIterator<base_type, ConstRowFlag<base_type>>{A_, 0_sl};
@@ -836,7 +836,7 @@ public:
    STRICT_CONSTEXPR ColIt& operator=(const ColIt&) = delete;
 
    // Iterator member functions are not ref-qualified since constructor ensures that A is an lvalue.
-   // Calling them with rvalue(ColIt) objects is allowed and even encouraged.
+   // Calling them with rvalue ColIt objects is allowed and even encouraged.
    STRICT_NODISCARD_CONSTEXPR auto begin() {
       using namespace detail;
       if constexpr(NonConstBaseType<RemoveRef<BaseRef>>) {

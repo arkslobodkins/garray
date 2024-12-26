@@ -55,7 +55,8 @@ void run_within_tol_rel_fail() {
    REQUIRE_THROW(within_tol_rel(Array{}, Array{}));
    REQUIRE_THROW(within_tol_rel(Array(1), Array(2)));
    REQUIRE_THROW(within_tol_rel(Array(1), Array(1), -constants::epsilon<T>));
-   REQUIRE_THROW(within_tol_rel(Array(1), Array(1), constants::epsilon<T>, -constants::epsilon<T>));
+   REQUIRE_THROW(
+       within_tol_rel(Array(1), Array(1), constants::epsilon<T>, -constants::epsilon<T>));
 
    REQUIRE_NOT_THROW(within_tol_rel(Array(1), Array(1), constants::epsilon<T>));
    REQUIRE_NOT_THROW(
@@ -68,8 +69,8 @@ template <Floating T>
 void run_abs_error() {
    Array1D<T> x = random<T>(1000, NegOne<T>, One<T>);
    ASSERT(max_abs_error(x, x) <= constants::epsilon<T>);
-   ASSERT(max_abs_error(x, x + eps10<T>) <= DefaultTol<T>::x);
-   ASSERT(not(max_abs_error(x, x + eps1000<T>) <= DefaultTol<T>::x));
+   ASSERT(max_abs_error(x, x + eps10<T>) <= DefaultTol<T>::value);
+   ASSERT(not(max_abs_error(x, x + eps1000<T>) <= DefaultTol<T>::value));
 }
 
 
@@ -86,8 +87,8 @@ template <Floating T>
 void run_rel_error() {
    Array1D<T> x = random_not0<T>(1000, NegOne<T>, One<T>);
    ASSERT(*max_rel_error(x, x) <= eps10<T>);
-   ASSERT(*max_rel_error(x, x + x * eps10<T>) <= DefaultTol<T>::x);
-   ASSERT(not(*max_rel_error(x, x + x * eps1000<T>) <= DefaultTol<T>::x));
+   ASSERT(*max_rel_error(x, x + x * eps10<T>) <= DefaultTol<T>::value);
+   ASSERT(not(*max_rel_error(x, x + x * eps1000<T>) <= DefaultTol<T>::value));
 
    // Test return value of optional.
    ASSERT(not rel_error(Zero<T>, Zero<T>));

@@ -18,21 +18,21 @@ namespace spp {
 
 template <Floating T>
 struct DefaultTol {
-   static constexpr Strict<T> x{100 * std::numeric_limits<T>::epsilon()};
+   static constexpr Strict<T> value{100 * std::numeric_limits<T>::epsilon()};
 };
 
 
 #ifdef STRICT_QUAD_PRECISION
 template <>
 struct DefaultTol<float128> {
-   static constexpr Strict x{100 * FLT128_EPSILON};
+   static constexpr Strict value{100 * FLT128_EPSILON};
 };
 #endif
 
 
 template <Floating T>
 STRICT_CONSTEXPR_INLINE StrictBool within_tol_abs(Strict<T> x, Strict<T> y,
-                                                  Strict<T> tol = DefaultTol<T>::x) {
+                                                  Strict<T> tol = DefaultTol<T>::value) {
    ASSERT_STRICT_DEBUG(tol >= Zero<T>);
    return abss(x - y) <= tol;
 }
@@ -40,8 +40,8 @@ STRICT_CONSTEXPR_INLINE StrictBool within_tol_abs(Strict<T> x, Strict<T> y,
 
 template <Floating T>
 STRICT_CONSTEXPR_INLINE StrictBool within_tol_rel(Strict<T> x, Strict<T> y,
-                                                  Strict<T> tol = DefaultTol<T>::x,
-                                                  Strict<T> near_zero = DefaultTol<T>::x) {
+                                                  Strict<T> tol = DefaultTol<T>::value,
+                                                  Strict<T> near_zero = DefaultTol<T>::value) {
    ASSERT_STRICT_DEBUG(tol >= Zero<T>);
    ASSERT_STRICT_DEBUG(near_zero >= Zero<T>);
 
@@ -58,7 +58,7 @@ STRICT_CONSTEXPR_INLINE StrictBool within_tol_rel(Strict<T> x, Strict<T> y,
 template <FloatingBaseType Base1, FloatingBaseType Base2>
 STRICT_CONSTEXPR StrictBool within_tol_abs(const Base1& A1, const Base2& A2,
                                            ValueTypeOf<Base1> tol
-                                           = DefaultTol<RealTypeOf<Base1>>::x) {
+                                           = DefaultTol<RealTypeOf<Base1>>::value) {
    static_assert(same_dimension<Base1, Base2>());
    ASSERT_STRICT_DEBUG(!A1.empty());
    ASSERT_STRICT_DEBUG(same_size(A1, A2));
@@ -69,9 +69,9 @@ STRICT_CONSTEXPR StrictBool within_tol_abs(const Base1& A1, const Base2& A2,
 template <FloatingBaseType Base1, FloatingBaseType Base2>
 STRICT_CONSTEXPR StrictBool within_tol_rel(const Base1& A1, const Base2& A2,
                                            ValueTypeOf<Base1> tol
-                                           = DefaultTol<RealTypeOf<Base1>>::x,
+                                           = DefaultTol<RealTypeOf<Base1>>::value,
                                            ValueTypeOf<Base1> near_zero
-                                           = DefaultTol<RealTypeOf<Base1>>::x) {
+                                           = DefaultTol<RealTypeOf<Base1>>::value) {
    static_assert(same_dimension<Base1, Base2>());
    ASSERT_STRICT_DEBUG(!A1.empty());
    ASSERT_STRICT_DEBUG(same_size(A1, A2));
