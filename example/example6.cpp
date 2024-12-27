@@ -18,13 +18,13 @@ std::optional<std::pair<Array1D<T>, index_t>> jacobi(const Array2D<T>& A, const 
    assert(A.rows() == A.cols() && A.cols() == b.size());
 
    const index_t N = A.rows();
-   const index_t max_its = 25_sl * N;
+   const index_t max_its = 100_sl * N;
    Array1D<T> xprev(N);
    Array1D<T> xnext(N);
 
    for(auto iter : irange(max_its)) {
       for(auto i : irange(N)) {
-         xnext[i] = One<T> / A(i, i) * (b[i] - dot_prod(exclude(A.row(i), i), exclude(xprev, i)));
+         xnext[i] = (b[i] - dot_prod(exclude(A.row(i), i), exclude(xprev, i))) / A(i, i);
       }
 
       auto matrix_vector_product
@@ -41,8 +41,8 @@ std::optional<std::pair<Array1D<T>, index_t>> jacobi(const Array2D<T>& A, const 
 
 
 int main() {
-   constexpr index_t N = 500_sl;
-   using T = long double;
+   constexpr index_t N = 100_sl;
+   using T = float64;
    constexpr Strict<T> tol = Thousand<T> * constants::epsilon<T>;
 
    Array2D<T> A(N, N);
