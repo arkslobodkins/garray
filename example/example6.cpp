@@ -8,19 +8,23 @@
 using namespace spp;
 
 
-// example6 solves N x N linear system of equations using straightforward implementation of Jacobi
+// example6 solves N x N linear system of equations using unoptimized implementation of Jacobi
 // method. Two-dimensional array class is introduced.
 
 
-template <Floating T>
-std::optional<std::pair<Array1D<T>, index_t>> jacobi(const Array2D<T>& A, const Array1D<T>& b,
-                                                     Strict<T> tol) {
+template <TwoDimOwnerType MT, OneDimOwnerType VT, Floating T = ValueTypeOf<MT>>
+std::optional<std::pair<VT, index_t>> jacobi(const MT& A, const VT& b, Strict<T> tol) {
    assert(A.rows() == A.cols() && A.cols() == b.size());
 
    const index_t N = A.rows();
    const index_t max_its = 100_sl * N;
-   Array1D<T> xprev(N);
-   Array1D<T> xnext(N);
+   VT xprev{};
+   VT xnext{};
+   // Static arrays are of correct size, whereas dynamic arrays are empty by default.
+   if constexpr(VT::is_dynamic()) {
+      xprev.resize(N);
+      xnext.resize(N);
+   }
 
    for(auto iter : irange(max_its)) {
       for(auto i : irange(N)) {
@@ -45,14 +49,13 @@ int main() {
    using T = float64;
    constexpr Strict<T> tol = Thousand<T> * constants::epsilon<T>;
 
-   Array2D<T> A(N, N);
-   Array1D<T> b(N);
+   FixedArray2D<T, N, N> A;
+   FixedArray1D<T, N> b;
    random(A, b);
    // Ensure A is diagonally dominant for convergence.
    A.diag() += row_reduce(A, [](auto row) { return sum(row); });
 
    auto x_opt = jacobi(A, b, tol);
-
    if(x_opt) {
       std::cout << "converged in " << x_opt->second << " iterations." << std::endl;
    } else {

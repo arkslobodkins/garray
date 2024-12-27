@@ -222,7 +222,20 @@ template <typename T> concept PointerConvertibleLvalueConst
       };
 
 
+template <typename T, typename = void>
+struct has_resize : std::false_type {};
+
+
+template <typename T>
+struct has_resize<T, std::void_t<decltype(&T::resize)>>
+    : std::true_type {};
+
+
 }  // namespace detail
+
+
+template <typename T> concept OneDimOwnerType = detail::ArrayOneDimType<T>;
+template <typename T> concept TwoDimOwnerType = detail::ArrayTwoDimType<T>;
 
 
 }  // namespace spp

@@ -982,6 +982,14 @@ public:
    STRICT_NODISCARD_CONSTEXPR const StrictArray2D& lval() const&& {
       return static_cast<StrictArray2D&>(CommonBase2D::lval_impl());
    }
+
+   STRICT_CONSTEXPR static StrictBool is_fixed() {
+      return !StrictBool{detail::has_resize<Base>::value};
+   }
+
+   STRICT_CONSTEXPR static StrictBool is_dynamic() {
+      return !is_fixed();
+   }
 };
 
 
