@@ -53,7 +53,7 @@ public:
       return val_;
    }
 
-   template<typename T>
+   template <typename T>
    STRICT_NODISCARD_CONSTEXPR_INLINE operator T() const = delete;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE Strict operator!() const {
@@ -240,7 +240,9 @@ private:
 };
 
 
+namespace detail {
 template <typename T> concept CompatibleBuiltin = Builtin<T> && sizeof(T) == sizeof(Strict<T>);
+}
 
 
 template <Builtin T>

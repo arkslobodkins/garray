@@ -4,7 +4,6 @@
 #pragma once
 
 
-#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -12,28 +11,10 @@
 #include "../ArrayCommon/array_traits.hpp"
 #include "../ArrayCommon/valid.hpp"
 #include "../StrictCommon/strict_common.hpp"
+#include "expr_traits.hpp"
 
 
-namespace spp {
-
-
-namespace expr {
-
-
-template <typename T, typename F> concept UnaryOperation
-    = std::invocable<F, ValueTypeOf<T>>
-   && StrictType<decltype(std::declval<F>()(ValueTypeOf<T>{}))>;
-
-
-template <typename T1, typename T2, typename F> concept BinaryOperation
-    = std::invocable<F, ValueTypeOf<T1>, ValueTypeOf<T2>>
-   && StrictType<decltype(std::declval<F>()(ValueTypeOf<T1>{}, ValueTypeOf<T2>{}))>;
-
-
-}  // namespace expr
-
-
-namespace detail {
+namespace spp::detail {
 
 
 // Workaround before CWG2518/P2593R1.
@@ -320,8 +301,5 @@ private:
 };
 
 
-}  // namespace detail
-
-
-}  // namespace spp
+}  // namespace spp::detail
 

@@ -13,5 +13,6 @@
 #include "array_stable_ops.hpp"
 #include "attach1D.hpp"
 #include "attach2D.hpp"
+#include "concepts.hpp"
 #include "derived1D.hpp"
 #include "derived2D.hpp"
