@@ -294,38 +294,14 @@ template <typename Base>
 void shuffle(Base&& A);
 
 
-namespace detail {
-template <RealBaseType Base>
-STRICT_CONSTEXPR ValueTypeOf<Base> rec_sum(const Base& A) {
-   ValueTypeOf<Base> s{};
-   for(index_t i = 0_sl; i < A.size(); ++i) {
-      s += A.un(i);
-   }
-   return s;
-}
-}  // namespace detail
-
-
 template <RealBaseType Base>
 STRICT_CONSTEXPR ValueTypeOf<Base> sum(const Base& A) {
    ASSERT_STRICT_DEBUG(!A.empty());
-   index_t block_size = 64_sl;
-   index_t nblocks = A.size() / block_size;
-   index_t rem = A.size() % block_size;
-
-   // Unaligned array is used to preserve constexpr.
-   Array1D<RealTypeOf<Base>, Unaligned> sb(nblocks);
-   for(index_t i = 0_sl; i < nblocks; ++i) {
-      for(index_t j = 0_sl; j < block_size; ++j) {
-         sb[i] += A.un(i * block_size + j);
-      }
+   ValueTypeOf<Base> s = A.un(0);
+   for(index_t i = 1_sl; i < A.size(); ++i) {
+      s += A.un(i);
    }
-
-   ValueTypeOf<Base> r{};
-   for(index_t i = 0_sl; i < rem; ++i) {
-      r += A.un(A.size() - 1_sl - i);
-   }
-   return detail::rec_sum(sb) + r;
+   return s;
 }
 
 
