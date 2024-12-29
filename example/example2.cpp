@@ -3,6 +3,7 @@
 
 using namespace spp;
 
+
 // example 2 puts more emphasis on slicing features of 1-d array class.
 int main() {
    Array1D<double> A = random(Size{10}, Low{-1._sd}, High{1._sd});

@@ -5,7 +5,6 @@
 
 
 #include <iterator>
-#include <type_traits>
 #include <utility>
 
 #include "ArrayCommon/array_common.hpp"

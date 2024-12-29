@@ -12,7 +12,7 @@ using namespace spp;
 // method. Two-dimensional array class is introduced.
 
 
-template <TwoDimOwnerType MT, OneDimOwnerType VT, Floating T = ValueTypeOf<MT>>
+template <TwoDimOwnerType MT, OneDimOwnerType VT, Floating T = RealTypeOf<MT>>
 std::optional<std::pair<VT, index_t>> jacobi(const MT& A, const VT& b, Strict<T> tol) {
    assert(A.rows() == A.cols() && A.cols() == b.size());
 
