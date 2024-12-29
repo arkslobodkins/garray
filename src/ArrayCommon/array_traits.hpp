@@ -105,14 +105,30 @@ struct CopyOrReferenceExpr<T> {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename... Args>
+template <std::size_t offset, typename... Args>
 struct LastPackTraits {
-   using type = std::tuple_element_t<sizeof...(Args) - 1, std::tuple<Args...>>;
+   using type = std::tuple_element_t<sizeof...(Args) - offset, std::tuple<Args...>>;
 };
 
 
 template <typename... Args>
-using LastPack_t = LastPackTraits<Args...>::type;
+using LastPack_t = LastPackTraits<1, Args...>::type;
+
+
+template <typename... Args>
+using SecondLastPack_t = LastPackTraits<2, Args...>::type;
+
+
+template <typename... Args>
+constexpr auto last_value_of(Args&&... args) {
+   return std::get<sizeof...(Args) - 1>(std::forward_as_tuple(args...));
+}
+
+
+template <typename... Args>
+constexpr auto second_last_value_of(Args&&... args) {
+   return std::get<sizeof...(Args) - 2>(std::forward_as_tuple(args...));
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

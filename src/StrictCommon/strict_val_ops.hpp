@@ -43,8 +43,7 @@ STRICT_NODISCARD_CONSTEXPR_INLINE Strict<long int> binom_coeff(ImplicitInt n, Im
 
 
 template <Real T>
-STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T> clamps(Strict<T> x, Strict<T> low,
-                                                   Strict<T> high) {
+STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T> clamps(Strict<T> x, Strict<T> low, Strict<T> high) {
    ASSERT_STRICT_DEBUG(low <= high);
    if constexpr(Floating<T>) {
       ASSERT_STRICT_DEBUG(!isnans(x));
@@ -92,8 +91,7 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> exps_int(ImplicitInt p) {
 
 
 template <Real T>
-STRICT_NODISCARD_CONSTEXPR_INLINE StrictBool in_open(Strict<T> x, Strict<T> low,
-                                                     Strict<T> high) {
+STRICT_NODISCARD_CONSTEXPR_INLINE StrictBool in_open(Strict<T> x, Strict<T> low, Strict<T> high) {
    ASSERT_STRICT_DEBUG(low <= high);
    return x > low && x < high;
 }
@@ -106,8 +104,7 @@ STRICT_NODISCARD_CONSTEXPR_INLINE StrictBool in_open(Value<T> x, Low<T> low, Hig
 
 
 template <Real T>
-STRICT_NODISCARD_CONSTEXPR_INLINE StrictBool in_closed(Strict<T> x, Strict<T> low,
-                                                       Strict<T> high) {
+STRICT_NODISCARD_CONSTEXPR_INLINE StrictBool in_closed(Strict<T> x, Strict<T> low, Strict<T> high) {
    ASSERT_STRICT_DEBUG(low <= high);
    return x >= low && x <= high;
 }
@@ -177,7 +174,7 @@ STRICT_NODISCARD_INLINE use::StrictPair<T> pow_prods(Strict<T> x, ImplicitInt p)
       auto temp = std::make_unique<Strict<T>[]>(static_cast<std::size_t>(2 * sz));
       Strict<T>* rtemp = temp.get();
       Strict<T>* stemp = temp.get() + sz;
-      rtemp[0] = strict_cast<T>(1);
+      rtemp[0] = One<T>;
       rtemp[1] = r;
       for(decltype(sz) i = 2; i < sz; ++i) {
          auto [rcur, scur] = two_prods(rtemp[i - 1], r);
@@ -203,8 +200,7 @@ STRICT_NODISCARD_INLINE use::StrictPair<T> pow_prods(Strict<T> x, ImplicitInt p)
          }
 
          auto [rn_p1, sn_p1] = two_prods(rn, x);
-         return use::StrictPair<T>{rn_p1,
-                                   strict_cast<T>(n) * x * rn_m1 * s + x * sum_loc + sn_p1};
+         return use::StrictPair<T>{rn_p1, strict_cast<T>(n) * x * rn_m1 * s + x * sum_loc + sn_p1};
       }
    }
 }
