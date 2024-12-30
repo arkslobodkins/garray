@@ -9,6 +9,7 @@
 #include "../ArrayCommon/array_traits.hpp"
 #include "../Expr/expr.hpp"
 #include "../StrictCommon/strict_common.hpp"
+#include "random_traits.hpp"
 
 
 namespace spp {
@@ -232,69 +233,64 @@ Strict<T> rands_not0() {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Base, typename... Args>
-   requires(sizeof...(Args) >= 2) && detail::NonConstBaseType<RemoveRef<Base>>
-        && Real<BuiltinTypeOf<Base>> && StrictType<RemoveRef<detail::SecondLastPack_t<Args...>>>
-        && StrictType<RemoveRef<detail::LastPack_t<Args...>>>
-void random(Base&& A, Args&&... args) {
-   detail::random(A, detail::second_last_value_of(args...), detail::last_value_of(args...));
-   if constexpr(sizeof...(Args) >= 3) {
-      random(args...);
+template <typename Base, typename... BasesAndStrict>
+   requires detail::RandomRealBasesAndStrict<Base, BasesAndStrict...>
+void random(Base&& A, BasesAndStrict&&... AArgs_and_xargs) {
+   detail::random(A,
+                  detail::second_last_value_of(AArgs_and_xargs...),
+                  detail::last_value_of(AArgs_and_xargs...));
+   if constexpr(sizeof...(BasesAndStrict) >= 3) {
+      random(AArgs_and_xargs...);
    }
 }
 
 
-template <typename Base, typename... Args>
-   requires(sizeof...(Args) >= 2)
-        && detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
-        && SameAs<Low<RealTypeOf<Base>>, RemoveRef<detail::SecondLastPack_t<Args...>>>
-        && SameAs<High<RealTypeOf<Base>>, RemoveRef<detail::LastPack_t<Args...>>>
-void random(Base&& A, Args&&... args) {
-   detail::random(
-       A, detail::second_last_value_of(args...).get(), detail::last_value_of(args...).get());
-   if constexpr(sizeof...(Args) >= 3) {
-      random(args...);
+template <typename Base, typename... BasesAndLowHigh>
+   requires detail::RandomRealBasesAndLowHigh<Base, BasesAndLowHigh...>
+void random(Base&& A, BasesAndLowHigh&&... AArgs_and_xargs) {
+   detail::random(A,
+                  detail::second_last_value_of(AArgs_and_xargs...).get(),
+                  detail::last_value_of(AArgs_and_xargs...).get());
+   if constexpr(sizeof...(BasesAndLowHigh) >= 3) {
+      random(AArgs_and_xargs...);
    }
 }
 
 
 template <typename... Base>
-   requires detail::AllNonConstBases<RemoveRef<Base>...>
+   requires detail::RandomBases<Base...>
 void random(Base&&... A) {
    (..., detail::random(A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>));
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Base, typename... Args>
-   requires(sizeof...(Args) >= 2) && detail::NonConstBaseType<RemoveRef<Base>>
-        && Real<BuiltinTypeOf<Base>> && StrictType<RemoveRef<detail::SecondLastPack_t<Args...>>>
-        && StrictType<RemoveRef<detail::LastPack_t<Args...>>>
-void random_not0(Base&& A, Args&&... args) {
-   detail::random_not0(A, detail::second_last_value_of(args...), detail::last_value_of(args...));
-   if constexpr(sizeof...(Args) >= 3) {
-      random(args...);
+template <typename Base, typename... BasesAndStrict>
+   requires detail::RandomRealBasesAndStrict<Base, BasesAndStrict...>
+void random_not0(Base&& A, BasesAndStrict&&... AArgs_and_xargs) {
+   detail::random_not0(A,
+                       detail::second_last_value_of(AArgs_and_xargs...),
+                       detail::last_value_of(AArgs_and_xargs...));
+   if constexpr(sizeof...(BasesAndStrict) >= 3) {
+      random_not0(AArgs_and_xargs...);
    }
 }
 
 
-template <typename Base, typename... Args>
-   requires(sizeof...(Args) >= 2)
-        && detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
-        && SameAs<Low<RealTypeOf<Base>>, RemoveRef<detail::SecondLastPack_t<Args...>>>
-        && SameAs<High<RealTypeOf<Base>>, RemoveRef<detail::LastPack_t<Args...>>>
-void random_not0(Base&& A, Args&&... args) {
-   detail::random_not0(
-       A, detail::second_last_value_of(args...).get(), detail::last_value_of(args...).get());
-   if constexpr(sizeof...(Args) >= 3) {
-      random(args...);
+template <typename Base, typename... BasesAndLowHigh>
+   requires detail::RandomRealBasesAndLowHigh<Base, BasesAndLowHigh...>
+void random_not0(Base&& A, BasesAndLowHigh&&... AArgs_and_xargs) {
+   detail::random_not0(A,
+                       detail::second_last_value_of(AArgs_and_xargs...).get(),
+                       detail::last_value_of(AArgs_and_xargs...).get());
+   if constexpr(sizeof...(BasesAndLowHigh) >= 3) {
+      random_not0(AArgs_and_xargs...);
    }
 }
 
 
 template <typename... Base>
-   requires detail::AllNonConstBases<RemoveRef<Base>...>
-         && Real<BuiltinTypeOf<detail::LastPack_t<Base...>>>
+   requires detail::RandomRealBases<Base...>
 void random_not0(Base&&... A) {
    (..., detail::random_not0(A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>));
 }

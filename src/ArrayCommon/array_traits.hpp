@@ -105,7 +105,10 @@ struct CopyOrReferenceExpr<T> {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Requires clause avoids out of bound access. Offset is moved to the right hand
+// side to avoid subtraction for unsigned integers.
 template <std::size_t offset, typename... Args>
+   requires(offset > 0) && (sizeof...(Args) >= offset)
 struct LastPackTraits {
    using type = std::tuple_element_t<sizeof...(Args) - offset, std::tuple<Args...>>;
 };
@@ -243,8 +246,7 @@ struct has_resize : std::false_type {};
 
 
 template <typename T>
-struct has_resize<T, std::void_t<decltype(&T::resize)>>
-    : std::true_type {};
+struct has_resize<T, std::void_t<decltype(&T::resize)>> : std::true_type {};
 
 
 }  // namespace detail

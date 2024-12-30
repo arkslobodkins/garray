@@ -7,6 +7,7 @@
 #include "../ArrayCommon/array_traits.hpp"
 #include "../Expr/expr.hpp"
 #include "../StrictCommon/strict_common.hpp"
+#include "random_traits.hpp"
 
 
 namespace spp {
@@ -224,7 +225,7 @@ constexpr void semi_random(Base&& A, Low<BuiltinTypeOf<Base>> low, High<BuiltinT
 
 
 template <typename... Base>
-   requires detail::AllNonConstBases<RemoveRef<Base>...>
+   requires detail::RandomBases<Base...>
 constexpr void semi_random(Base&&... A) {
    (...,
     detail::semi_random(A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>, One<unsigned>));
@@ -249,8 +250,7 @@ constexpr void semi_random_not0(Base&& A, Low<BuiltinTypeOf<Base>> low,
 
 
 template <typename... Base>
-   requires detail::AllNonConstBases<RemoveRef<Base>...>
-         && Real<BuiltinTypeOf<detail::LastPack_t<Base...>>>
+   requires detail::RandomRealBases<Base...>
 constexpr void semi_random_not0(Base&&... A) {
    (...,
     detail::semi_random_not0(
