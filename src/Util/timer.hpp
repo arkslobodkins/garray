@@ -15,7 +15,7 @@
 // Removed std::format since Intel and clang compilers do not support it(at this time).
 #define STRICT_TIME(a)                                                       \
    do {                                                                      \
-      spp::util::timer t;                                                    \
+      spp::timer t;                                                          \
       a;                                                                     \
       std::ostringstream stream;                                             \
       stream << (#a) << " took: " << std::setprecision(4) << std::scientific \
@@ -24,7 +24,7 @@
    } while(0)
 
 
-namespace spp::util {
+namespace spp {
 
 
 struct timer {
@@ -47,4 +47,4 @@ private:
 };
 
 
-}  // namespace spp::util
+}  // namespace spp
