@@ -53,8 +53,7 @@ int main() {
    FixedArray1D<T, N> b;
    random_not0(A, b);
    // Ensure A is diagonally dominant for convergence.
-   A.diag() += row_reduce(A, [](auto row) { return sum(row); });
-   A.diag() *= Strict{T(2)};
+   A.diag() += Strict{T(2)} * row_reduce(A, [](auto row) { return sum(row); });
 
    auto x_opt = jacobi(A, b, tol);
    if(x_opt) {

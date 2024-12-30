@@ -227,6 +227,7 @@ constexpr void semi_random(Base&& A, Low<BuiltinTypeOf<Base>> low, High<BuiltinT
 template <typename... Base>
    requires detail::RandomBases<Base...>
 constexpr void semi_random(Base&&... A) {
+   static_assert(sizeof...(Base) > 0);
    (...,
     detail::semi_random(A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>, One<unsigned>));
 }
@@ -252,6 +253,7 @@ constexpr void semi_random_not0(Base&& A, Low<BuiltinTypeOf<Base>> low,
 template <typename... Base>
    requires detail::RandomRealBases<Base...>
 constexpr void semi_random_not0(Base&&... A) {
+   static_assert(sizeof...(Base) > 0);
    (...,
     detail::semi_random_not0(
         A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>, One<unsigned>));

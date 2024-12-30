@@ -35,8 +35,7 @@ int main() {
 
    // 3.
    Array1D<double> C1(n), C2(n);
-   random(C1(even), 0._sd, 10._sd);
-   random(C2(even), 0._sd, 10._sd);
+   random(C1(even), C2(even), 0._sd, 10._sd);
    C1(odd) = C1(even) + 1.E-8_sd;
    C2(odd) = -C2(even) + 1.E-8_sd;
    auto CQ1 = array_cast<float128>(C1);

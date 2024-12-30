@@ -260,6 +260,7 @@ void random(Base&& A, BasesAndLowHigh&&... AArgs_and_xargs) {
 template <typename... Base>
    requires detail::RandomBases<Base...>
 void random(Base&&... A) {
+   static_assert(sizeof...(Base) > 0);
    (..., detail::random(A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>));
 }
 
@@ -292,6 +293,7 @@ void random_not0(Base&& A, BasesAndLowHigh&&... AArgs_and_xargs) {
 template <typename... Base>
    requires detail::RandomRealBases<Base...>
 void random_not0(Base&&... A) {
+   static_assert(sizeof...(Base) > 0);
    (..., detail::random_not0(A, Zero<BuiltinTypeOf<Base>>, One<BuiltinTypeOf<Base>>));
 }
 
