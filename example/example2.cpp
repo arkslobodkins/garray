@@ -40,7 +40,6 @@ int main() {
                                                        slice_6,
                                                        dst1,
                                                        dst2);
-   random_not0<double>();
    return EXIT_SUCCESS;
 }
 
