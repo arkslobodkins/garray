@@ -44,15 +44,14 @@ public:
 
    STRICT_NODISCARD_CONSTEXPR UnaryExprBase(const UnaryExprBase& E)
       requires(!copy_delete)
-       : A_{E.A_},
-         op_{E.op_} {
-   }
+   = default;
 
    STRICT_NODISCARD_CONSTEXPR UnaryExprBase(const UnaryExprBase& E)
       requires copy_delete
    = delete;
 
    STRICT_CONSTEXPR UnaryExprBase& operator=(const UnaryExprBase&) = delete;
+
    STRICT_CONSTEXPR ~UnaryExprBase() = default;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
@@ -127,16 +126,14 @@ public:
 
    STRICT_NODISCARD_CONSTEXPR BinaryExprBase(const BinaryExprBase& E)
       requires(!copy_delete)
-       : A1_{E.A1_},
-         A2_{E.A2_},
-         op_{E.op_} {
-   }
+   = default;
 
    STRICT_NODISCARD_CONSTEXPR BinaryExprBase(const BinaryExprBase& E)
       requires(copy_delete)
    = delete;
 
    STRICT_CONSTEXPR BinaryExprBase& operator=(const BinaryExprBase&) = delete;
+
    STRICT_CONSTEXPR ~BinaryExprBase() = default;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
