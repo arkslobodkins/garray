@@ -74,8 +74,8 @@ template <BaseType Base, typename Op, bool copy_delete = false>
 class STRICT_NODISCARD UnaryExpr;
 
 
-template <BaseType Base, typename Op, bool copy_delete>
-   requires expr::UnaryOperation<Base, Op> && OneDimBaseType<Base>
+template <OneDimBaseType Base, typename Op, bool copy_delete>
+   requires expr::UnaryOperation<Base, Op>
 class STRICT_NODISCARD UnaryExpr<Base, Op, copy_delete>
     : public UnaryExprBase<Base, Op, copy_delete> {
 public:
@@ -83,10 +83,11 @@ public:
 };
 
 
-template <BaseType Base, typename Op, bool copy_delete>
-   requires expr::UnaryOperation<Base, Op> && TwoDimBaseType<Base>
+template <TwoDimBaseType Base, typename Op, bool copy_delete>
+   requires expr::UnaryOperation<Base, Op>
 class STRICT_NODISCARD UnaryExpr<Base, Op, copy_delete>
     : public UnaryExprBase<Base, Op, copy_delete> {
+private:
    using ExprBase = UnaryExprBase<Base, Op, copy_delete>;
 
 public:
@@ -158,9 +159,8 @@ template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete = false>
 class STRICT_NODISCARD BinaryExpr;
 
 
-template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete>
-   requires expr::BinaryOperation<Base1, Base2, Op> && OneDimBaseType<Base1>
-         && OneDimBaseType<Base2>
+template <OneDimBaseType Base1, OneDimBaseType Base2, typename Op, bool copy_delete>
+   requires expr::BinaryOperation<Base1, Base2, Op>
 class STRICT_NODISCARD BinaryExpr<Base1, Base2, Op, copy_delete>
     : public BinaryExprBase<Base1, Base2, Op, copy_delete> {
 public:
@@ -168,11 +168,11 @@ public:
 };
 
 
-template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete>
-   requires expr::BinaryOperation<Base1, Base2, Op> && TwoDimBaseType<Base1>
-         && TwoDimBaseType<Base2>
+template <TwoDimBaseType Base1, TwoDimBaseType Base2, typename Op, bool copy_delete>
+   requires expr::BinaryOperation<Base1, Base2, Op>
 class STRICT_NODISCARD BinaryExpr<Base1, Base2, Op, copy_delete>
     : public BinaryExprBase<Base1, Base2, Op, copy_delete> {
+private:
    using ExprBase = BinaryExprBase<Base1, Base2, Op, copy_delete>;
 
 public:
