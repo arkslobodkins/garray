@@ -4,7 +4,6 @@
 #pragma once
 
 
-#include <type_traits>
 #include <utility>
 
 #include "../ArrayCommon/array_auxiliary.hpp"
@@ -22,10 +21,17 @@ template <typename>
 constexpr bool static_false = false;
 
 
+// One-dimensional and two-dimensional cases of unary and binary expression templates
+// could be rewritten as the same class, where two-dimensional functionality would be
+// implemented by adding requires clause to member functions. However, two-dimensional
+// functionality would still be shown by autocomplete for one-dimensional types.
+// Therefore, specialization is used where each specialization derives from the base class.
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <BaseType Base, typename Op, bool copy_delete = false>
+template <BaseType Base, typename Op, bool copy_delete>
    requires expr::UnaryOperation<Base, Op>
-class STRICT_NODISCARD UnaryExpr
+class STRICT_NODISCARD UnaryExprBase
     : private std::conditional_t<OneDimBaseType<Base>, CopyBase1D, CopyBase2D> {
 public:
    // value_type is not always the same as ValueTypeOf<Base>. For example,
@@ -33,65 +39,84 @@ public:
    using value_type = decltype(std::declval<Op>()(ValueTypeOf<Base>{}));
    using builtin_type = value_type::value_type;
 
-   STRICT_NODISCARD_CONSTEXPR explicit UnaryExpr(const Base& A, Op op) : A_{A}, op_{op} {
+   STRICT_NODISCARD_CONSTEXPR explicit UnaryExprBase(const Base& A, Op op) : A_{A}, op_{op} {
    }
 
-   STRICT_NODISCARD_CONSTEXPR UnaryExpr(const UnaryExpr& E)
+   STRICT_NODISCARD_CONSTEXPR UnaryExprBase(const UnaryExprBase& E)
       requires(!copy_delete)
        : A_{E.A_},
          op_{E.op_} {
    }
 
-   STRICT_NODISCARD_CONSTEXPR UnaryExpr(const UnaryExpr& E)
+   STRICT_NODISCARD_CONSTEXPR UnaryExprBase(const UnaryExprBase& E)
       requires copy_delete
    = delete;
 
-   STRICT_CONSTEXPR UnaryExpr& operator=(const UnaryExpr&) = delete;
-   STRICT_CONSTEXPR ~UnaryExpr() = default;
+   STRICT_CONSTEXPR UnaryExprBase& operator=(const UnaryExprBase&) = delete;
+   STRICT_CONSTEXPR ~UnaryExprBase() = default;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
       return op_(A_.un(i));
-   }
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i, ImplicitInt j) const
-      requires TwoDimBaseType<Base>
-   {
-      return op_(A_.un(i, j));
    }
 
    STRICT_NODISCARD_CONSTEXPR_INLINE index_t size() const {
       return A_.size();
    }
 
-   STRICT_NODISCARD_CONSTEXPR_INLINE index_t rows() const
-      requires TwoDimBaseType<Base>
-   {
-      return A_.rows();
-   }
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE index_t cols() const
-      requires TwoDimBaseType<Base>
-   {
-      return A_.cols();
-   }
-
-private:
+protected:
    // Slice arrays are stored by copy, arrays by reference.
    typename CopyOrReferenceExpr<AddConst<Base>>::type A_;
    Op op_;
 };
 
 
+template <BaseType Base, typename Op, bool copy_delete = false>
+class STRICT_NODISCARD UnaryExpr;
+
+
+template <BaseType Base, typename Op, bool copy_delete>
+   requires expr::UnaryOperation<Base, Op> && OneDimBaseType<Base>
+class STRICT_NODISCARD UnaryExpr<Base, Op, copy_delete>
+    : public UnaryExprBase<Base, Op, copy_delete> {
+public:
+   using UnaryExprBase<Base, Op, copy_delete>::UnaryExprBase;
+};
+
+
+template <BaseType Base, typename Op, bool copy_delete>
+   requires expr::UnaryOperation<Base, Op> && TwoDimBaseType<Base>
+class STRICT_NODISCARD UnaryExpr<Base, Op, copy_delete>
+    : public UnaryExprBase<Base, Op, copy_delete> {
+   using ExprBase = UnaryExprBase<Base, Op, copy_delete>;
+
+public:
+   using ExprBase::un;  // Unhide.
+   using ExprBase::UnaryExprBase;
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE ExprBase::value_type un(ImplicitInt i, ImplicitInt j) const {
+      return ExprBase::op_(ExprBase::A_.un(i, j));
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE index_t rows() const {
+      return ExprBase::A_.rows();
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE index_t cols() const {
+      return ExprBase::A_.cols();
+   }
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete = false>
+template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete>
    requires expr::BinaryOperation<Base1, Base2, Op>
-class STRICT_NODISCARD BinaryExpr
+class STRICT_NODISCARD BinaryExprBase
     : private std::conditional_t<OneDimBaseType<Base1>, CopyBase1D, CopyBase2D> {
 public:
    using value_type = decltype(std::declval<Op>()(ValueTypeOf<Base1>{}, ValueTypeOf<Base2>{}));
    using builtin_type = value_type::value_type;
 
-   STRICT_NODISCARD_CONSTEXPR explicit BinaryExpr(const Base1& A1, const Base2& A2, Op op)
+   STRICT_NODISCARD_CONSTEXPR explicit BinaryExprBase(const Base1& A1, const Base2& A2, Op op)
        : A1_{A1},
          A2_{A2},
          op_{op} {
@@ -99,51 +124,72 @@ public:
       static_assert(same_dimension<Base1, Base2>());
    }
 
-   STRICT_NODISCARD_CONSTEXPR BinaryExpr(const BinaryExpr& E)
+   STRICT_NODISCARD_CONSTEXPR BinaryExprBase(const BinaryExprBase& E)
       requires(!copy_delete)
        : A1_{E.A1_},
          A2_{E.A2_},
          op_{E.op_} {
    }
 
-   STRICT_NODISCARD_CONSTEXPR BinaryExpr(const BinaryExpr& E)
+   STRICT_NODISCARD_CONSTEXPR BinaryExprBase(const BinaryExprBase& E)
       requires(copy_delete)
    = delete;
 
-   STRICT_CONSTEXPR BinaryExpr& operator=(const BinaryExpr&) = delete;
-   STRICT_CONSTEXPR ~BinaryExpr() = default;
+   STRICT_CONSTEXPR BinaryExprBase& operator=(const BinaryExprBase&) = delete;
+   STRICT_CONSTEXPR ~BinaryExprBase() = default;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i) const {
       return op_(A1_.un(i), A2_.un(i));
-   }
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE value_type un(ImplicitInt i, ImplicitInt j) const
-      requires TwoDimBaseType<Base1>
-   {
-      return op_(A1_.un(i, j), A2_.un(i, j));
    }
 
    STRICT_NODISCARD_CONSTEXPR_INLINE index_t size() const {
       return A1_.size();
    }
 
-   STRICT_NODISCARD_CONSTEXPR_INLINE index_t rows() const
-      requires TwoDimBaseType<Base1>
-   {
-      return A1_.rows();
-   }
-
-   STRICT_NODISCARD_CONSTEXPR_INLINE index_t cols() const
-      requires TwoDimBaseType<Base2>
-   {
-      return A1_.cols();
-   }
-
-private:
+protected:
    // Slice arrays are stored by copy, arrays by reference.
    typename CopyOrReferenceExpr<AddConst<Base1>>::type A1_;
    typename CopyOrReferenceExpr<AddConst<Base2>>::type A2_;
    Op op_;
+};
+
+
+template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete = false>
+class STRICT_NODISCARD BinaryExpr;
+
+
+template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete>
+   requires expr::BinaryOperation<Base1, Base2, Op> && OneDimBaseType<Base1>
+         && OneDimBaseType<Base2>
+class STRICT_NODISCARD BinaryExpr<Base1, Base2, Op, copy_delete>
+    : public BinaryExprBase<Base1, Base2, Op, copy_delete> {
+public:
+   using BinaryExprBase<Base1, Base2, Op, copy_delete>::BinaryExprBase;
+};
+
+
+template <BaseType Base1, BaseType Base2, typename Op, bool copy_delete>
+   requires expr::BinaryOperation<Base1, Base2, Op> && TwoDimBaseType<Base1>
+         && TwoDimBaseType<Base2>
+class STRICT_NODISCARD BinaryExpr<Base1, Base2, Op, copy_delete>
+    : public BinaryExprBase<Base1, Base2, Op, copy_delete> {
+   using ExprBase = BinaryExprBase<Base1, Base2, Op, copy_delete>;
+
+public:
+   using ExprBase::BinaryExprBase;
+   using ExprBase::un;  // Unhide.
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE ExprBase::value_type un(ImplicitInt i, ImplicitInt j) const {
+      return ExprBase::op_(ExprBase::A1_.un(i, j), ExprBase::A2_.un(i, j));
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE index_t rows() const {
+      return ExprBase::A1_.rows();
+   }
+
+   STRICT_NODISCARD_CONSTEXPR_INLINE index_t cols() const {
+      return ExprBase::A1_.cols();
+   }
 };
 
 
