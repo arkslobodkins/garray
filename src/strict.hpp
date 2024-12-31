@@ -4,6 +4,11 @@
 #pragma once
 
 
+#if __cplusplus < 202002L
+#error requires c++20 or higher
+#else
+
+
 #include "ArrayCommon/array_common.hpp"
 #include "Expr/expr.hpp"
 #include "StrictCommon/strict_common.hpp"
@@ -16,3 +21,6 @@
 #include "concepts.hpp"
 #include "derived1D.hpp"
 #include "derived2D.hpp"
+
+
+#endif
