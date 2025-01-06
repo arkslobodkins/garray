@@ -16,11 +16,6 @@
 namespace spp::detail {
 
 
-// Workaround before CWG2518/P2593R1.
-template <typename>
-constexpr bool static_false = false;
-
-
 // One-dimensional and two-dimensional cases of unary and binary expression templates
 // could be rewritten as the same class, where two-dimensional functionality would be
 // implemented by adding requires clause to member functions. However, two-dimensional
