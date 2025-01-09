@@ -26,16 +26,16 @@ std::optional<std::pair<VT, index_t>> jacobi(const MT& A, const VT& b, Strict<T>
       xnext.resize(N);
    }
 
-   for(auto iter : irange(max_its)) {
-      for(auto i : irange(N)) {
-         xnext[i] = (b[i] - dot_prod(exclude(A.row(i), i), exclude(xprev, i))) / A(i, i);
-      }
-
+   for(auto iter : irange(max_its + 1_sl)) {
       auto matrix_vector_product
           = row_reduce(A, [&xnext](auto row) { return dot_prod(row, xnext); });
 
-      if(max_abs_error(matrix_vector_product, b) / norm_inf(b) <= tol) {
-         return {std::pair{xnext, iter + 1_sl}};
+      if(within_tol_rel(matrix_vector_product, b, tol)) {
+         return {std::pair{xnext, iter}};
+      }
+
+      for(auto i : irange(N)) {
+         xnext[i] = (b[i] - dot_prod(exclude(A.row(i), i), exclude(xprev, i))) / A(i, i);
       }
       xprev = xnext;
    }
@@ -51,7 +51,7 @@ int main() {
 
    FixedArray2D<T, N, N> A;
    FixedArray1D<T, N> b;
-   random_not0(A, b);
+   random(A, b);
    // Ensure A is diagonally dominant for convergence.
    A.diag() += Strict{T(2)} * row_reduce(A, [](auto row) { return sum(row); });
 
