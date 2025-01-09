@@ -38,7 +38,8 @@ using FixedArray2D = StrictArray2D<detail::FixedArrayBase2D<T, M, N, AF>>;
 
 
 template <TwoDimBaseType Base>
-class STRICT_NODISCARD StrictArrayBase2D : public Base {
+class STRICT_NODISCARD StrictArrayBase2D : public Base,
+                                           public detail::Lval_CRTP<StrictArrayBase2D<Base>> {
 public:
    using size_type = index_t;
    using typename Base::builtin_type;
@@ -49,6 +50,8 @@ public:
    using Base::rows;
 
    using Base::Base;
+   using detail::Lval_CRTP<StrictArrayBase2D<Base>>::lval;
+
    STRICT_NODISCARD_CONSTEXPR StrictArrayBase2D(const StrictArrayBase2D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArrayBase2D(StrictArrayBase2D&&) = default;
    STRICT_CONSTEXPR StrictArrayBase2D& operator=(const StrictArrayBase2D&) = delete;
@@ -598,18 +601,6 @@ public:
    = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArrayBase2D& lval() & = delete;
-
-   STRICT_CONSTEXPR const StrictArrayBase2D& lval() const& = delete;
-
-   STRICT_NODISCARD_CONSTEXPR StrictArrayBase2D& lval() && {
-      return this->lval_impl();
-   }
-
-   STRICT_NODISCARD_CONSTEXPR const StrictArrayBase2D& lval() const&& {
-      return this->lval_impl();
-   }
-
    //  Return unaligned array so that it can be constexpr.
    STRICT_NODISCARD_CONSTEXPR Array2D<builtin_type, Unaligned> eval() const& {
       // Workaround for "inherited constructor cannot be used to copy object".
@@ -621,15 +612,6 @@ public:
 
    STRICT_CONSTEXPR static index_t dimension() {
       return 2_sl;
-   }
-
-protected:
-   STRICT_CONSTEXPR StrictArrayBase2D& lval_impl() {
-      return *this;
-   }
-
-   STRICT_CONSTEXPR const StrictArrayBase2D& lval_impl() const {
-      return *this;
    }
 
 private:
@@ -648,7 +630,8 @@ private:
 
 
 template <detail::TwoDimNonConstBaseType Base>
-class STRICT_NODISCARD StrictArrayMutable2D : public StrictArrayBase2D<Base> {
+class STRICT_NODISCARD StrictArrayMutable2D : public StrictArrayBase2D<Base>,
+                                              public detail::Lval_CRTP<StrictArrayMutable2D<Base>> {
    using CommonBase2D = StrictArrayBase2D<Base>;
 
 public:
@@ -657,6 +640,8 @@ public:
    using typename CommonBase2D::value_type;
 
    using StrictArrayBase2D<Base>::StrictArrayBase2D;
+   using detail::Lval_CRTP<StrictArrayMutable2D<Base>>::lval;
+
    STRICT_NODISCARD_CONSTEXPR StrictArrayMutable2D(const StrictArrayMutable2D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArrayMutable2D(StrictArrayMutable2D&&) = default;
 
@@ -804,23 +789,12 @@ public:
       CommonBase2D::view1D() ^= A.view1D();
       return *this;
    }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& lval() & = delete;
-
-   STRICT_CONSTEXPR const StrictArrayMutable2D& lval() const& = delete;
-
-   STRICT_NODISCARD_CONSTEXPR StrictArrayMutable2D& lval() && {
-      return static_cast<StrictArrayMutable2D&>(CommonBase2D::lval_impl());
-   }
-
-   STRICT_NODISCARD_CONSTEXPR const StrictArrayMutable2D& lval() const&& {
-      return static_cast<StrictArrayMutable2D&>(CommonBase2D::lval_impl());
-   }
 };
 
 
 template <typename Base>
-class STRICT_NODISCARD StrictArray2D final : public StrictArrayMutable2D<Base> {
+class STRICT_NODISCARD StrictArray2D final : public StrictArrayMutable2D<Base>,
+                                             public detail::Lval_CRTP<StrictArray2D<Base>> {
    using CommonBase2D = StrictArrayBase2D<Base>;
    using MutableBase2D = StrictArrayMutable2D<Base>;
 
@@ -833,6 +807,8 @@ public:
    using typename MutableBase2D::value_type;
 
    using StrictArrayMutable2D<Base>::StrictArrayMutable2D;
+   using detail::Lval_CRTP<StrictArray2D<Base>>::lval;
+
    STRICT_NODISCARD_CONSTEXPR StrictArray2D() = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray2D(const StrictArray2D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray2D(StrictArray2D&&) = default;
@@ -968,18 +944,6 @@ public:
 
    STRICT_CONSTEXPR Strict64 gbytes() const {
       return this->bytes().sd() / cubes(1024_sl).sd();
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& lval() & = delete;
-
-   STRICT_CONSTEXPR const StrictArray2D& lval() const& = delete;
-
-   STRICT_NODISCARD_CONSTEXPR StrictArray2D& lval() && {
-      return static_cast<StrictArray2D&>(CommonBase2D::lval_impl());
-   }
-
-   STRICT_NODISCARD_CONSTEXPR const StrictArray2D& lval() const&& {
-      return static_cast<StrictArray2D&>(CommonBase2D::lval_impl());
    }
 
    STRICT_CONSTEXPR static StrictBool is_fixed() {

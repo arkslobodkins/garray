@@ -10,6 +10,7 @@
 #include "ArrayCommon/array_common.hpp"
 #include "StrictCommon/strict_common.hpp"
 #include "array_base1D.hpp"
+#include "derived_base.hpp"
 #include "fixed_array_base1D.hpp"
 #include "iterator.hpp"
 #include "slice.hpp"
@@ -36,13 +37,16 @@ using FixedArray1D = StrictArray1D<detail::FixedArrayBase1D<T, sz, AF>>;
 
 
 template <OneDimBaseType Base>
-class STRICT_NODISCARD StrictArrayBase1D : public Base {
+class STRICT_NODISCARD StrictArrayBase1D : public Base,
+                                           public detail::Lval_CRTP<StrictArrayBase1D<Base>> {
 public:
    using size_type = index_t;
    using typename Base::builtin_type;
    using typename Base::value_type;
 
    using Base::Base;
+   using detail::Lval_CRTP<StrictArrayBase1D<Base>>::lval;
+
    STRICT_NODISCARD_CONSTEXPR StrictArrayBase1D(const StrictArrayBase1D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArrayBase1D(StrictArrayBase1D&&) = default;
    STRICT_CONSTEXPR StrictArrayBase1D& operator=(const StrictArrayBase1D&) = delete;
@@ -250,18 +254,6 @@ public:
    = delete;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArrayBase1D& lval() & = delete;
-
-   STRICT_CONSTEXPR const StrictArrayBase1D& lval() const& = delete;
-
-   STRICT_NODISCARD_CONSTEXPR StrictArrayBase1D& lval() && {
-      return this->lval_impl();
-   }
-
-   STRICT_NODISCARD_CONSTEXPR const StrictArrayBase1D& lval() const&& {
-      return this->lval_impl();
-   }
-
    //  Return unaligned array so that it can be constexpr.
    STRICT_NODISCARD_CONSTEXPR Array1D<builtin_type, Unaligned> eval() const& {
       // Workaround for "inherited constructor cannot be used to copy object".
@@ -274,20 +266,12 @@ public:
    STRICT_CONSTEXPR static index_t dimension() {
       return 1_sl;
    }
-
-protected:
-   STRICT_CONSTEXPR StrictArrayBase1D& lval_impl() {
-      return *this;
-   }
-
-   STRICT_CONSTEXPR const StrictArrayBase1D& lval_impl() const {
-      return *this;
-   }
 };
 
 
 template <detail::OneDimNonConstBaseType Base>
-class STRICT_NODISCARD StrictArrayMutable1D : public StrictArrayBase1D<Base> {
+class STRICT_NODISCARD StrictArrayMutable1D : public StrictArrayBase1D<Base>,
+                                              public detail::Lval_CRTP<StrictArrayMutable1D<Base>> {
    using CommonBase1D = StrictArrayBase1D<Base>;
 
 public:
@@ -296,6 +280,8 @@ public:
    using typename CommonBase1D::value_type;
 
    using StrictArrayBase1D<Base>::StrictArrayBase1D;
+   using detail::Lval_CRTP<StrictArrayMutable1D<Base>>::lval;
+
    STRICT_NODISCARD_CONSTEXPR StrictArrayMutable1D(const StrictArrayMutable1D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArrayMutable1D(StrictArrayMutable1D&&) = default;
 
@@ -443,23 +429,12 @@ public:
       apply1(*this, A, [&](index_t i) { Base::un(i) ^= A.un(i); });
       return *this;
    }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& lval() & = delete;
-
-   STRICT_CONSTEXPR const StrictArrayMutable1D& lval() const& = delete;
-
-   STRICT_NODISCARD_CONSTEXPR StrictArrayMutable1D& lval() && {
-      return static_cast<StrictArrayMutable1D&>(CommonBase1D::lval_impl());
-   }
-
-   STRICT_NODISCARD_CONSTEXPR const StrictArrayMutable1D& lval() const&& {
-      return static_cast<StrictArrayMutable1D&>(CommonBase1D::lval_impl());
-   }
 };
 
 
 template <typename Base>
-class STRICT_NODISCARD StrictArray1D final : public StrictArrayMutable1D<Base> {
+class STRICT_NODISCARD StrictArray1D final : public StrictArrayMutable1D<Base>,
+                                             public detail::Lval_CRTP<StrictArray1D<Base>> {
    using CommonBase1D = StrictArrayBase1D<Base>;
    using MutableBase1D = StrictArrayMutable1D<Base>;
 
@@ -472,6 +447,8 @@ public:
    using typename MutableBase1D::value_type;
 
    using StrictArrayMutable1D<Base>::StrictArrayMutable1D;
+   using detail::Lval_CRTP<StrictArray1D<Base>>::lval;
+
    STRICT_NODISCARD_CONSTEXPR StrictArray1D() = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray1D(const StrictArray1D&) = default;
    STRICT_NODISCARD_CONSTEXPR StrictArray1D(StrictArray1D&&) = default;
@@ -607,18 +584,6 @@ public:
 
    STRICT_CONSTEXPR Strict64 gbytes() const {
       return this->bytes().sd() / cubes(1024_sl).sd();
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& lval() & = delete;
-
-   STRICT_CONSTEXPR const StrictArray1D& lval() const& = delete;
-
-   STRICT_NODISCARD_CONSTEXPR StrictArray1D& lval() && {
-      return static_cast<StrictArray1D&>(CommonBase1D::lval_impl());
-   }
-
-   STRICT_NODISCARD_CONSTEXPR const StrictArray1D& lval() const&& {
-      return static_cast<StrictArray1D&>(CommonBase1D::lval_impl());
    }
 
    STRICT_CONSTEXPR static StrictBool is_fixed() {
