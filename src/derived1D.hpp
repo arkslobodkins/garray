@@ -270,8 +270,10 @@ public:
 
 
 template <detail::OneDimNonConstBaseType Base>
-class STRICT_NODISCARD StrictArrayMutable1D : public StrictArrayBase1D<Base>,
-                                              public detail::Lval_CRTP<StrictArrayMutable1D<Base>> {
+class STRICT_NODISCARD StrictArrayMutable1D
+    : public StrictArrayBase1D<Base>,
+      public detail::Lval_CRTP<StrictArrayMutable1D<Base>>,
+      public detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>> {
    using CommonBase1D = StrictArrayBase1D<Base>;
 
 public:
@@ -307,134 +309,24 @@ public:
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator+=(value_type x) {
-      apply0(*this, [x, this](index_t i) { Base::un(i) += x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator-=(value_type x) {
-      apply0(*this, [x, this](index_t i) { Base::un(i) -= x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator*=(value_type x) {
-      apply0(*this, [x, this](index_t i) { Base::un(i) *= x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator/=(value_type x) {
-      apply0(*this, [x, this](index_t i) { Base::un(i) /= x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator%=(value_type x)
-      requires Integer<builtin_type>
-   {
-      apply0(*this, [x, this](index_t i) { Base::un(i) %= x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator<<=(value_type x)
-      requires Integer<builtin_type>
-   {
-      apply0(*this, [x, this](index_t i) { Base::un(i) <<= x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator>>=(value_type x)
-      requires Integer<builtin_type>
-   {
-      apply0(*this, [x, this](index_t i) { Base::un(i) >>= x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator&=(value_type x)
-      requires Integer<builtin_type>
-   {
-      apply0(*this, [x, this](index_t i) { Base::un(i) &= x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator|=(value_type x)
-      requires Integer<builtin_type>
-   {
-      apply0(*this, [x, this](index_t i) { Base::un(i) |= x; });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator^=(value_type x)
-      requires Integer<builtin_type>
-   {
-      apply0(*this, [x, this](index_t i) { Base::un(i) ^= x; });
-      return *this;
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator+=(OneDimRealBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) += A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator-=(OneDimRealBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) -= A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator*=(OneDimRealBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) *= A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator/=(OneDimRealBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) /= A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator%=(OneDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) %= A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator<<=(OneDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) <<= A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator>>=(OneDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) >>= A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator&=(OneDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) &= A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator|=(OneDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) |= A.un(i); });
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable1D& operator^=(OneDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      apply1(*this, A, [&](index_t i) { Base::un(i) ^= A.un(i); });
-      return *this;
-   }
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator+=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator-=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator*=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator/=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator%=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator<<=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator>>=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator&=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator|=;
+   using detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>>::operator^=;
 };
 
 
 template <typename Base>
-class STRICT_NODISCARD StrictArray1D final : public StrictArrayMutable1D<Base>,
-                                             public detail::Lval_CRTP<StrictArray1D<Base>> {
+class STRICT_NODISCARD StrictArray1D final
+    : public StrictArrayMutable1D<Base>,
+      public detail::Lval_CRTP<StrictArray1D<Base>>,
+      public detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>> {
    using CommonBase1D = StrictArrayBase1D<Base>;
    using MutableBase1D = StrictArrayMutable1D<Base>;
 
@@ -476,98 +368,16 @@ public:
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArray1D& operator+=(value_type x) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator+=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator-=(value_type x) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator-=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator*=(value_type x) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator*=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator/=(value_type x) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator/=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator%=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator%=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator<<=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator<<=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator>>=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator>>=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator&=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator&=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator|=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator|=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator^=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator^=(x));
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArray1D& operator+=(OneDimRealBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator+=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator-=(OneDimRealBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator-=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator*=(OneDimRealBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator*=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator/=(OneDimRealBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator/=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator%=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator%=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator<<=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator<<=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator>>=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator>>=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator&=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator&=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator|=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator|=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray1D& operator^=(OneDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray1D&>(MutableBase1D::operator^=(A));
-   }
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator+=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator-=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator*=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator/=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator%=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator<<=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator>>=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator&=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator|=;
+   using detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>>::operator^=;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    STRICT_CONSTEXPR StrictLong bytes() const {

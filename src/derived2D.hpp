@@ -630,8 +630,10 @@ private:
 
 
 template <detail::TwoDimNonConstBaseType Base>
-class STRICT_NODISCARD StrictArrayMutable2D : public StrictArrayBase2D<Base>,
-                                              public detail::Lval_CRTP<StrictArrayMutable2D<Base>> {
+class STRICT_NODISCARD StrictArrayMutable2D
+    : public StrictArrayBase2D<Base>,
+      public detail::Lval_CRTP<StrictArrayMutable2D<Base>>,
+      public detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>> {
    using CommonBase2D = StrictArrayBase2D<Base>;
 
 public:
@@ -666,135 +668,24 @@ public:
       return static_cast<StrictArrayMutable2D&>(Base::operator=(A));
    }
 
-   ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator+=(value_type x) {
-      CommonBase2D::view1D() += x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator-=(value_type x) {
-      CommonBase2D::view1D() -= x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator*=(value_type x) {
-      CommonBase2D::view1D() *= x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator/=(value_type x) {
-      CommonBase2D::view1D() /= x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator%=(value_type x)
-      requires Integer<builtin_type>
-   {
-      CommonBase2D::view1D() %= x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator<<=(value_type x)
-      requires Integer<builtin_type>
-   {
-      CommonBase2D::view1D() <<= x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator>>=(value_type x)
-      requires Integer<builtin_type>
-   {
-      CommonBase2D::view1D() >>= x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator&=(value_type x)
-      requires Integer<builtin_type>
-   {
-      CommonBase2D::view1D() &= x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator|=(value_type x)
-      requires Integer<builtin_type>
-   {
-      CommonBase2D::view1D() |= x;
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator^=(value_type x)
-      requires Integer<builtin_type>
-   {
-      CommonBase2D::view1D() ^= x;
-      return *this;
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator+=(TwoDimRealBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() += A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator-=(TwoDimRealBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() -= A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator*=(TwoDimRealBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() *= A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator/=(TwoDimRealBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() /= A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator%=(TwoDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() %= A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator<<=(TwoDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() <<= A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator>>=(TwoDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() >>= A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator&=(TwoDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() &= A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator|=(TwoDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() |= A.view1D();
-      return *this;
-   }
-
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator^=(TwoDimIntegerBaseType auto const& A) {
-      ASSERT_STRICT_DEBUG(same_size(*this, A));
-      CommonBase2D::view1D() ^= A.view1D();
-      return *this;
-   }
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator+=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator-=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator*=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator/=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator%=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator<<=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator>>=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator&=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator|=;
+   using detail::Operands_CRTP<StrictArrayMutable2D<Base>, ValueTypeOf<Base>>::operator^=;
 };
 
 
 template <typename Base>
-class STRICT_NODISCARD StrictArray2D final : public StrictArrayMutable2D<Base>,
-                                             public detail::Lval_CRTP<StrictArray2D<Base>> {
+class STRICT_NODISCARD StrictArray2D final
+    : public StrictArrayMutable2D<Base>,
+      public detail::Lval_CRTP<StrictArray2D<Base>>,
+      public detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>> {
    using CommonBase2D = StrictArrayBase2D<Base>;
    using MutableBase2D = StrictArrayMutable2D<Base>;
 
@@ -835,99 +726,16 @@ public:
       return static_cast<StrictArray2D&>(Base::operator=(A));
    }
 
-   ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArray2D& operator+=(value_type x) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator+=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator-=(value_type x) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator-=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator*=(value_type x) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator*=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator/=(value_type x) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator/=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator%=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator%=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator<<=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator<<=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator>>=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator>>=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator&=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator&=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator|=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator|=(x));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator^=(value_type x)
-      requires Integer<builtin_type>
-   {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator^=(x));
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////////////////////////
-   STRICT_CONSTEXPR StrictArray2D& operator+=(TwoDimRealBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator+=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator-=(TwoDimRealBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator-=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator*=(TwoDimRealBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator*=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator/=(TwoDimRealBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator/=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator%=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator%=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator<<=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator<<=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator>>=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator>>=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator&=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator&=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator|=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator|=(A));
-   }
-
-   STRICT_CONSTEXPR StrictArray2D& operator^=(TwoDimIntegerBaseType auto const& A) {
-      return static_cast<StrictArray2D&>(MutableBase2D::operator^=(A));
-   }
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator+=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator-=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator*=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator/=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator%=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator<<=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator>>=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator&=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator|=;
+   using detail::Operands_CRTP<StrictArray2D<Base>, ValueTypeOf<Base>>::operator^=;
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    STRICT_CONSTEXPR StrictLong bytes() const {
