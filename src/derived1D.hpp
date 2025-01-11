@@ -274,12 +274,10 @@ class STRICT_NODISCARD StrictArrayMutable1D
     : public StrictArrayBase1D<Base>,
       public detail::Lval_CRTP<StrictArrayMutable1D<Base>>,
       public detail::Operands_CRTP<StrictArrayMutable1D<Base>, ValueTypeOf<Base>> {
-   using CommonBase1D = StrictArrayBase1D<Base>;
-
 public:
-   using typename CommonBase1D::builtin_type;
-   using typename CommonBase1D::size_type;
-   using typename CommonBase1D::value_type;
+   using typename StrictArrayBase1D<Base>::builtin_type;
+   using typename StrictArrayBase1D<Base>::size_type;
+   using typename StrictArrayBase1D<Base>::value_type;
 
    using StrictArrayBase1D<Base>::StrictArrayBase1D;
    using detail::Lval_CRTP<StrictArrayMutable1D<Base>>::lval;
@@ -327,7 +325,6 @@ class STRICT_NODISCARD StrictArray1D final
     : public StrictArrayMutable1D<Base>,
       public detail::Lval_CRTP<StrictArray1D<Base>>,
       public detail::Operands_CRTP<StrictArray1D<Base>, ValueTypeOf<Base>> {
-   using CommonBase1D = StrictArrayBase1D<Base>;
    using MutableBase1D = StrictArrayMutable1D<Base>;
 
 public:
