@@ -6,6 +6,7 @@
 
 #include "ArrayCommon/array_auxiliary.hpp"
 #include "ArrayCommon/array_traits.hpp"
+#include "StrictCommon/strict_common.hpp"
 
 
 namespace spp::detail {
