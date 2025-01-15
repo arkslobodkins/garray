@@ -60,14 +60,14 @@ std::ostream& operator<<(std::ostream& os, Strict<T> x);
 
 
 template <Builtin T>
-void print(Strict<T> x, const std::string& name = "");
+void print(Strict<T> x, const std::string& name);
 
 
 void print(StrictType auto const&... x);
 
 
 template <Builtin T>
-void printn(Strict<T> x, const std::string& name = "");
+void printn(Strict<T> x, const std::string& name);
 
 
 void printn(StrictType auto const&... x);
