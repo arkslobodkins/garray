@@ -55,34 +55,38 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <IndexType Index>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) operator[](Index i) {
+      using namespace detail;
       ASSERT_STRICT_RANGE_DEBUG(valid_index(*this, index_helper(*this, i)));
       return Base::un(index_helper(*this, i));
    }
 
    template <IndexType Index>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) operator[](Index i) const {
+      using namespace detail;
       ASSERT_STRICT_RANGE_DEBUG(valid_index(*this, index_helper(*this, i)));
       return Base::un(index_helper(*this, i));
    }
 
    template <IndexType Index>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(Index i) {
-      return Base::un(index_helper(*this, i));
+      return Base::un(detail::index_helper(*this, i));
    }
 
    template <IndexType Index>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(Index i) const {
-      return Base::un(index_helper(*this, i));
+      return Base::un(detail::index_helper(*this, i));
    }
 
    template <IndexType Index>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) at(Index i) {
+      using namespace detail;
       ASSERT_STRICT_RANGE_ALWAYS(valid_index(*this, index_helper(*this, i)));
       return Base::un(index_helper(*this, i));
    }
 
    template <IndexType Index>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) at(Index i) const {
+      using namespace detail;
       ASSERT_STRICT_RANGE_ALWAYS(valid_index(*this, index_helper(*this, i)));
       return Base::un(index_helper(*this, i));
    }
@@ -172,18 +176,19 @@ public:
    // can be deduced implicitly.
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice slice) & {
+      using namespace detail;
       auto sh = slice_helper(*this, std::move(slice));
-      if constexpr(detail::NonConstBaseType<Base>) {
-         return StrictArrayMutable1D<detail::SliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+      if constexpr(NonConstBaseType<Base>) {
+         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
              *this, std::move(sh)};
       } else {
-         return StrictArrayBase1D<detail::ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+         return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
              *this, std::move(sh)};
       }
    }
 
    STRICT_CONSTEXPR auto operator()(use::IndexList list) & {
-      auto sh = slice_helper(*this, list);
+      auto sh = detail::slice_helper(*this, list);
       return operator()(std::move(sh));
    }
 
@@ -197,13 +202,14 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice slice) const& {
+      using namespace detail;
       auto sh = slice_helper(*this, std::move(slice));
-      return StrictArrayBase1D<detail::ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
+      return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase1D, decltype(sh)>>{
           *this, std::move(sh)};
    }
 
    STRICT_CONSTEXPR auto operator()(use::IndexList list) const& {
-      auto sh = slice_helper(*this, list);
+      auto sh = detail::slice_helper(*this, list);
       return operator()(std::move(sh));
    }
 

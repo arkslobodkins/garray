@@ -60,6 +60,7 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <IndexType Index1, IndexType Index2>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) operator()(Index1 i, Index2 j) {
+      using namespace detail;
       auto [ih, jh] = index_row_col_helper(*this, i, j);
       ASSERT_STRICT_RANGE_DEBUG(valid_index(*this, ih, jh));
       return Base::un(ih, jh);
@@ -67,6 +68,7 @@ public:
 
    template <IndexType Index1, IndexType Index2>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) operator()(Index1 i, Index2 j) const {
+      using namespace detail;
       auto [ih, jh] = index_row_col_helper(*this, i, j);
       ASSERT_STRICT_RANGE_DEBUG(valid_index(*this, ih, jh));
       return Base::un(ih, jh);
@@ -82,16 +84,19 @@ public:
 
    template <IndexType Index1, IndexType Index2>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(Index1 i, Index2 j) {
+      using namespace detail;
       return Base::un(index_row_helper(*this, i), index_col_helper(*this, j));
    }
 
    template <IndexType Index1, IndexType Index2>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) un(Index1 i, Index2 j) const {
+      using namespace detail;
       return Base::un(index_row_helper(*this, i), index_col_helper(*this, j));
    }
 
    template <IndexType Index1, IndexType Index2>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) at(Index1 i, Index2 j) {
+      using namespace detail;
       auto [ih, jh] = index_row_col_helper(*this, i, j);
       ASSERT_STRICT_RANGE_ALWAYS(valid_index(*this, ih, jh));
       return Base::un(ih, jh);
@@ -99,6 +104,7 @@ public:
 
    template <IndexType Index1, IndexType Index2>
    STRICT_NODISCARD_CONSTEXPR_INLINE decltype(auto) at(Index1 i, Index2 j) const {
+      using namespace detail;
       auto [ih, jh] = index_row_col_helper(*this, i, j);
       ASSERT_STRICT_RANGE_ALWAYS(valid_index(*this, ih, jh));
       return Base::un(ih, jh);
@@ -207,6 +213,7 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <IndexType Index>
    STRICT_CONSTEXPR auto row(Index i) & {
+      using namespace detail;
       auto ih = index_row_helper(*this, i);
       ASSERT_STRICT_DEBUG(valid_row(*this, ih));
       auto first = ih * Base::cols();
@@ -215,6 +222,7 @@ public:
 
    template <IndexType Index>
    STRICT_CONSTEXPR auto col(Index j) & {
+      using namespace detail;
       auto jh = index_col_helper(*this, j);
       ASSERT_STRICT_DEBUG(valid_col(*this, jh));
       auto first = jh;
@@ -231,11 +239,12 @@ public:
    }
 
    STRICT_CONSTEXPR auto view1D() & {
-      if constexpr(detail::NonConstBaseType<Base>) {
-         return StrictArrayMutable1D<detail::SliceArrayBase1D<StrictArrayBase2D, seqN>>{
+      using namespace detail;
+      if constexpr(NonConstBaseType<Base>) {
+         return StrictArrayMutable1D<SliceArrayBase1D<StrictArrayBase2D, seqN>>{
              *this, seqN{0, Base::size(), 1}};
       } else {
-         return StrictArrayBase1D<detail::ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
+         return StrictArrayBase1D<ConstSliceArrayBase1D<StrictArrayBase2D, seqN>>{
              *this, seqN{0, Base::size(), 1}};
       }
    }
@@ -246,6 +255,7 @@ public:
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <IndexType Index>
    STRICT_CONSTEXPR auto row(Index i) const& {
+      using namespace detail;
       auto ih = index_row_helper(*this, i);
       ASSERT_STRICT_DEBUG(valid_row(*this, ih));
       auto first = ih * Base::cols();
@@ -254,6 +264,7 @@ public:
 
    template <IndexType Index>
    STRICT_CONSTEXPR auto col(Index j) const& {
+      using namespace detail;
       auto jh = index_col_helper(*this, j);
       ASSERT_STRICT_DEBUG(valid_col(*this, jh));
       auto first = jh;
@@ -349,134 +360,136 @@ public:
    // SliceType is used to resolve ambiguity with operator() for indexing.
    template <detail::SliceType Slice1, detail::SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) & {
+      using namespace detail;
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(row_slice), std::move(col_slice));
-      if constexpr(detail::NonConstBaseType<Base>) {
+      if constexpr(NonConstBaseType<Base>) {
          return StrictArrayMutable2D<
-             detail::SliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+             SliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
              *this, std::move(s1h), std::move(s2h)};
       } else {
          return StrictArrayBase2D<
-             detail::ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+             ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
              *this, std::move(s1h), std::move(s2h)};
       }
    }
 
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, Slice col_slice) & {
-      auto sh = slice_row_helper(*this, row_list);
+      auto sh = detail::slice_row_helper(*this, row_list);
       return operator()(std::move(sh), std::move(col_slice));
    }
 
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice row_slice, use::IndexList col_list) & {
-      auto sh = slice_col_helper(*this, col_list);
+      auto sh = detail::slice_col_helper(*this, col_list);
       return operator()(std::move(row_slice), std::move(sh));
    }
 
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, use::IndexList col_list) & {
-      auto s1h = slice_row_helper(*this, row_list);
-      auto s2h = slice_col_helper(*this, col_list);
+      auto s1h = detail::slice_row_helper(*this, row_list);
+      auto s2h = detail::slice_col_helper(*this, col_list);
       return operator()(std::move(s1h), std::move(s2h));
    }
 
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto rows(Slice slice) & {
-      auto [s1h, s2h] = slice_row_col_helper(*this, std::move(slice), place::all);
+      auto [s1h, s2h] = detail::slice_row_col_helper(*this, std::move(slice), place::all);
       return operator()(std::move(s1h), std::move(s2h));
    }
 
    STRICT_CONSTEXPR auto rows(use::IndexList list) & {
-      auto sh = slice_row_helper(*this, list);
+      auto sh = detail::slice_row_helper(*this, list);
       return this->rows(std::move(sh));
    }
 
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto cols(Slice slice) & {
-      auto [s1h, s2h] = slice_row_col_helper(*this, place::all, std::move(slice));
+      auto [s1h, s2h] = detail::slice_row_col_helper(*this, place::all, std::move(slice));
       return operator()(std::move(s1h), std::move(s2h));
    }
 
    STRICT_CONSTEXPR auto cols(use::IndexList list) & {
-      auto sh = slice_col_helper(*this, list);
+      auto sh = detail::slice_col_helper(*this, list);
       return this->cols(std::move(sh));
    }
 
    template <IndexType Index1, IndexType Index2, IndexType Index3, IndexType Index4>
    STRICT_CONSTEXPR auto block(Index1 first_row, Index2 first_col, Index3 last_row,
                                Index4 last_col) & {
-      auto [i1, j1] = index_row_col_helper(*this, first_row, first_col);
-      auto [i2, j2] = index_row_col_helper(*this, last_row, last_col);
+      auto [i1, j1] = detail::index_row_col_helper(*this, first_row, first_col);
+      auto [i2, j2] = detail::index_row_col_helper(*this, last_row, last_col);
       return operator()(seq{i1, i2}, seq{j1, j2});
    }
 
    template <IndexType Index1, IndexType Index2>
    STRICT_CONSTEXPR auto blockN(Index1 first_row, Index2 first_col, ImplicitInt nrows,
                                 ImplicitInt ncols) & {
-      auto [i1, j1] = index_row_col_helper(*this, first_row, first_col);
+      auto [i1, j1] = detail::index_row_col_helper(*this, first_row, first_col);
       return operator()(seqN{i1, nrows.get()}, seqN{j1, ncols.get()});
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////
    template <detail::SliceType Slice1, detail::SliceType Slice2>
    STRICT_CONSTEXPR auto operator()(Slice1 row_slice, Slice2 col_slice) const& {
+      using namespace detail;
       auto [s1h, s2h] = slice_row_col_helper(*this, std::move(row_slice), std::move(col_slice));
       return StrictArrayBase2D<
-          detail::ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
+          ConstSliceArrayBase2D<StrictArrayBase2D, decltype(s1h), decltype(s2h)>>{
           *this, std::move(s1h), std::move(s2h)};
    }
 
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, Slice col_slice) const& {
-      auto sh = slice_row_helper(*this, row_list);
+      auto sh = detail::slice_row_helper(*this, row_list);
       return operator()(std::move(sh), std::move(col_slice));
    }
 
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto operator()(Slice row_slice, use::IndexList col_list) const& {
-      auto sh = slice_col_helper(*this, col_list);
+      auto sh = detail::slice_col_helper(*this, col_list);
       return operator()(std::move(row_slice), std::move(sh));
    }
 
    STRICT_CONSTEXPR auto operator()(use::IndexList row_list, use::IndexList col_list) const& {
-      auto s1h = slice_row_helper(*this, row_list);
-      auto s2h = slice_col_helper(*this, col_list);
+      auto s1h = detail::slice_row_helper(*this, row_list);
+      auto s2h = detail::slice_col_helper(*this, col_list);
       return operator()(std::move(s1h), std::move(s2h));
    }
 
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto rows(Slice slice) const& {
-      auto [s1h, s2h] = slice_row_col_helper(*this, std::move(slice), place::all);
+      auto [s1h, s2h] = detail::slice_row_col_helper(*this, std::move(slice), place::all);
       return operator()(std::move(s1h), std::move(s2h));
    }
 
    STRICT_CONSTEXPR auto rows(use::IndexList list) const& {
-      auto sh = slice_row_helper(*this, list);
+      auto sh = detail::slice_row_helper(*this, list);
       return this->rows(std::move(sh));
    }
 
    template <detail::SliceType Slice>
    STRICT_CONSTEXPR auto cols(Slice slice) const& {
-      auto [s1h, s2h] = slice_row_col_helper(*this, place::all, std::move(slice));
+      auto [s1h, s2h] = detail::slice_row_col_helper(*this, place::all, std::move(slice));
       return operator()(std::move(s1h), std::move(s2h));
    }
 
    STRICT_CONSTEXPR auto cols(use::IndexList list) const& {
-      auto sh = slice_col_helper(*this, list);
+      auto sh = detail::slice_col_helper(*this, list);
       return this->cols(std::move(sh));
    }
 
    template <IndexType Index1, IndexType Index2, IndexType Index3, IndexType Index4>
    STRICT_CONSTEXPR auto block(Index1 first_row, Index2 first_col, Index3 last_row,
                                Index4 last_col) const& {
-      auto [i1, j1] = index_row_col_helper(*this, first_row, first_col);
-      auto [i2, j2] = index_row_col_helper(*this, last_row, last_col);
+      auto [i1, j1] = detail::index_row_col_helper(*this, first_row, first_col);
+      auto [i2, j2] = detail::index_row_col_helper(*this, last_row, last_col);
       return operator()(seq{i1, i2}, seq{j1, j2});
    }
 
    template <IndexType Index1, IndexType Index2>
    STRICT_CONSTEXPR auto blockN(Index1 first_row, Index2 first_col, ImplicitInt nrows,
                                 ImplicitInt ncols) const& {
-      auto [i1, j1] = index_row_col_helper(*this, first_row, first_col);
+      auto [i1, j1] = detail::index_row_col_helper(*this, first_row, first_col);
       return operator()(seqN{i1, nrows.get()}, seqN{j1, ncols.get()});
    }
 
