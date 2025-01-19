@@ -58,10 +58,13 @@ STRICT_CONSTEXPR_INLINE StrictBool within_tol_rel(Strict<T> x, Strict<T> y,
 template <FloatingBaseType Base1, FloatingBaseType Base2>
 STRICT_CONSTEXPR StrictBool within_tol_abs(const Base1& A1, const Base2& A2,
                                            ValueTypeOf<Base1> tol
-                                           = DefaultTol<RealTypeOf<Base1>>::value) {
+                                           = DefaultTol<RealTypeOf<Base1>>::value,
+                                           StrictBool empty_default = false_sb) {
    static_assert(same_dimension<Base1, Base2>());
-   ASSERT_STRICT_DEBUG(!A1.empty());
    ASSERT_STRICT_DEBUG(same_size(A1, A2));
+   if(A1.empty()) {
+      return empty_default;
+   }
    return all_of(A1, A2, [tol](const auto& x, const auto& y) { return within_tol_abs(x, y, tol); });
 }
 
@@ -71,10 +74,13 @@ STRICT_CONSTEXPR StrictBool within_tol_rel(const Base1& A1, const Base2& A2,
                                            ValueTypeOf<Base1> tol
                                            = DefaultTol<RealTypeOf<Base1>>::value,
                                            ValueTypeOf<Base1> near_zero
-                                           = DefaultTol<RealTypeOf<Base1>>::value) {
+                                           = DefaultTol<RealTypeOf<Base1>>::value,
+                                           StrictBool empty_default = false_sb) {
    static_assert(same_dimension<Base1, Base2>());
-   ASSERT_STRICT_DEBUG(!A1.empty());
    ASSERT_STRICT_DEBUG(same_size(A1, A2));
+   if(A1.empty()) {
+      return empty_default;
+   }
    return all_of(A1, A2, [tol, near_zero](const auto& x, const auto& y) {
       return within_tol_rel(x, y, tol, near_zero);
    });
@@ -99,20 +105,27 @@ STRICT_CONSTEXPR std::optional<Strict<T>> rel_error(Strict<T> approx, Strict<T> 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <FloatingBaseType Base1, FloatingBaseType Base2>
-STRICT_CONSTEXPR ValueTypeOf<Base1> max_abs_error(const Base1& approx, const Base2& exact) {
+STRICT_CONSTEXPR ValueTypeOf<Base1> max_abs_error(const Base1& approx, const Base2& exact,
+                                                  ValueTypeOf<Base1> empty_default
+                                                  = One<RealTypeOf<Base1>>) {
    static_assert(same_dimension<Base1, Base2>());
-   ASSERT_STRICT_DEBUG(!approx.empty());
    ASSERT_STRICT_DEBUG(same_size(approx, exact));
+   if(approx.empty()) {
+      return empty_default;
+   }
    return norm_inf(approx - exact);
 }
 
 
 template <FloatingBaseType Base1, FloatingBaseType Base2>
-STRICT_NODISCARD_CONSTEXPR std::optional<ValueTypeOf<Base1>> max_rel_error(const Base1& approx,
-                                                                           const Base2& exact) {
+STRICT_NODISCARD_CONSTEXPR std::optional<ValueTypeOf<Base1>> max_rel_error(
+    const Base1& approx, const Base2& exact,
+    ValueTypeOf<Base1> empty_default = One<RealTypeOf<Base1>>) {
    static_assert(same_dimension<Base1, Base2>());
-   ASSERT_STRICT_DEBUG(!approx.empty());
    ASSERT_STRICT_DEBUG(same_size(approx, exact));
+   if(approx.empty()) {
+      return empty_default;
+   }
 
    if(has_zero(approx) || has_zero(exact)) {
       return {std::nullopt};

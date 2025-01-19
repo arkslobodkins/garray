@@ -30,7 +30,6 @@ void run_within_tol_abs() {
 template <Floating T>
 void run_within_tol_abs_fail() {
    using Array = Array1D<T>;
-   REQUIRE_THROW(within_tol_abs(Array{}, Array{}));
    REQUIRE_THROW(within_tol_abs(Array(1), Array(2)));
    REQUIRE_THROW(within_tol_abs(Array(1), Array(1), -constants::epsilon<T>));
 }
@@ -52,7 +51,6 @@ void run_within_tol_rel() {
 template <Floating T>
 void run_within_tol_rel_fail() {
    using Array = Array1D<T>;
-   REQUIRE_THROW(within_tol_rel(Array{}, Array{}));
    REQUIRE_THROW(within_tol_rel(Array(1), Array(2)));
    REQUIRE_THROW(within_tol_rel(Array(1), Array(1), -constants::epsilon<T>));
    REQUIRE_THROW(
@@ -77,7 +75,6 @@ void run_abs_error() {
 template <Floating T>
 void run_abs_error_fail() {
    using Array = Array1D<T>;
-   REQUIRE_THROW(max_abs_error(Array{}, Array{}));
    REQUIRE_THROW(max_abs_error(Array(1), Array(2)));
 }
 
@@ -100,7 +97,6 @@ void run_rel_error() {
 template <Floating T>
 void run_rel_error_fail() {
    using Array = Array1D<T>;
-   REQUIRE_THROW(max_rel_error(Array{}, Array{}));
    REQUIRE_THROW(max_rel_error(Array(1), Array(2)));
 }
 

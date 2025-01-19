@@ -81,10 +81,10 @@ void empty_expr_ops() {
 
 void empty_util_ops() {
    Array2D<float> A1, A2;
-   REQUIRE_THROW(within_tol_abs(A1, A2));
-   REQUIRE_THROW(within_tol_rel(A1, A2));
-   REQUIRE_THROW(max_abs_error(A1, A2));
-   REQUIRE_THROW(max_rel_error(A1, A2));
+   REQUIRE_NOT_THROW(within_tol_abs(A1, A2));
+   REQUIRE_NOT_THROW(within_tol_rel(A1, A2));
+   REQUIRE_NOT_THROW(max_abs_error(A1, A2));
+   REQUIRE_NOT_THROW(max_rel_error(A1, A2));
 
    REQUIRE_NOT_THROW(A1.view1D() = random<float>(0));
    REQUIRE_NOT_THROW(A1 = random<float>(0, 0));
