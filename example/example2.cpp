@@ -24,8 +24,8 @@ int main() {
    auto slice_6 = in_closed_range(A, Low{-0.5}, High{0.5});
    A.remove(slice_6.get_slice());
 
-   auto dst1 = A.empty() ? norm2(A(place::even)) : 0._sd;
-   // generate evaluates on the fly, no memory allocation is performed.
+   auto dst1 = norm2(A(place::even));
+   // Generate evaluates on the fly, no memory allocation is performed.
    auto dst2 = norm2(generate(A(place::even), [](auto x) { return x > 0._sd ? x : squares(x); }));
 
    // Suppress unused variable warnings.
