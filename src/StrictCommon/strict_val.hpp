@@ -34,7 +34,7 @@ public:
    using value_type = bool;
 
    // Special member functions.
-   STRICT_NODISCARD_CONSTEXPR explicit Strict() = default;
+   STRICT_NODISCARD_CONSTEXPR Strict() = default;
    STRICT_NODISCARD_CONSTEXPR Strict(const Strict&) = default;
    STRICT_CONSTEXPR Strict& operator=(const Strict&) & = default;
 

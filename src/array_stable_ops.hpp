@@ -18,72 +18,81 @@ namespace spp {
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_sum(const Base& A);
+ValueTypeOf<Base> stable_sum(const Base& A, ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> semi_stable_sum(const Base& A);
+ValueTypeOf<Base> semi_stable_sum(const Base& A, ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_prod(const Base& A);
+ValueTypeOf<Base> stable_prod(const Base& A, ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_mean(const Base& A);
+ValueTypeOf<Base> stable_mean(const Base& A, ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base1, FloatingBaseType Base2>
    requires(same_dimension_b<Base1, Base2>())
-ValueTypeOf<Base1> stable_dot_prod(const Base1& A1, const Base2& A2);
+ValueTypeOf<Base1> stable_dot_prod(const Base1& A1, const Base2& A2,
+                                   ValueTypeOf<Base1> empty_default = {});
 
 
 template <FloatingBaseType Base1, FloatingBaseType Base2>
    requires(same_dimension_b<Base1, Base2>())
-ValueTypeOf<Base1> semi_stable_dot_prod(const Base1& A1, const Base2& A2);
+ValueTypeOf<Base1> semi_stable_dot_prod(const Base1& A1, const Base2& A2,
+                                        ValueTypeOf<Base1> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm1(const Base& A);
+ValueTypeOf<Base> stable_norm1(const Base& A, ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm1_scaled(const Base& A);
+ValueTypeOf<Base> stable_norm1_scaled(const Base& A, ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm2(const Base& A);
+ValueTypeOf<Base> stable_norm2(const Base& A, ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm2_scaled(const Base& A);
+ValueTypeOf<Base> stable_norm2_scaled(const Base& A, ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm_lp(const Base& A, ImplicitInt lp);
+ValueTypeOf<Base> stable_norm_lp(const Base& A, ImplicitInt lp,
+                                 ValueTypeOf<Base> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm_lp_scaled(const Base& A, ImplicitInt lp);
+ValueTypeOf<Base> stable_norm_lp_scaled(const Base& A, ImplicitInt lp,
+                                        ValueTypeOf<Base> empty_default = {});
 
 
 template <OneDimBaseType Base1>
-ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x);
+ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x,
+                                     ValueTypeOf<Base1> empty_default = {});
 
 
 template <OneDimBaseType Base1, OneDimSignedIntegerBaseType Base2>
-ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x,
-                                     const Base2& powers);
+ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x, const Base2& powers,
+                                     ValueTypeOf<Base1> empty_default = {});
 
 
 template <OneDimFloatingBaseType Base1, OneDimFloatingBaseType Base2,
           OneDimSignedIntegerBaseType Base3>
-ValueTypeOf<Base1> stable_gpolynomial(const Base1& coeffs, const Base2& X, const Base3& powers);
+ValueTypeOf<Base1> stable_gpolynomial(const Base1& coeffs, const Base2& X, const Base3& powers,
+                                      ValueTypeOf<Base1> empty_default = {});
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_sum(const Base& A) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_sum(const Base& A, ValueTypeOf<Base> empty_default) {
+   if(A.empty()) {
+      return empty_default;
+   }
+
    using real_type = RealTypeOf<Base>;
    using value_type = ValueTypeOf<Base>;
 
@@ -106,8 +115,11 @@ ValueTypeOf<Base> stable_sum(const Base& A) {
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> semi_stable_sum(const Base& A) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> semi_stable_sum(const Base& A, ValueTypeOf<Base> empty_default) {
+   if(A.empty()) {
+      return empty_default;
+   }
+
    index_t block_size = 64_sl;
    index_t nblocks = A.size() / block_size;
    index_t rem = A.size() % block_size;
@@ -133,8 +145,11 @@ ValueTypeOf<Base> semi_stable_sum(const Base& A) {
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_prod(const Base& A) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_prod(const Base& A, ValueTypeOf<Base> empty_default) {
+   if(A.empty()) {
+      return empty_default;
+   }
+
    using real_type = RealTypeOf<Base>;
 
    Array1D<real_type> res(A.size() - 1_sl);
@@ -155,17 +170,22 @@ ValueTypeOf<Base> stable_prod(const Base& A) {
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_mean(const Base& A) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_mean(const Base& A, ValueTypeOf<Base> empty_default) {
+   if(A.empty()) {
+      return empty_default;
+   }
    return stable_sum(A) / value_type_cast<Base>(A.size());
 }
 
 
 template <FloatingBaseType Base1, FloatingBaseType Base2>
    requires(same_dimension_b<Base1, Base2>())
-ValueTypeOf<Base1> stable_dot_prod(const Base1& A1, const Base2& A2) {
-   ASSERT_STRICT_DEBUG(!A1.empty());
+ValueTypeOf<Base1> stable_dot_prod(const Base1& A1, const Base2& A2,
+                                   ValueTypeOf<Base1> empty_default) {
    ASSERT_STRICT_DEBUG(same_size(A1, A2));
+   if(A1.empty()) {
+      return empty_default;
+   }
 
    auto [p, s] = two_prods(A1.un(0), A2.un(0));
    decltype(p) q;
@@ -181,45 +201,58 @@ ValueTypeOf<Base1> stable_dot_prod(const Base1& A1, const Base2& A2) {
 
 template <FloatingBaseType Base1, FloatingBaseType Base2>
    requires(same_dimension_b<Base1, Base2>())
-ValueTypeOf<Base1> semi_stable_dot_prod(const Base1& A1, const Base2& A2) {
-   ASSERT_STRICT_DEBUG(!A1.empty());
+ValueTypeOf<Base1> semi_stable_dot_prod(const Base1& A1, const Base2& A2,
+                                        ValueTypeOf<Base1> empty_default) {
    ASSERT_STRICT_DEBUG(same_size(A1, A2));
+   if(A1.empty()) {
+      return empty_default;
+   }
    return semi_stable_sum(A1 * A2);
 }
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm1(const Base& A) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_norm1(const Base& A, ValueTypeOf<Base> empty_default) {
+   if(A.empty()) {
+      return empty_default;
+   }
    return stable_sum(abs(A));
 }
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm1_scaled(const Base& A) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_norm1_scaled(const Base& A, ValueTypeOf<Base> empty_default) {
+   if(A.empty()) {
+      return empty_default;
+   }
    return stable_norm1(A) / value_type_cast<Base>(A.size());
 }
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm2(const Base& A) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_norm2(const Base& A, ValueTypeOf<Base> empty_default) {
+   if(A.empty()) {
+      return empty_default;
+   }
    return sqrts(stable_dot_prod(A, A));
 }
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm2_scaled(const Base& A) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_norm2_scaled(const Base& A, ValueTypeOf<Base> empty_default) {
+   if(A.empty()) {
+      return empty_default;
+   }
    return stable_norm2(A) / sqrts(value_type_cast<Base>(A.size()));
 }
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm_lp(const Base& A, ImplicitInt lp) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_norm_lp(const Base& A, ImplicitInt lp, ValueTypeOf<Base> empty_default) {
    ASSERT_STRICT_DEBUG(lp.get() > 0_sl);
+   if(A.empty()) {
+      return empty_default;
+   }
 
    auto pw = lp.get();
    auto sz = A.size();
@@ -233,9 +266,12 @@ ValueTypeOf<Base> stable_norm_lp(const Base& A, ImplicitInt lp) {
 
 
 template <FloatingBaseType Base>
-ValueTypeOf<Base> stable_norm_lp_scaled(const Base& A, ImplicitInt lp) {
-   ASSERT_STRICT_DEBUG(!A.empty());
+ValueTypeOf<Base> stable_norm_lp_scaled(const Base& A, ImplicitInt lp,
+                                        ValueTypeOf<Base> empty_default) {
    ASSERT_STRICT_DEBUG(lp.get() > 0_sl);
+   if(A.empty()) {
+      return empty_default;
+   }
 
    return stable_norm_lp(A, lp)
         / pows(value_type_cast<Base>(A.size()), invs(value_type_cast<Base>(lp.get())));
@@ -243,8 +279,11 @@ ValueTypeOf<Base> stable_norm_lp_scaled(const Base& A, ImplicitInt lp) {
 
 
 template <OneDimBaseType Base1>
-ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x) {
-   ASSERT_STRICT_DEBUG(!coeffs.empty());
+ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x,
+                                     ValueTypeOf<Base1> empty_default) {
+   if(coeffs.empty()) {
+      return empty_default;
+   }
 
    auto X = const1D(Size{coeffs.size()}, Value{x});
    auto powers = sequence(Size{coeffs.size()}, Start{0}, Incr{1});
@@ -253,10 +292,12 @@ ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x) 
 
 
 template <OneDimBaseType Base1, OneDimSignedIntegerBaseType Base2>
-ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x,
-                                     const Base2& powers) {
-   ASSERT_STRICT_DEBUG(!coeffs.empty());
+ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x, const Base2& powers,
+                                     ValueTypeOf<Base1> empty_default) {
    ASSERT_STRICT_DEBUG(same_size(coeffs, powers));
+   if(coeffs.empty()) {
+      return empty_default;
+   }
    ASSERT_STRICT_DEBUG(all_non_neg(powers));
 
    auto X = const1D(Size{coeffs.size()}, Value{x});
@@ -266,9 +307,12 @@ ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x,
 
 template <OneDimFloatingBaseType Base1, OneDimFloatingBaseType Base2,
           OneDimSignedIntegerBaseType Base3>
-ValueTypeOf<Base1> stable_gpolynomial(const Base1& coeffs, const Base2& X, const Base3& powers) {
-   ASSERT_STRICT_DEBUG(!coeffs.empty());
+ValueTypeOf<Base1> stable_gpolynomial(const Base1& coeffs, const Base2& X, const Base3& powers,
+                                      ValueTypeOf<Base1> empty_default) {
    ASSERT_STRICT_DEBUG(same_size(coeffs, X, powers));
+   if(coeffs.empty()) {
+      return empty_default;
+   }
    ASSERT_STRICT_DEBUG(all_non_neg(powers));
 
    auto R = pow_prod(X, powers).first;
