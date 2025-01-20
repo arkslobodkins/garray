@@ -598,80 +598,56 @@ STRICT_CONSTEXPR_2026 ValueTypeOf<Base1> gpolynomial(const Base1& coeffs, const 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR StrictBool has_zero(const Base& A, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
    auto is_zero = []<Real T>(const Strict<T>& x) { return x == Zero<T>; };
-   return any_of(A, is_zero);
+   return any_of(A, is_zero, empty_default);
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR StrictBool all_zeros(const Base& A, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
    auto is_zero = []<Real T>(const Strict<T>& x) { return x == Zero<T>; };
-   return all_of(A, is_zero);
+   return all_of(A, is_zero, empty_default);
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR StrictBool all_pos(const Base& A, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
    auto is_positive = []<Real T>(const Strict<T>& x) { return x > Zero<T>; };
-   return all_of(A, is_positive);
+   return all_of(A, is_positive, empty_default);
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR StrictBool all_neg(const Base& A, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
    auto is_negative = []<Real T>(const Strict<T>& x) { return x < Zero<T>; };
-   return all_of(A, is_negative);
+   return all_of(A, is_negative, empty_default);
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR StrictBool all_non_pos(const Base& A, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
    auto is_non_positive = []<Real T>(const Strict<T>& x) { return x <= Zero<T>; };
-   return all_of(A, is_non_positive);
+   return all_of(A, is_non_positive, empty_default);
 }
 
 
 template <RealBaseType Base>
 STRICT_CONSTEXPR StrictBool all_non_neg(const Base& A, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
    auto is_non_negative = []<Real T>(const Strict<T>& x) { return x >= Zero<T>; };
-   return all_of(A, is_non_negative);
+   return all_of(A, is_non_negative, empty_default);
 }
 
 
 template <BaseType Base>
 STRICT_CONSTEXPR StrictBool none_of(const Base& A, ValueTypeOf<Base> x, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
-   return none_of(A, [x](auto y) { return y == x; });
+   return none_of(A, [x](auto y) { return y == x; }, empty_default);
 }
 
 
 template <BaseType Base>
 STRICT_CONSTEXPR StrictBool none_of(const Base& A, Value<RealTypeOf<Base>> x,
                                     StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
-   return none_of(A, x.get());
+   return none_of(A, x.get(), empty_default);
 }
 
 
@@ -699,20 +675,14 @@ STRICT_CONSTEXPR StrictBool none_of(const Base1& A1, const Base2& A2, F f,
 
 template <BaseType Base>
 STRICT_CONSTEXPR StrictBool any_of(const Base& A, ValueTypeOf<Base> x, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
-   return any_of(A, [x](auto y) { return y == x; });
+   return any_of(A, [x](auto y) { return y == x; }, empty_default);
 }
 
 
 template <BaseType Base>
 STRICT_CONSTEXPR StrictBool any_of(const Base& A, Value<RealTypeOf<Base>> x,
                                    StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
-   return any_of(A, x.get());
+   return any_of(A, x.get(), empty_default);
 }
 
 
@@ -750,20 +720,14 @@ STRICT_CONSTEXPR StrictBool any_of(const Base1& A1, const Base2& A2, F f,
 
 template <BaseType Base>
 STRICT_CONSTEXPR StrictBool all_of(const Base& A, ValueTypeOf<Base> x, StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
-   return all_of(A, [x](auto y) { return y == x; });
+   return all_of(A, [x](auto y) { return y == x; }, empty_default);
 }
 
 
 template <BaseType Base>
 STRICT_CONSTEXPR StrictBool all_of(const Base& A, Value<RealTypeOf<Base>> x,
                                    StrictBool empty_default) {
-   if(A.empty()) {
-      return empty_default;
-   }
-   return all_of(A, x.get());
+   return all_of(A, x.get(), empty_default);
 }
 
 
