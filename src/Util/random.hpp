@@ -15,6 +15,130 @@
 namespace spp {
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Real T>
+Strict<T> rands(Strict<T> low, Strict<T> high);
+
+
+template <Real T>
+Strict<T> rands(Low<T> low, High<T> high);
+
+
+template <Builtin T>
+Strict<T> rands();
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Real T>
+Strict<T> rands_not0(Strict<T> low, Strict<T> high);
+
+
+template <Real T>
+Strict<T> rands_not0(Low<T> low, High<T> high);
+
+
+template <Real T>
+Strict<T> rands_not0();
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename Base, typename... BasesAndStrict>
+   requires detail::RandomRealBasesAndStrict<Base, BasesAndStrict...>
+void random(Base&& A, BasesAndStrict&&... AArgs_and_xargs);
+
+
+template <typename Base, typename... BasesAndLowHigh>
+   requires detail::RandomRealBasesAndLowHigh<Base, BasesAndLowHigh...>
+void random(Base&& A, BasesAndLowHigh&&... AArgs_and_xargs);
+
+
+template <typename... Base>
+   requires detail::RandomBases<Base...>
+void random(Base&&... A);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename Base, typename... BasesAndStrict>
+   requires detail::RandomRealBasesAndStrict<Base, BasesAndStrict...>
+void random_not0(Base&& A, BasesAndStrict&&... AArgs_and_xargs);
+
+
+template <typename Base, typename... BasesAndLowHigh>
+   requires detail::RandomRealBasesAndLowHigh<Base, BasesAndLowHigh...>
+void random_not0(Base&& A, BasesAndLowHigh&&... AArgs_and_xargs);
+
+
+template <typename... Base>
+   requires detail::RandomRealBases<Base...>
+void random_not0(Base&&... A);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Real T>
+auto random(ImplicitInt n, Strict<T> low, Strict<T> high);
+
+
+template <Real T>
+auto random(Size n, Low<T> low, High<T> high);
+
+
+template <Builtin T>
+auto random(ImplicitInt n);
+
+
+template <Builtin T>
+auto random(Size n);
+
+
+template <Real T>
+auto random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high);
+
+
+template <Real T>
+auto random(Rows m, Cols n, Low<T> low, High<T> high);
+
+
+template <Builtin T>
+auto random(ImplicitInt m, ImplicitInt n);
+
+
+template <Builtin T>
+auto random(Rows m, Cols n);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Real T>
+auto random_not0(ImplicitInt n, Strict<T> low, Strict<T> high);
+
+
+template <Real T>
+auto random_not0(Size n, Low<T> low, High<T> high);
+
+
+template <Real T>
+auto random_not0(ImplicitInt n);
+
+
+template <Real T>
+auto random_not0(Size n);
+
+
+template <Real T>
+auto random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high);
+
+
+template <Real T>
+auto random_not0(Rows m, Cols n, Low<T> low, High<T> high);
+
+
+template <Real T>
+auto random_not0(ImplicitInt m, ImplicitInt n);
+
+
+template <Real T>
+auto random_not0(Rows m, Cols n);
+
+
 namespace detail {
 
 

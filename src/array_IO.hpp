@@ -15,6 +15,7 @@
 #include "ArrayCommon/array_traits.hpp"
 #include "Expr/expr.hpp"
 #include "StrictCommon/strict_common.hpp"
+#include "array_ops.hpp"
 #include "derived1D.hpp"
 #include "derived2D.hpp"
 

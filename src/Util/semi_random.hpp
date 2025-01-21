@@ -13,6 +13,140 @@
 namespace spp {
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Real T>
+constexpr Strict<T> semi_rands(Strict<T> low, Strict<T> high, Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr Strict<T> semi_rands(Low<T> low, High<T> high, Seed seed = Seed{One<unsigned>});
+
+
+template <Builtin T>
+constexpr Strict<T> semi_rands(Seed seed = Seed{One<unsigned>});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Real T>
+constexpr Strict<T> semi_rands_not0(Strict<T> low, Strict<T> high, Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr Strict<T> semi_rands_not0(Low<T> low, High<T> high, Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr Strict<T> semi_rands_not0(Seed seed = Seed{One<unsigned>});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename Base>
+   requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
+constexpr void semi_random(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Base> high,
+                           Seed seed = Seed{One<unsigned>});
+
+
+template <typename Base>
+   requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
+constexpr void semi_random(Base&& A, Low<BuiltinTypeOf<Base>> low, High<BuiltinTypeOf<Base>> high,
+                           Seed seed = Seed{One<unsigned>});
+
+
+template <typename... Base>
+   requires detail::RandomBases<Base...>
+constexpr void semi_random(Base&&... A);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename Base>
+   requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
+constexpr void semi_random_not0(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Base> high,
+                                Seed seed = Seed{One<unsigned>});
+
+
+template <typename Base>
+   requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
+constexpr void semi_random_not0(Base&& A, Low<BuiltinTypeOf<Base>> low,
+                                High<BuiltinTypeOf<Base>> high, Seed seed = Seed{One<unsigned>});
+
+
+template <typename... Base>
+   requires detail::RandomRealBases<Base...>
+constexpr void semi_random_not0(Base&&... A);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Real T, typename U>
+constexpr auto semi_random(ImplicitInt n, Strict<T> low, Strict<T> high,
+                           Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random(Size n, Low<T> low, High<T> high, Seed seed = Seed{One<unsigned>});
+
+
+template <Builtin T>
+constexpr auto semi_random(ImplicitInt n, Seed seed = Seed{One<unsigned>});
+
+
+template <Builtin T>
+constexpr auto semi_random(Size n, Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high,
+                           Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random(Rows m, Cols n, Low<T> low, High<T> high,
+                           Seed seed = Seed{One<unsigned>});
+
+
+template <Builtin T>
+constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Seed seed = Seed{One<unsigned>});
+
+
+template <Builtin T>
+constexpr auto semi_random(Rows m, Cols n, Seed seed = Seed{One<unsigned>});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <Real T>
+constexpr auto semi_random_not0(ImplicitInt n, Strict<T> low, Strict<T> high,
+                                Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random_not0(Size n, Low<T> low, High<T> high, Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random_not0(ImplicitInt n, Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random_not0(Size n, Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high,
+                                Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random_not0(Rows m, Cols n, Low<T> low, High<T> high,
+                                Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Seed seed = Seed{One<unsigned>});
+
+
+template <Real T>
+constexpr auto semi_random_not0(Rows m, Cols n, Seed seed = Seed{One<unsigned>});
+
+
 namespace detail {
 
 
@@ -170,39 +304,38 @@ constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Str
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
-constexpr Strict<T> semi_rands(Strict<T> low, Strict<T> high, Seed seed = Seed{One<unsigned>}) {
+constexpr Strict<T> semi_rands(Strict<T> low, Strict<T> high, Seed seed) {
    return detail::semi_rands(low, high, seed.get());
 }
 
 
 template <Real T>
-constexpr Strict<T> semi_rands(Low<T> low, High<T> high, Seed seed = Seed{One<unsigned>}) {
+constexpr Strict<T> semi_rands(Low<T> low, High<T> high, Seed seed) {
    return detail::semi_rands(low.get(), high.get(), seed.get());
 }
 
 
 template <Builtin T>
-constexpr Strict<T> semi_rands(Seed seed = Seed{One<unsigned>}) {
+constexpr Strict<T> semi_rands(Seed seed) {
    return detail::semi_rands(Zero<T>, One<T>, seed.get());
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
-constexpr Strict<T> semi_rands_not0(Strict<T> low, Strict<T> high,
-                                    Seed seed = Seed{One<unsigned>}) {
+constexpr Strict<T> semi_rands_not0(Strict<T> low, Strict<T> high, Seed seed) {
    return detail::semi_rands_not0(low, high, seed.get());
 }
 
 
 template <Real T>
-constexpr Strict<T> semi_rands_not0(Low<T> low, High<T> high, Seed seed = Seed{One<unsigned>}) {
+constexpr Strict<T> semi_rands_not0(Low<T> low, High<T> high, Seed seed) {
    return detail::semi_rands_not0(low.get(), high.get(), seed.get());
 }
 
 
 template <Real T>
-constexpr Strict<T> semi_rands_not0(Seed seed = Seed{One<unsigned>}) {
+constexpr Strict<T> semi_rands_not0(Seed seed) {
    return detail::semi_rands_not0(Zero<T>, One<T>, seed.get());
 }
 
@@ -210,8 +343,7 @@ constexpr Strict<T> semi_rands_not0(Seed seed = Seed{One<unsigned>}) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename Base>
    requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
-constexpr void semi_random(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Base> high,
-                           Seed seed = Seed{One<unsigned>}) {
+constexpr void semi_random(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Base> high, Seed seed) {
    detail::semi_random(A, low, high, seed.get());
 }
 
@@ -219,7 +351,7 @@ constexpr void semi_random(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Base> hi
 template <typename Base>
    requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
 constexpr void semi_random(Base&& A, Low<BuiltinTypeOf<Base>> low, High<BuiltinTypeOf<Base>> high,
-                           Seed seed = Seed{One<unsigned>}) {
+                           Seed seed) {
    detail::semi_random(A, low.get(), high.get(), seed.get());
 }
 
@@ -237,7 +369,7 @@ constexpr void semi_random(Base&&... A) {
 template <typename Base>
    requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
 constexpr void semi_random_not0(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Base> high,
-                                Seed seed = Seed{One<unsigned>}) {
+                                Seed seed) {
    detail::semi_random_not0(A, low, high, seed.get());
 }
 
@@ -245,7 +377,7 @@ constexpr void semi_random_not0(Base&& A, ValueTypeOf<Base> low, ValueTypeOf<Bas
 template <typename Base>
    requires detail::NonConstBaseType<RemoveRef<Base>> && Real<BuiltinTypeOf<Base>>
 constexpr void semi_random_not0(Base&& A, Low<BuiltinTypeOf<Base>> low,
-                                High<BuiltinTypeOf<Base>> high, Seed seed = Seed{One<unsigned>}) {
+                                High<BuiltinTypeOf<Base>> high, Seed seed) {
    detail::semi_random_not0(A, low.get(), high.get(), seed.get());
 }
 
@@ -262,104 +394,99 @@ constexpr void semi_random_not0(Base&&... A) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T, typename U>
-constexpr auto semi_random(ImplicitInt n, Strict<T> low, Strict<T> high,
-                           Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random(ImplicitInt n, Strict<T> low, Strict<T> high, Seed seed) {
    return detail::semi_random<T>(n, low, high, seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random(Size n, Low<T> low, High<T> high, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random(Size n, Low<T> low, High<T> high, Seed seed) {
    return semi_random<T>(n.get(), low.get(), high.get(), seed.get());
 }
 
 
 template <Builtin T>
-constexpr auto semi_random(ImplicitInt n, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random(ImplicitInt n, Seed seed) {
    return detail::semi_random<T>(n, Zero<T>, One<T>, seed.get());
 }
 
 
 template <Builtin T>
-constexpr auto semi_random(Size n, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random(Size n, Seed seed) {
    return semi_random<T>(n.get(), seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high,
-                           Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high, Seed seed) {
    return detail::semi_random<T>(m, n, low, high, seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random(Rows m, Cols n, Low<T> low, High<T> high,
-                           Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random(Rows m, Cols n, Low<T> low, High<T> high, Seed seed) {
    return semi_random<T>(m.get(), n.get(), low.get(), high.get(), seed.get());
 }
 
 
 template <Builtin T>
-constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random(ImplicitInt m, ImplicitInt n, Seed seed) {
    return detail::semi_random<T>(m, n, Zero<T>, One<T>, seed.get());
 }
 
 
 template <Builtin T>
-constexpr auto semi_random(Rows m, Cols n, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random(Rows m, Cols n, Seed seed) {
    return semi_random<T>(m.get(), n.get(), seed.get());
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
-constexpr auto semi_random_not0(ImplicitInt n, Strict<T> low, Strict<T> high,
-                                Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random_not0(ImplicitInt n, Strict<T> low, Strict<T> high, Seed seed) {
    return detail::semi_random_not0<T>(n, low, high, seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random_not0(Size n, Low<T> low, High<T> high, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random_not0(Size n, Low<T> low, High<T> high, Seed seed) {
    return semi_random_not0<T>(n.get(), low.get(), high.get(), seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random_not0(ImplicitInt n, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random_not0(ImplicitInt n, Seed seed) {
    return detail::semi_random_not0<T>(n, Zero<T>, One<T>, seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random_not0(Size n, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random_not0(Size n, Seed seed) {
    return semi_random_not0<T>(n.get(), seed.get());
 }
 
 
 template <Real T>
 constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Strict<T> low, Strict<T> high,
-                                Seed seed = Seed{One<unsigned>}) {
+                                Seed seed) {
    return detail::semi_random_not0<T>(m, n, low, high, seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random_not0(Rows m, Cols n, Low<T> low, High<T> high,
-                                Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random_not0(Rows m, Cols n, Low<T> low, High<T> high, Seed seed) {
    return semi_random_not0<T>(m.get(), n.get(), low.get(), high.get(), seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random_not0(ImplicitInt m, ImplicitInt n, Seed seed) {
    return detail::semi_random_not0<T>(m, n, Zero<T>, One<T>, seed.get());
 }
 
 
 template <Real T>
-constexpr auto semi_random_not0(Rows m, Cols n, Seed seed = Seed{One<unsigned>}) {
+constexpr auto semi_random_not0(Rows m, Cols n, Seed seed) {
    return semi_random_not0<T>(m.get(), n.get(), seed.get());
 }
 
