@@ -56,8 +56,7 @@ public:
    STRICT_CONSTEXPR void swap(ArrayBase2D& A) noexcept;
    STRICT_CONSTEXPR void swap(ArrayBase2D&& A) noexcept;
 
-   STRICT_CONSTEXPR auto& resize(ImplicitInt m, ImplicitInt n);
-   STRICT_CONSTEXPR auto& resize_forget(ImplicitInt m, ImplicitInt n);
+   STRICT_CONSTEXPR auto& resize(ImplicitInt m, ImplicitInt n, ImplicitBool preserve = true);
 
    STRICT_CONSTEXPR auto& resize_and_assign(TwoDimBaseType auto const& A);
 
@@ -247,42 +246,34 @@ STRICT_CONSTEXPR void ArrayBase2D<T, AF>::swap(ArrayBase2D&& A) noexcept {
 
 
 template <Builtin T, AlignmentFlag AF>
-STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::resize(ImplicitInt m, ImplicitInt n) {
+STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::resize(ImplicitInt m, ImplicitInt n,
+                                                  ImplicitBool preserve) {
    ASSERT_STRICT_DEBUG(m.get() >= 0_sl);
    ASSERT_STRICT_DEBUG(n.get() >= 0_sl);
    ASSERT_STRICT_DEBUG(semi_valid_row_col_sizes(m.get(), n.get()));
 
    const auto d0_new = m.get();
    const auto d1_new = n.get();
-   if(not(d0_new == dims_.un(0) && d1_new == dims_.un(1))) {
-      ArrayBase2D tmp(d0_new, d1_new);
-      for(index_t i = 0_sl; i < mins(dims_.un(0), d0_new); ++i) {
-         for(index_t j = 0_sl; j < mins(dims_.un(1), d1_new); ++j) {
-            tmp.un(i, j) = this->un(i, j);
-         }
-      }
-      this->swap(tmp);
-   }
 
-   return static_cast<StrictArray2D<ArrayBase2D>&>(*this);
-}
-
-
-template <Builtin T, AlignmentFlag AF>
-STRICT_CONSTEXPR auto& ArrayBase2D<T, AF>::resize_forget(ImplicitInt m, ImplicitInt n) {
-   ASSERT_STRICT_DEBUG(m.get() >= 0_sl);
-   ASSERT_STRICT_DEBUG(n.get() >= 0_sl);
-   ASSERT_STRICT_DEBUG(semi_valid_row_col_sizes(m.get(), n.get()));
-
-   const auto d0_new = m.get();
-   const auto d1_new = n.get();
-   if(not(d0_new == dims_.un(0) && d1_new == dims_.un(1))) {
-      if(d0_new * d1_new != dims_.un(0) * dims_.un(1)) {
+   if(preserve.get()) {
+      if(not(d0_new == dims_.un(0) && d1_new == dims_.un(1))) {
          ArrayBase2D tmp(d0_new, d1_new);
+         for(index_t i = 0_sl; i < mins(dims_.un(0), d0_new); ++i) {
+            for(index_t j = 0_sl; j < mins(dims_.un(1), d1_new); ++j) {
+               tmp.un(i, j) = this->un(i, j);
+            }
+         }
          this->swap(tmp);
-      } else {
-         dims_.un(0) = d0_new;
-         dims_.un(1) = d1_new;
+      }
+   } else {
+      if(not(d0_new == dims_.un(0) && d1_new == dims_.un(1))) {
+         if(d0_new * d1_new != dims_.un(0) * dims_.un(1)) {
+            ArrayBase2D tmp(d0_new, d1_new);
+            this->swap(tmp);
+         } else {
+            dims_.un(0) = d0_new;
+            dims_.un(1) = d1_new;
+         }
       }
    }
 

@@ -34,7 +34,7 @@ consteval void array1D() {
    E.resize_and_assign(C);
    E.resize_and_assign(std::move(C));
    E.resize(20);
-   E.resize_forget(20);
+   E.resize(20, false);
 
    E.remove(0);
    E.remove(0, 1);
@@ -116,7 +116,7 @@ consteval void array2D() {
    D.resize_and_assign(C);
    D.resize_and_assign(std::move(C));
    D.resize(20, 20);
-   D.resize_forget(20, 20);
+   D.resize(20, 20, false);
 
    D.remove_rows(0, 1);
    D.remove_rows(Pos{0}, Count{1});
@@ -263,17 +263,17 @@ consteval void expr_ops() {
 
       x + One<T>;
       x - One<T>;
-      x * One<T>;
+      x* One<T>;
       x / One<T>;
 
       One<T> + x;
       One<T> - x;
-      One<T> * x;
+      One<T>* x;
       One<T> / x;
 
       x + x;
       x - x;
-      x * x;
+      x* x;
       x / x;
 
       e_unit<T>(0, 2);
@@ -284,14 +284,14 @@ consteval void expr_ops() {
          x % One<T>;
          x << One<T>;
          x >> One<T>;
-         x & One<T>;
+         x& One<T>;
          x | One<T>;
          x ^ One<T>;
 
          One<T> % x;
          One<T> << x;
          One<T> >> x;
-         One<T> & x;
+         One<T>& x;
          One<T> | x;
          One<T> ^ x;
 
@@ -312,15 +312,15 @@ consteval void expr_ops() {
    } else {
       !x;
 
-      x && true_sb;
+      x&& true_sb;
       x || true_sb;
       x ^ true_sb;
 
-      true_sb && x;
+      true_sb&& x;
       true_sb || x;
       true_sb ^ x;
 
-      x && x;
+      x&& x;
       x || x;
       x ^ x;
    }

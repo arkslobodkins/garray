@@ -63,8 +63,7 @@ public:
    STRICT_CONSTEXPR void swap(ArrayBase1D& A) noexcept;
    STRICT_CONSTEXPR void swap(ArrayBase1D&& A) noexcept;
 
-   STRICT_CONSTEXPR auto& resize(ImplicitInt n);
-   STRICT_CONSTEXPR auto& resize_forget(ImplicitInt n);
+   STRICT_CONSTEXPR auto& resize(ImplicitInt n, ImplicitBool preserve = true);
 
    STRICT_CONSTEXPR auto& resize_and_assign(OneDimBaseType auto const& A);
 
@@ -285,27 +284,15 @@ STRICT_CONSTEXPR void ArrayBase1D<T, AF>::swap(ArrayBase1D&& A) noexcept {
 }
 
 
-// Preserves values of the remaining elements.
 template <Builtin T, AlignmentFlag AF>
-STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize(ImplicitInt n) {
+STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize(ImplicitInt n, ImplicitBool preserve) {
    ASSERT_STRICT_DEBUG(n.get() > -1_sl);
 
    if(auto n_new = n.get(); n_new != n_) {
       ArrayBase1D tmp(n_new);
-      copyn(*this, tmp, mins(n_, n_new));
-      this->swap(tmp);
-   }
-   return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
-}
-
-
-// Does not preserve values of the remaining elements.
-template <Builtin T, AlignmentFlag AF>
-STRICT_CONSTEXPR auto& ArrayBase1D<T, AF>::resize_forget(ImplicitInt n) {
-   ASSERT_STRICT_DEBUG(n.get() > -1_sl);
-
-   if(auto n_new = n.get(); n_new != n_) {
-      ArrayBase1D tmp(n_new);
+      if(preserve.get()) {
+         copyn(*this, tmp, mins(n_, n_new));
+      }
       this->swap(tmp);
    }
    return static_cast<StrictArray1D<ArrayBase1D>&>(*this);
