@@ -240,7 +240,7 @@ public:
 template <>
 class SliceWrapper<seqN> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(seqN s) : s_{s} {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(const seqN& s) : s_{s} {
    }
 
    STRICT_CONSTEXPR_INLINE auto get([[maybe_unused]] OneDimBaseType auto const& A) const {
@@ -266,7 +266,7 @@ private:
 template <>
 class SliceWrapper<seq> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(seq s) : s_{s} {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(const seq& s) : s_{s} {
    }
 
    STRICT_CONSTEXPR_INLINE auto get([[maybe_unused]] OneDimBaseType auto const& A) const {
@@ -295,18 +295,18 @@ private:
 template <>
 class SliceWrapper<All> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(All) {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(All) {
    }
 
-   STRICT_CONSTEXPR_INLINE auto get(OneDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get(OneDimBaseType auto const& A) {
       return seqN{0, A.size(), 1};
    }
 
-   STRICT_CONSTEXPR_INLINE auto get_row(TwoDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get_row(TwoDimBaseType auto const& A) {
       return seqN{0, A.rows(), 1};
    }
 
-   STRICT_CONSTEXPR_INLINE auto get_col(TwoDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get_col(TwoDimBaseType auto const& A) {
       return seqN{0, A.cols(), 1};
    }
 };
@@ -315,18 +315,18 @@ public:
 template <>
 class SliceWrapper<Even> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(Even) {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(Even) {
    }
 
-   STRICT_CONSTEXPR_INLINE auto get(OneDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get(OneDimBaseType auto const& A) {
       return seqN{0, (A.size() + 1_sl) / 2_sl, 2};
    }
 
-   STRICT_CONSTEXPR_INLINE auto get_row(TwoDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get_row(TwoDimBaseType auto const& A) {
       return seqN{0, (A.rows() + 1_sl) / 2_sl, 2};
    }
 
-   STRICT_CONSTEXPR_INLINE auto get_col(TwoDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get_col(TwoDimBaseType auto const& A) {
       return seqN{0, (A.cols() + 1_sl) / 2_sl, 2};
    }
 };
@@ -335,18 +335,18 @@ public:
 template <>
 class SliceWrapper<Odd> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(Odd) {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(Odd) {
    }
 
-   STRICT_CONSTEXPR_INLINE auto get(OneDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get(OneDimBaseType auto const& A) {
       return seqN{1, A.size() / 2_sl, 2};
    }
 
-   STRICT_CONSTEXPR_INLINE auto get_row(TwoDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get_row(TwoDimBaseType auto const& A) {
       return seqN{1, A.rows() / 2_sl, 2};
    }
 
-   STRICT_CONSTEXPR_INLINE auto get_col(TwoDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get_col(TwoDimBaseType auto const& A) {
       return seqN{1, A.cols() / 2_sl, 2};
    }
 };
@@ -355,18 +355,18 @@ public:
 template <>
 class SliceWrapper<Reverse> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(Reverse) {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(Reverse) {
    }
 
-   STRICT_CONSTEXPR_INLINE auto get(OneDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get(OneDimBaseType auto const& A) {
       return seqN{A.empty() ? 0_sl : A.size() - 1_sl, A.size(), -1};
    }
 
-   STRICT_CONSTEXPR_INLINE auto get_row(TwoDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get_row(TwoDimBaseType auto const& A) {
       return seqN{A.empty() ? 0_sl : A.rows() - 1_sl, A.rows(), -1};
    }
 
-   STRICT_CONSTEXPR_INLINE auto get_col(TwoDimBaseType auto const& A) const {
+   STRICT_CONSTEXPR_INLINE static auto get_col(TwoDimBaseType auto const& A) {
       return seqN{A.empty() ? 0_sl : A.cols() - 1_sl, A.cols(), -1};
    }
 };
@@ -375,7 +375,7 @@ public:
 template <>
 class SliceWrapper<place::skipN> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(place::skipN x) : x_{x} {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(place::skipN x) : x_{x} {
    }
 
    STRICT_CONSTEXPR_INLINE auto get(OneDimBaseType auto const& A) const {
@@ -398,7 +398,7 @@ private:
 template <>
 class SliceWrapper<place::firstN> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(place::firstN x) : x_{x} {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(place::firstN x) : x_{x} {
    }
 
    STRICT_CONSTEXPR_INLINE auto get([[maybe_unused]] OneDimBaseType auto const& A) const {
@@ -424,7 +424,7 @@ private:
 template <>
 class SliceWrapper<place::lastN> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(place::lastN x) : x_{x} {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(place::lastN x) : x_{x} {
    }
 
    STRICT_CONSTEXPR_INLINE auto get(OneDimBaseType auto const& A) const {
@@ -450,7 +450,7 @@ private:
 template <>
 class SliceWrapper<std::vector<ImplicitInt>> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(std::vector<ImplicitInt> x) : x_{std::move(x)} {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(std::vector<ImplicitInt> x) : x_{std::move(x)} {
    }
 
    STRICT_CONSTEXPR_INLINE auto get([[maybe_unused]] OneDimBaseType auto const& A) && {
@@ -496,7 +496,7 @@ private:
 template <>
 class SliceWrapper<place::complement> {
 public:
-   STRICT_CONSTEXPR_INLINE SliceWrapper(place::complement x) : x_{std::move(x)} {
+   STRICT_CONSTEXPR_INLINE explicit SliceWrapper(place::complement x) : x_{std::move(x)} {
    }
 
    STRICT_CONSTEXPR_INLINE auto get([[maybe_unused]] OneDimBaseType auto const& A) const {
@@ -548,7 +548,7 @@ public:
 template <>
 class SliceArrayWrapper<seqN> {
 public:
-   STRICT_CONSTEXPR SliceArrayWrapper(seqN sl) : sl_{sl} {
+   STRICT_CONSTEXPR explicit SliceArrayWrapper(const seqN& sl) : sl_{sl} {
    }
 
    STRICT_CONSTEXPR_INLINE index_t size() const {
@@ -587,7 +587,7 @@ private:
 template <>
 class SliceArrayWrapper<std::vector<ImplicitInt>> {
 public:
-   STRICT_CONSTEXPR SliceArrayWrapper(std::vector<ImplicitInt>&& indexes)
+   STRICT_CONSTEXPR explicit SliceArrayWrapper(std::vector<ImplicitInt>&& indexes)
        : indexes_{std::move(indexes)} {
    }
 

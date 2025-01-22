@@ -36,9 +36,9 @@ struct timer {
    }
 
    Strict64 wall_time() {
-      return Strict64{double(std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                 std::chrono::high_resolution_clock::now() - start)
-                                 .count())
+      return Strict64{static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                              std::chrono::high_resolution_clock::now() - start)
+                                              .count())
                       / 1.e9};
    }
 

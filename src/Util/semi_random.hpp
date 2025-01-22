@@ -155,7 +155,8 @@ class SemiGenerator {
 public:
    constexpr SemiGenerator(Strict<unsigned> seed = Strict<unsigned>{1U}, Strict<T> low = Zero<T>,
                            Strict<T> high = One<T>)
-       : previous_{Strict{unsigned(__TIME__[7])} * Strict{100'000U} + seed * Strict{100'000U}},
+       : previous_{Strict{static_cast<unsigned>(__TIME__[7])} * Strict{100'000U}
+                   + seed * Strict{100'000U}},
          low_{low},
          high_{high} {
    }
