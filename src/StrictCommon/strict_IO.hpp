@@ -100,15 +100,15 @@ public:
    }
 
    template <Floating PT>
-   int precision() const {
+   StrictInt precision() const {
       if constexpr(SameAs<PT, float>) {
-         return precision_[0];
+         return Strict{precision_[0]};
       } else if constexpr(SameAs<PT, double>) {
-         return precision_[1];
+         return Strict{precision_[1]};
       } else if constexpr(SameAs<PT, long double>) {
-         return precision_[2];
+         return Strict{precision_[2]};
       } else {
-         return precision_[3];
+         return Strict{precision_[3]};
       }
    }
 

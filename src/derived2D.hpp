@@ -665,7 +665,7 @@ public:
       return static_cast<StrictArrayMutable2D&>(Base::operator=(A));
    }
 
-   STRICT_CONSTEXPR StrictArrayMutable2D& operator=(StrictArrayMutable2D&& A) {
+   STRICT_CONSTEXPR StrictArrayMutable2D& operator=(StrictArrayMutable2D&& A) noexcept {
       return static_cast<StrictArrayMutable2D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
    }
 
@@ -723,7 +723,7 @@ public:
       return static_cast<StrictArray2D&>(Base::operator=(A));
    }
 
-   STRICT_CONSTEXPR StrictArray2D& operator=(StrictArray2D&& A) & {
+   STRICT_CONSTEXPR StrictArray2D& operator=(StrictArray2D&& A) & noexcept {
       return static_cast<StrictArray2D&>(Base::operator=(static_cast<Base&&>(std::move(A))));
    }
 

@@ -12,7 +12,7 @@
 #include "use.hpp"
 
 
-namespace spp { namespace detail {
+namespace spp::detail {
 
 
 template <BaseType Base, typename F>
@@ -154,5 +154,5 @@ STRICT_CONSTEXPR_INLINE void fill(ValueTypeOf<Base> val, Base& A) {
 }
 
 
-}}  // namespace spp::detail
+}  // namespace spp::detail
 

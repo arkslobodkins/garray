@@ -10,7 +10,7 @@
 #include "strict_val.hpp"
 
 
-namespace spp { inline namespace literals {
+namespace spp::inline literals {
 
 
 consteval Strict<int> operator""_si(unsigned long long x) {
@@ -112,5 +112,5 @@ inline Strict<float128> operator""_SQ() {
 #endif
 
 
-}}  // namespace spp::literals
+}  // namespace spp::inline literals
 

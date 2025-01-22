@@ -32,7 +32,7 @@ class IndexWrapper<T> {
    ImplicitInt i_;
 
 public:
-   STRICT_CONSTEXPR_INLINE IndexWrapper(T i) : i_{i} {
+   STRICT_CONSTEXPR_INLINE explicit IndexWrapper(T i) : i_{i} {
    }
 
    STRICT_CONSTEXPR_INLINE index_t get([[maybe_unused]] OneDimBaseType auto const& A) const {
@@ -55,7 +55,7 @@ class IndexWrapper<T> {
    index_t i_;
 
 public:
-   STRICT_CONSTEXPR_INLINE IndexWrapper(T lst) : i_{lst.get()} {
+   STRICT_CONSTEXPR_INLINE explicit IndexWrapper(T lst) : i_{lst.get()} {
    }
 
    STRICT_CONSTEXPR_INLINE index_t get(OneDimBaseType auto const& A) const {

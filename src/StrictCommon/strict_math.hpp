@@ -203,7 +203,7 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2023 StrictBool isinfs(Strict<T> x) {
 #ifdef STRICT_QUAD_PRECISION
    else {
       // Convert to bool first because int is returned.
-      return StrictBool{bool(isinfq(T{x}))};
+      return StrictBool{static_cast<bool>(isinfq(T{x}))};
    }
 #endif
 }
@@ -217,7 +217,7 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2023 StrictBool isnans(Strict<T> x) {
 #ifdef STRICT_QUAD_PRECISION
    else {
       // Convert to bool first because int is returned.
-      return StrictBool{bool(isnanq(T{x}))};
+      return StrictBool{static_cast<bool>(isnanq(T{x}))};
    }
 #endif
 }
@@ -231,7 +231,7 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2023 StrictBool isfinites(Strict<T> x) {
 #ifdef STRICT_QUAD_PRECISION
    else {
       // Convert to bool first because int is returned.
-      return StrictBool{bool(finiteq(T{x}))};
+      return StrictBool{static_cast<bool>(finiteq(T{x}))};
    }
 #endif
 }
