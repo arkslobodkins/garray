@@ -68,7 +68,14 @@ public:
    = delete;
 
 private:
+#ifdef __GNUG__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
    alignas(detail::alignment_of<T, AF>()) value_type data_[to_size_t(N.get())];
+#ifdef __GNUG__
+#pragma GCC diagnostic pop
+#endif
 };
 
 
