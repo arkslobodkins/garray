@@ -14,7 +14,7 @@
 #include "strict_val.hpp"
 
 
-namespace spp { namespace constants {
+namespace spp::constants {
 
 
 template <Floating T>
@@ -71,5 +71,5 @@ constexpr inline auto sqrt2_sq = sqrt2<float128>;
 #endif
 
 
-}}  // namespace spp::constants
+}  // namespace spp::constants
 

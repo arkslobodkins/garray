@@ -15,7 +15,7 @@ namespace spp { inline namespace literals {
 
 consteval Strict<int> operator""_si(unsigned long long x) {
    ASSERT_STRICT_DEBUG(x <= std::numeric_limits<int>::max());
-   return Strict{int(x)};
+   return Strict{static_cast<int>(x)};
 }
 
 
@@ -36,12 +36,12 @@ consteval Strict<unsigned long int> operator""_sul(unsigned long long x) {
 
 
 consteval Strict<float> operator""_sf(long double x) {
-   return Strict{float(x)};
+   return Strict{static_cast<float>(x)};
 }
 
 
 consteval Strict<double> operator""_sd(long double x) {
-   return Strict{double(x)};
+   return Strict{static_cast<double>(x)};
 }
 
 

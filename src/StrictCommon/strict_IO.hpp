@@ -113,31 +113,31 @@ public:
    }
 
    StrictFormat& precision(ImplicitNonNegInt n) {
-      precision_[0] = int(n.get().val());
-      precision_[1] = int(n.get().val());
-      precision_[2] = int(n.get().val());
-      precision_[3] = int(n.get().val());
+      precision_[0] = static_cast<int>(n.get().val());
+      precision_[1] = static_cast<int>(n.get().val());
+      precision_[2] = static_cast<int>(n.get().val());
+      precision_[3] = static_cast<int>(n.get().val());
       return *this;
    }
 
    StrictFormat& precision_float(ImplicitNonNegInt n) {
-      precision_[0] = int(n.get().val());
+      precision_[0] = static_cast<int>(n.get().val());
       return *this;
    }
 
    StrictFormat& precision_double(ImplicitNonNegInt n) {
-      precision_[1] = int(n.get().val());
+      precision_[1] = static_cast<int>(n.get().val());
       return *this;
    }
 
    StrictFormat& precision_long_double(ImplicitNonNegInt n) {
-      precision_[2] = int(n.get().val());
+      precision_[2] = static_cast<int>(n.get().val());
       return *this;
    }
 
 #ifdef STRICT_QUAD_PRECISION
    StrictFormat& precision_quad(ImplicitNonNegInt n) {
-      precision_[3] = int(n.get().val());
+      precision_[3] = static_cast<int>(n.get().val());
       return *this;
    }
 #endif
