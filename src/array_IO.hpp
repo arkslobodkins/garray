@@ -176,7 +176,7 @@ std::istream& istream_base_read(std::istream& is, Array2D<T, AF>& A) {
 
    if(!tmp.empty()) {
       const index_t ncols = tmp.cols();
-      index_t row_count = ncols == 0_sl ? 0_sl : 1_sl;
+      index_t row_count = 1_sl;
 
       tmp.resize(2, ncols);
       while(std::getline(is, line)) {
