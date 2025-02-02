@@ -30,7 +30,5 @@ template <typename... Base> concept RandomRealBases
     = AllNonConstBases<RemoveRef<Base>...> && Real<BuiltinTypeOf<LastPack_t<Base...>>>;
 
 
-
-
-}
+}  // namespace spp::detail
 
