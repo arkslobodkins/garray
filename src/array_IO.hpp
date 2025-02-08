@@ -58,7 +58,8 @@ void print_to_file(const std::string& file_path, BaseType auto const& A,
                    const std::string& name = "");
 
 
-STRICT_INLINE std::ostream& operator<<(std::ostream& os, const std::vector<ImplicitInt>& indexes);
+STRICT_INLINE std::ostream& operator<<(std::ostream& os,
+                                       const std::vector<ImplicitInt>& indexes);
 
 
 namespace detail {
@@ -214,7 +215,7 @@ const auto boolean_spacing = []() -> int { return 6; };
 
 
 const auto floating_spacing = []<Floating T>(Strict<T> x) -> int {
-   return count_digit(x.val()) + format.precision<T>() + 2;
+   return count_digit(x.val()) + format.precision<T>().val() + 2;
 };
 
 
@@ -280,7 +281,8 @@ auto max_if_needed(TwoDimBaseType auto const& A) {
 }
 
 
-std::ostream& set_width_if_needed(std::ostream& os, TwoDimBaseType auto const& A, auto max_abs) {
+std::ostream& set_width_if_needed(std::ostream& os, TwoDimBaseType auto const& A,
+                                  auto max_abs) {
    using builtin_type = BuiltinTypeOf<decltype(A)>;
    if constexpr(Boolean<builtin_type>) {
       return os << std::setw(boolean_spacing());
@@ -404,7 +406,8 @@ void printn(BaseType auto const&... A) {
 }
 
 
-void print_to_file(const std::string& file_path, BaseType auto const& A, const std::string& name) {
+void print_to_file(const std::string& file_path, BaseType auto const& A,
+                   const std::string& name) {
    std::ofstream ofs{file_path};
    ASSERT_STRICT_ALWAYS_MSG(ofs, "Invalid file path.\n");
    detail::ostream_base_print(ofs, A, name);
@@ -412,7 +415,8 @@ void print_to_file(const std::string& file_path, BaseType auto const& A, const s
 }
 
 
-STRICT_INLINE std::ostream& operator<<(std::ostream& os, const std::vector<ImplicitInt>& indexes) {
+STRICT_INLINE std::ostream& operator<<(std::ostream& os,
+                                       const std::vector<ImplicitInt>& indexes) {
    for(auto x : indexes) {
       os << x.get() << '\n';
    }
