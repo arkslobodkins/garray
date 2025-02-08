@@ -817,8 +817,7 @@ template <typename Base, typename F>
             && !detail::ArrayOneDimRealTypeRvalue<Base>)
 STRICT_CONSTEXPR auto in_cond_range(Base&& A, F f) {
    std::vector<ImplicitInt> indexes;
-   std::ranges::copy_if(
-       irange(A), std::back_inserter(indexes), [&](auto i) { return bool{f(A.un(i))}; });
+   std::ranges::copy_if(irange(A), std::back_inserter(indexes), [&](auto i) { return f(A.un(i)); });
    return A(indexes);
 }
 

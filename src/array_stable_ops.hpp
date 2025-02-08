@@ -120,9 +120,9 @@ ValueTypeOf<Base> semi_stable_sum(const Base& A, ValueTypeOf<Base> empty_default
       return empty_default;
    }
 
-   index_t block_size = 64_sl;
-   index_t nblocks = A.size() / block_size;
-   index_t rem = A.size() % block_size;
+   const index_t block_size = 64_sl;
+   const index_t nblocks = A.size() / block_size;
+   const index_t rem = A.size() % block_size;
 
    Array1D<RealTypeOf<Base>> sb(nblocks);
    for(index_t i = 0_sl; i < nblocks; ++i) {
@@ -254,13 +254,13 @@ ValueTypeOf<Base> stable_norm_lp(const Base& A, ImplicitInt lp, ValueTypeOf<Base
       return empty_default;
    }
 
-   auto pw = lp.get();
-   auto sz = A.size();
+   const auto pw = lp.get();
+   const auto sz = A.size();
 
    using real_type = RealTypeOf<Base>;
-   auto coeff = const1D(Size{sz}, Value{real_type(1)});
-   auto P = const1D(Size{sz}, Value(pw));
-   auto s = stable_gpolynomial(coeff, abs(A.view1D()), P);
+   const auto coeff = const1D(Size{sz}, Value{real_type(1)});
+   const auto P = const1D(Size{sz}, Value(pw));
+   const auto s = stable_gpolynomial(coeff, abs(A.view1D()), P);
    return pows(s, invs(value_type_cast<Base>(pw)));
 }
 
@@ -285,8 +285,8 @@ ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x,
       return empty_default;
    }
 
-   auto X = const1D(Size{coeffs.size()}, Value{x});
-   auto powers = sequence(Size{coeffs.size()}, Start{0}, Incr{1});
+   const auto X = const1D(Size{coeffs.size()}, Value{x});
+   const auto powers = sequence(Size{coeffs.size()}, Start{0}, Incr{1});
    return stable_gpolynomial(coeffs, X, powers);
 }
 
@@ -300,7 +300,7 @@ ValueTypeOf<Base1> stable_polynomial(const Base1& coeffs, ValueTypeOf<Base1> x, 
    }
    ASSERT_STRICT_DEBUG(all_non_neg(powers));
 
-   auto X = const1D(Size{coeffs.size()}, Value{x});
+   const auto X = const1D(Size{coeffs.size()}, Value{x});
    return stable_gpolynomial(coeffs, X, powers);
 }
 
@@ -315,10 +315,10 @@ ValueTypeOf<Base1> stable_gpolynomial(const Base1& coeffs, const Base2& X, const
    }
    ASSERT_STRICT_DEBUG(all_non_neg(powers));
 
-   auto R = pow_prod(X, powers).first;
-   auto S = pow_prod(X, powers).second;
-   auto coeff_pair = merge(coeffs, coeffs);
-   auto RS = merge(R, S);
+   const auto R = pow_prod(X, powers).first;
+   const auto S = pow_prod(X, powers).second;
+   const auto coeff_pair = merge(coeffs, coeffs);
+   const auto RS = merge(R, S);
    return stable_dot_prod(coeff_pair, RS);
 }
 
