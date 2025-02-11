@@ -411,6 +411,17 @@ template <typename Base>
 STRICT_CONSTEXPR auto operator^(Base&& A, ValueTypeOf<Base> x) = delete;
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+template <TwoDimRealBaseType Base1, OneDimRealBaseType Base2>
+STRICT_CONSTEXPR auto matvec_prod(const Base1& A, const Base2& x);
+
+
+template <typename Base1, typename Base2>
+   requires TwoDimRealBaseType<RemoveRef<Base1>> && OneDimRealBaseType<RemoveRef<Base2>>
+             && (detail::ArrayRealTypeRvalue<Base1> || detail::ArrayRealTypeRvalue<Base2>)
+STRICT_CONSTEXPR auto matvec_prod(Base1&& A1, Base2&& A2) = delete;
+
+
 namespace detail {
 
 
@@ -433,6 +444,7 @@ template <BaseType Base1, BaseType Base2, typename F, bool copy_delete>
 STRICT_CONSTEXPR auto generate(const Base1& A1, const Base2& A2, F f) {
    using E = detail::BinaryExpr<Base1, Base2, F, copy_delete>;
 
+   static_assert(same_dimension<Base1, Base2>());
    if constexpr(OneDimBaseType<Base1>) {
       return StrictArrayBase1D<E>(A1, A2, f);
    } else {
@@ -688,6 +700,22 @@ STRICT_CONSTEXPR auto operator||(const Base& A, ValueTypeOf<Base> x) {
 template <BooleanBaseType Base>
 STRICT_CONSTEXPR auto operator^(const Base& A, ValueTypeOf<Base> x) {
    return generate(A, detail::generate_const(A, x), expr::BinaryBooleanXor{});
+}
+
+
+template <TwoDimRealBaseType Base1, OneDimRealBaseType Base2>
+STRICT_CONSTEXPR auto matvec_prod(const Base1& A, const Base2& x) {
+   ASSERT_STRICT_DEBUG(A.cols() == x.size());
+   // Re-implement dot product function here so that array_ops header does not need
+   // to be included. It is also implemented slightly differently.
+   auto dot = [](const auto& x1, const auto& x2) {
+      ValueTypeOf<Base1> s{};
+      for(index_t i = 0_sl; i < x1.size(); ++i) {
+         s += x1[i] * x2[i];
+      }
+      return s;
+   };
+   return row_reduce(A, [&x, &dot](auto row) { return dot(row, x); });
 }
 
 

@@ -27,10 +27,7 @@ std::optional<std::pair<VT, index_t>> jacobi(const MT& A, const VT& b, Strict<T>
    }
 
    for(const auto iter : irange(max_its + 1_sl)) {
-      const auto matrix_vector_product
-          = row_reduce(A, [&xnext](auto row) { return dot_prod(row, xnext); });
-
-      if(within_tol_rel(matrix_vector_product, b, tol)) {
+      if(within_tol_rel(matvec_prod(A, xnext), b, tol)) {
          return {std::pair{xnext, iter}};
       }
 
