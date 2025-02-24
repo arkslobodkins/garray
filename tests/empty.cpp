@@ -6,7 +6,7 @@ using namespace spp;
 
 
 void empty_array_ops() {
-   const Array2D<float> A;
+   Array2D<float> A;
    REQUIRE_NOT_THROW(sum(A));
    REQUIRE_NOT_THROW(prod(A));
    REQUIRE_NOT_THROW(mean(A));
@@ -49,9 +49,8 @@ void empty_array_ops() {
    REQUIRE_NOT_THROW(in_closed_range(A.view1D(), -1._sf, 1._sf));
    REQUIRE_NOT_THROW(for_each(A, [](auto) {}));
 
-   Array2D<float> B;
-   REQUIRE_NOT_THROW(sort(B, [](auto, auto) { return true_sb; }));
-   REQUIRE_NOT_THROW(shuffle(B));
+   REQUIRE_NOT_THROW(sort(A, [](auto, auto) { return true_sb; }));
+   REQUIRE_NOT_THROW(shuffle(A));
 }
 
 

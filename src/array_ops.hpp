@@ -17,7 +17,6 @@
 #include "ArrayCommon/array_traits.hpp"
 #include "Expr/expr.hpp"
 #include "StrictCommon/strict_common.hpp"
-#include "derived1D.hpp"
 
 
 // Generic functions that work on Arrays, SliceArrays, and their expression templates.

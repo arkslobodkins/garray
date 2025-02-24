@@ -53,11 +53,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T> invs(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> exps(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::exp(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::exp(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{expq(T{x})};
    }
 #endif
@@ -66,11 +67,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> exps(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> logs(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::log(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::log(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{logq(T{x})};
    }
 #endif
@@ -79,11 +81,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> logs(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> log2s(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::log2(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::log2(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{log2q(T{x})};
    }
 #endif
@@ -92,11 +95,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> log2s(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> log10s(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::log10(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::log10(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{log10q(T{x})};
    }
 #endif
@@ -105,11 +109,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> log10s(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> sqrts(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::sqrt(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::sqrt(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{sqrtq(T{x})};
    }
 #endif
@@ -118,11 +123,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> sqrts(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> cbrts(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::cbrt(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::cbrt(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{cbrtq(T{x})};
    }
 #endif
@@ -131,11 +137,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> cbrts(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> sins(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::sin(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::sin(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{sinq(T{x})};
    }
 #endif
@@ -144,11 +151,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> sins(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> coss(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::cos(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::cos(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{cosq(T{x})};
    }
 #endif
@@ -157,11 +165,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> coss(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> tans(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::tan(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::tan(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{tanq(T{x})};
    }
 #endif
@@ -170,11 +179,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> tans(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2023 Strict<T> floors(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::floor(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::floor(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{floorq(T{x})};
    }
 #endif
@@ -183,11 +193,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2023 Strict<T> floors(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2023 Strict<T> ceils(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::ceil(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::ceil(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{ceilq(T{x})};
    }
 #endif
@@ -197,11 +208,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2023 Strict<T> ceils(Strict<T> x) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2023 StrictBool isinfs(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return StrictBool{std::isinf(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return StrictBool{std::isinf(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       // Convert to bool first because int is returned.
       return StrictBool{static_cast<bool>(isinfq(T{x}))};
    }
@@ -211,11 +223,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2023 StrictBool isinfs(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2023 StrictBool isnans(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return StrictBool{std::isnan(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return StrictBool{std::isnan(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       // Convert to bool first because int is returned.
       return StrictBool{static_cast<bool>(isnanq(T{x}))};
    }
@@ -225,11 +238,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2023 StrictBool isnans(Strict<T> x) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2023 StrictBool isfinites(Strict<T> x) {
-   if constexpr(StandardFloating<T>) {
-      return StrictBool{std::isfinite(T{x})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return StrictBool{std::isfinite(T{x})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       // Convert to bool first because int is returned.
       return StrictBool{static_cast<bool>(finiteq(T{x}))};
    }
@@ -270,11 +284,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T> pows(Strict<T> x, Strict<T> pw) {
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> pows(Strict<T> x, Strict<T> pw) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::pow(T{x}, T{pw})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::pow(T{x}, T{pw})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{powq(T{x}, T{pw})};
    }
 #endif
@@ -283,11 +298,12 @@ STRICT_NODISCARD_CONSTEXPR_INLINE_2026 Strict<T> pows(Strict<T> x, Strict<T> pw)
 
 template <Floating T>
 STRICT_NODISCARD_CONSTEXPR_INLINE_2023 Strict<T> fmas(Strict<T> x, Strict<T> y, Strict<T> z) {
-   if constexpr(StandardFloating<T>) {
-      return Strict<T>{std::fma(T{x}, T{y}, T{z})};
-   }
 #ifdef STRICT_QUAD_PRECISION
-   else {
+   if constexpr(StandardFloating<T>) {
+#endif
+      return Strict<T>{std::fma(T{x}, T{y}, T{z})};
+#ifdef STRICT_QUAD_PRECISION
+   } else {
       return Strict<T>{fmaq(T{x}, T{y}, T{z})};
    }
 #endif
