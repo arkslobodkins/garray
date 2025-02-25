@@ -19,6 +19,9 @@ template <Builtin T>
 struct Strict;
 
 
+class ImplicitBool;
+
+
 template <Builtin T, Builtin U>
 STRICT_NODISCARD_CONSTEXPR_INLINE Strict<T> strict_cast(U x);
 
@@ -53,7 +56,10 @@ public:
       return val_;
    }
 
+   // ImplicitBool must be excluded from the deleted overload, otherwise this overload would be
+   // equally good candidate as templated constructor for ImplicitBool(StrictBool).
    template <typename T>
+      requires(!SameAs<ImplicitBool, T>)
    STRICT_NODISCARD_CONSTEXPR_INLINE operator T() const = delete;
 
    STRICT_NODISCARD_CONSTEXPR_INLINE Strict operator!() const {

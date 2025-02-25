@@ -3,6 +3,10 @@
 
 using namespace spp;
 
+void f(){}
+
+template <typename T> concept Good
+    =  SameAs<int, BuiltinTypeOf<T>>;
 
 // example 2 puts more emphasis on slicing features of 1-d array class.
 int main() {
@@ -40,6 +44,9 @@ int main() {
                                                        slice_6,
                                                        dst1,
                                                        dst2);
+
+//   std::cout << expr::UnaryOperation<int, decltype(f)> << std::endl;
+   std::cout << Good<int> << std::endl;
    return EXIT_SUCCESS;
 }
 
