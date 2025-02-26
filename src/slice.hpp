@@ -595,7 +595,9 @@ public:
       return to_index_t(indexes_.size());
    }
 
-   STRICT_CONSTEXPR StrictBool valid(BaseType auto const& A) const {
+   // Unlike specialization for seqN, specialization for vector only supports one-dimensional
+   // types.
+   STRICT_CONSTEXPR StrictBool valid(OneDimBaseType auto const& A) const {
       return valid_slice_vector(A, indexes_);
    }
 

@@ -31,7 +31,7 @@ STRICT_CONSTEXPR_INLINE void apply1(Base1& A1, [[maybe_unused]] const Base2& A2,
 }
 
 
-template <typename It, BaseType Base>
+template <typename It, OneDimBaseType Base>
 STRICT_CONSTEXPR_INLINE void copy(It b, It e, Base& A) {
    for(index_t count = 0_sl; b != e; ++b) {
       A.un(count++) = *b;
