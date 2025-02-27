@@ -14,18 +14,14 @@ using namespace spp;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 void run_constr_default() {
-   Array1D<T> A;
-   ASSERT(A.size() == 0_sl);
+   ASSERT(Array1D<T>{}.size() == 0_sl);
 }
 
 
 template <Builtin T>
 void run_constr_size(ImplicitInt n) {
-   Array1D<T> A1(n);
-   ASSERT(A1.size() == n.get());
-
-   Array1D<T> A2(Size{n.get()});
-   ASSERT(A2.size() == n.get());
+   ASSERT(Array1D<T>(n).size() == n.get());
+   ASSERT(Array1D<T>(Size{n.get()}).size() == n.get());
 }
 
 

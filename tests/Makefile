@@ -1,7 +1,7 @@
 compiler = clang
 debug = 0
 
-all: info fixed_array1D array1D array_stable_ops error_tools array_1Dvs2D constexpr empty
+all: info fixed_array1D fixed_array2D array1D array_stable_ops error_tools array_1Dvs2D constexpr empty
 
 
 ifeq ($(compiler), gcc)
@@ -50,6 +50,9 @@ info: info.cpp
 
 fixed_array1D: fixed_array1D.cpp
 	$(CXX) $(CXXFLAGS) fixed_array1D.cpp -o fixed_array1D.x $(LFLAGS)
+
+fixed_array2D: fixed_array2D.cpp
+	$(CXX) $(CXXFLAGS) fixed_array2D.cpp -o fixed_array2D.x $(LFLAGS)
 
 array1D: array1D.cpp
 	$(CXX) $(CXXFLAGS) array1D.cpp -o array1D.x $(LFLAGS)

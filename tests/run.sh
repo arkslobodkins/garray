@@ -19,6 +19,9 @@ echo -e "\nRUNNING INFO"
 echo -e "\nRUNNING FIXED ARRAY 1D TESTS"
 ./fixed_array1D.x
 
+echo -e "\nRUNNING FIXED ARRAY 2D TESTS"
+./fixed_array2D.x
+
 echo -e "\nRUNNING ARRAY 1D TESTS"
 ./array1D.x
 

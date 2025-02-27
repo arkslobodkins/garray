@@ -9,21 +9,21 @@ using namespace spp;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_constr_default() {
-   constexpr FixedArray1D<T, n> A;
-   ASSERT(A.size() == n.get());
+   constexpr FixedArray1D<T, N> A;
+   ASSERT(decltype(A)::size() == N.get());
 }
 
 
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_constr_value() {
-   constexpr FixedArray1D<T, n> A1(One<T>);
-   ASSERT(A1.size() == n.get());
+   constexpr FixedArray1D<T, N> A1(One<T>);
+   ASSERT(A1.size() == N.get());
    ASSERT(all_of(A1, One<T>));
 
-   constexpr FixedArray1D<T, n> A2(Value{One<T>});
-   ASSERT(A2.size() == n.get());
+   constexpr FixedArray1D<T, N> A2(Value{One<T>});
+   ASSERT(A2.size() == N.get());
    ASSERT(all_of(A2, One<T>));
 }
 
@@ -40,36 +40,36 @@ consteval void run_constr_list() {
 }
 
 
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_constr_iterator() {
-   FixedArray1D<T, n> A1 = semi_random<T>(n);
-   FixedArray1D<T, n> A2(A1.begin(), A1.end());
+   FixedArray1D<T, N> A1 = semi_random<T>(N);
+   FixedArray1D<T, N> A2(A1.begin(), A1.end());
    ASSERT(A1 == A2);
 }
 
 
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_constr_copy() {
-   FixedArray1D<T, n> A1 = semi_random<T>(n);
-   FixedArray1D<T, n> A2 = A1;
+   FixedArray1D<T, N> A1 = semi_random<T>(N);
+   FixedArray1D<T, N> A2 = A1;
    ASSERT(A1 == A2);
 }
 
 
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_constr_move() {
-   FixedArray1D<T, n> A1 = semi_random<T>(n);
-   FixedArray1D<T, n> A2 = A1;
-   FixedArray1D<T, n> A3 = std::move(A1);
+   FixedArray1D<T, N> A1 = semi_random<T>(N);
+   FixedArray1D<T, N> A2 = A1;
+   FixedArray1D<T, N> A3 = std::move(A1);
    ASSERT(A2 == A3);
    ASSERT(all_of(A1, Zero<T>));
 }
 
 
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_constr_copy_other() {
-   FixedArray1D<T, n> A1 = semi_random<T>(n);
-   FixedArray1D<T, n> A2 = A1.view1D();
+   FixedArray1D<T, N> A1 = semi_random<T>(N);
+   FixedArray1D<T, N> A2 = A1.view1D();
    ASSERT(A1 == A2);
 }
 
@@ -96,9 +96,9 @@ void run_constr_copy_other_fail() {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_assign_value() {
-   FixedArray1D<T, n> A;
+   FixedArray1D<T, N> A;
    A = One<T>;
    ASSERT(all_of(A, One<T>));
 }
@@ -117,20 +117,20 @@ consteval void run_assign_list() {
 }
 
 
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_assign_copy() {
-   FixedArray1D<T, n> A1 = semi_random<T>(n);
-   FixedArray1D<T, n> A2;
+   FixedArray1D<T, N> A1 = semi_random<T>(N);
+   FixedArray1D<T, N> A2;
    A2 = A1;
    ASSERT(A1 == A2);
 }
 
 
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_assign_move() {
-   FixedArray1D<T, n> A1 = semi_random<T>(n);
-   FixedArray1D<T, n> A2 = A1;
-   FixedArray1D<T, n> A3;
+   FixedArray1D<T, N> A1 = semi_random<T>(N);
+   FixedArray1D<T, N> A2 = A1;
+   FixedArray1D<T, N> A3;
    A3 = std::move(A1);
 
    ASSERT(A2 == A3);
@@ -142,10 +142,10 @@ consteval void run_assign_move() {
 }
 
 
-template <Builtin T, ImplicitIntStatic n>
+template <Builtin T, ImplicitIntStatic N>
 consteval void run_assign_copy_other() {
-   Array1D<T> A1 = semi_random<T>(n);
-   FixedArray1D<T, n> A2;
+   Array1D<T> A1 = semi_random<T>(N);
+   FixedArray1D<T, N> A2;
    A2 = A1;
    ASSERT(A1 == A2);
 }
@@ -169,14 +169,14 @@ void run_assign_copy_other_fail() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 void fixed_array_constructor() {
-   constexpr index_t n = 10_sl;
-   run_constr_default<T, n>();
-   run_constr_value<T, n>();
+   constexpr index_t N = 10_sl;
+   run_constr_default<T, N>();
+   run_constr_value<T, N>();
    run_constr_list<T>();
-   run_constr_iterator<T, n>();
-   run_constr_copy<T, n>();
-   run_constr_move<T, n>();
-   run_constr_copy_other<T, n>();
+   run_constr_iterator<T, N>();
+   run_constr_copy<T, N>();
+   run_constr_move<T, N>();
+   run_constr_copy_other<T, N>();
 
    run_constr_list_fail<T>();
    run_constr_iterator_fail<T>();
@@ -187,12 +187,12 @@ void fixed_array_constructor() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Builtin T>
 void fixed_array_assignment() {
-   constexpr index_t n = 10_sl;
-   run_assign_value<T, n>();
+   constexpr index_t N = 10_sl;
+   run_assign_value<T, N>();
    run_assign_list<T>();
-   run_assign_copy<T, n>();
-   run_assign_move<T, n>();
-   run_assign_copy_other<T, n>();
+   run_assign_copy<T, N>();
+   run_assign_move<T, N>();
+   run_assign_copy_other<T, N>();
 
    run_assign_list_fail<T>();
    run_assign_copy_other_fail<T>();
@@ -202,21 +202,21 @@ void fixed_array_assignment() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 template <Real T>
 void fixed_array_data() {
-   constexpr index_t n = 10_sl;
-   FixedArray1D<T, n> A1(One<T>);
-   const FixedArray1D<T, n> A2(One<T>);
+   constexpr index_t N = 10_sl;
+   FixedArray1D<T, N> A1(One<T>);
+   const FixedArray1D<T, N> A2(One<T>);
 
    Strict<T>* a_ptr = A1.data();
    const Strict<T>* b_ptr = A2.data();
-   ASSERT(std::all_of(a_ptr, a_ptr + n.val(), [](auto x) { return x == One<T>; }));
-   ASSERT(std::all_of(b_ptr, b_ptr + n.val(), [](auto x) { return x == One<T>; }));
+   ASSERT(std::all_of(a_ptr, a_ptr + N.val(), [](auto x) { return x == One<T>; }));
+   ASSERT(std::all_of(b_ptr, b_ptr + N.val(), [](auto x) { return x == One<T>; }));
 
    T* a_blas_ptr = A1.blas_data();
    const T* b_blas_ptr = A2.blas_data();
    ASSERT(
-       std::all_of(a_blas_ptr, a_blas_ptr + n.val(), [](auto x) { return Strict{x} == One<T>; }));
+       std::all_of(a_blas_ptr, a_blas_ptr + N.val(), [](auto x) { return Strict{x} == One<T>; }));
    ASSERT(
-       std::all_of(b_blas_ptr, b_blas_ptr + n.val(), [](auto x) { return Strict{x} == One<T>; }));
+       std::all_of(b_blas_ptr, b_blas_ptr + N.val(), [](auto x) { return Strict{x} == One<T>; }));
 }
 
 
